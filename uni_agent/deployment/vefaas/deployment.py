@@ -30,6 +30,9 @@ PUB_VOLCES_IMG_URL_TEMPLATE = {
         "enterprise-public-cn-beijing.cr.volces.com"
         "/swe-bench-verified/sweb.eval.x86_64.{project_name}_1776_{instance_number}:v2"
     ),
+    "swe-rebench": (
+        "enterprise-public-2-cn-beijing.cr.volces.com/swe-rebench/{project_name}_1776_{instance_number}:latest"
+    ),
     "swe-bench-live": (
         "enterprise-public-cn-beijing.cr.volces.com/swe-bench-live/{project_name}_1776_{instance_number}:latest"
     ),
@@ -46,7 +49,7 @@ def get_vefaas_image_name(dataset_id: str, instance_id: str) -> str:
     project_name = parts[0].lower()
     instance_number = parts[1].lower()
 
-    if dataset_id in ["swe-bench", "swe-bench-verified", "swe-bench-live"]:
+    if dataset_id in ["swe-bench", "swe-bench-verified", "swe-bench-live", "swe-rebench"]:
         return PUB_VOLCES_IMG_URL_TEMPLATE[dataset_id].format(
             project_name=project_name,
             instance_number=instance_number,
