@@ -74,8 +74,17 @@ elif impl == "modal":
         "runtime_timeout": 300.0,
         "deployment_timeout": 3600.0,
     }
+elif impl == "openyuanrong":
+    assert os.getenv("OPENYUANRONG_SERVER_ADDRESS") is not None, "OPENYUANRONG_SERVER_ADDRESS must be set"
+    assert os.getenv("OPENYUANRONG_TOKEN") is not None, "OPENYUANRONG_TOKEN must be set"
+    deployment_config = {
+        "type": "openyuanrong",
+        "image": os.getenv("OPENYUANRONG_DEPLOYMENT_IMAGE", "python:3.12"),
+        "timeout": float(os.getenv("OPENYUANRONG_DEPLOYMENT_TIMEOUT", "300")),
+        "startup_timeout": float(os.getenv("OPENYUANRONG_DEPLOYMENT_STARTUP_TIMEOUT", "180")),
+    }
 elif impl == "":
-    raise ValueError("DEPLOYMENT must be set")
+    raise ValueError("DEPLOYMENT must be set (local, vefaas, modal, openyuanrong)")
 else:
     raise ValueError(f"Invalid environment implementation: {impl}")
 
