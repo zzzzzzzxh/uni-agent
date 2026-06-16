@@ -108,15 +108,13 @@ async def swe_agent_runner(
     )
 
     metadata, eval_timeout = build_reward_context(tools_kwargs)
-    task_image = extract_image((tools_kwargs.get("env") or {}))
     env = _create_agent_env(f"swe_bb_{sample_index}_{uuid4().hex[:8]}", tools_kwargs, agent_config)
 
     try:
         logger.info(
-            "[sample %d] starting env, data_source=%s, task_image=%s",
+            "[sample %d] starting env, data_source=%s",
             sample_index,
             metadata["data_source"],
-            task_image or "N/A",
         )
         t0 = time.perf_counter()
         await env.start()

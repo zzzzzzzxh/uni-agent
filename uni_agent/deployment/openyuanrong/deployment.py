@@ -14,12 +14,13 @@ from swerex.runtime.abstract import CreateBashSessionRequest, IsAliveResponse
 from swerex.utils.wait import _wait_until_alive
 
 from uni_agent.async_logging import get_logger
-from uni_agent.deployment.config import YRDeploymentConfig, YRMountConfig
+from uni_agent.deployment.config import YRDeploymentConfig
 from uni_agent.deployment.remote_runtime import RemoteRuntime, RemoteRuntimeConfig
 
 __all__ = ["YRDeployment"]
 
 DEFAULT_SWEREX_REMOTE_LOG_PATH = "./swerex-remote.log"
+DEFAULT_OPENYUANRONG_PIP_INDEX_URL = "https://pypi.tuna.tsinghua.edu.cn/simple"
 
 
 def _configure_env() -> None:
@@ -32,6 +33,12 @@ def _configure_env() -> None:
         raise ValueError("OPENYUANRONG_TOKEN environment variable must be set")
     os.environ["AKERNEL_SERVER_ADDRESS"] = server
     os.environ["AKERNEL_TOKEN"] = token
+
+
+def _with_default_pip_index_url(env: dict[str, str] | None) -> dict[str, str]:
+    merged = dict(env or {})
+    merged.setdefault("PIP_INDEX_URL", DEFAULT_OPENYUANRONG_PIP_INDEX_URL)
+    return merged
 
 
 def _create_sandbox(config: YRDeploymentConfig) -> Any:
@@ -49,7 +56,7 @@ def _create_sandbox(config: YRDeploymentConfig) -> Any:
     if config.image is not None:
         kwargs["image"] = config.image
     if config.env is not None:
-        kwargs["env"] = config.env
+        kwargs["env"] = dict(config.env)
     if config.name is not None:
         kwargs["name"] = config.name
     if config.cwd is not None:
@@ -61,36 +68,10 @@ def _create_sandbox(config: YRDeploymentConfig) -> Any:
 
         kwargs["mounts"] = [Mount(target=mount.target, image_url=mount.image_url) for mount in config.mounts]
     kwargs.update(config.sandbox_kwargs)
+    kwargs["env"] = _with_default_pip_index_url(kwargs.get("env"))
     kwargs["port_forwardings"] = [config.port]
 
     return Sandbox(**kwargs)
-
-
-def _mounted_swerex_command(runtime_target: str) -> str:
-    runtime_target = runtime_target.rstrip("/")
-    return (
-        f"{runtime_target}/bin/python {runtime_target}/bin/swerex-remote"
-        " --host 0.0.0.0 --port {port} --auth-token {token}"
-    )
-
-
-def _apply_runtime_mount_env_overrides(config: YRDeploymentConfig) -> YRDeploymentConfig:
-    runtime_image = os.getenv("OPENYUANRONG_SWEREX_RUNTIME_IMAGE")
-    runtime_target = os.getenv("OPENYUANRONG_SWEREX_RUNTIME_TARGET", "/opt/swe-rex").rstrip("/")
-    if runtime_image:
-        mounts = list(config.mounts)
-        for mount in mounts:
-            if mount.target == runtime_target:
-                mount.image_url = runtime_image
-                break
-        else:
-            mounts.append(YRMountConfig(target=runtime_target, image_url=runtime_image))
-        config.mounts = mounts
-
-    if not config.command and (runtime_image or config.mounts):
-        config.command = _mounted_swerex_command(runtime_target)
-
-    return config
 
 
 def _swerex_remote_log_path() -> str:
@@ -147,54 +128,58 @@ def _start_swerex_via_port_forwarding(
 
 
 def _runtime_debug_enabled() -> bool:
-    value = os.getenv("OPENYUANRONG_RUNTIME_DEBUG", "0").strip().lower()
+    value = os.getenv("DEBUG_MODE", "0").strip().lower()
     return value in {"1", "true", "yes", "on"}
 
 
 def _debug_python_runtime(sandbox: Any) -> Any:
     command = r"""
 set +e
-echo "=== task image python / swe-rex debug ==="
 
-debug_python() {
+print_python() {
     label="$1"
     py="$2"
-    if command -v "$py" >/dev/null 2>&1; then
-        resolved="$(command -v "$py" 2>/dev/null)"
-    elif [ -x "$py" ]; then
+    if [ -x "$py" ]; then
         resolved="$py"
+    elif command -v "$py" >/dev/null 2>&1; then
+        resolved="$(command -v "$py" 2>/dev/null)"
     else
-        echo "[$label] missing: $py"
+        echo "$label=missing"
         return 0
     fi
 
-    echo "[$label] executable: $resolved"
-    "$resolved" --version 2>&1 || true
-    "$resolved" - <<'PY' 2>&1 || true
+    version="$("$resolved" --version 2>&1 || true)"
+    echo "$label=$resolved ($version)"
+}
+
+print_sidecar_swerex() {
+    py="/opt/swe-rex/bin/python"
+    if [ ! -x "$py" ]; then
+        echo "sidecar_swerex=missing-python"
+        return 0
+    fi
+
+    "$py" - <<'PY' 2>&1 || true
 import importlib.util
 
 spec = importlib.util.find_spec("swerex")
 if spec is None:
-    print("swerex: missing")
+    print("sidecar_swerex=missing")
 else:
     import swerex
 
-    print(f"swerex: {spec.origin}")
-    print(f"swerex_version: {getattr(swerex, '__version__', 'unknown')}")
+    print(f"sidecar_swerex={getattr(swerex, '__version__', 'unknown')} ({spec.origin})")
 PY
 }
 
-debug_python "task-python" "python"
-debug_python "task-python3" "python3"
-debug_python "task-/usr/bin/python3" "/usr/bin/python3"
+print_python "task_python" "/usr/bin/python3"
+print_python "sidecar_python" "/opt/swe-rex/bin/python"
+print_sidecar_swerex
 
-echo "=== mounted sidecar /opt/swe-rex python / swe-rex debug ==="
-debug_python "sidecar-/opt/swe-rex/bin/python" "/opt/swe-rex/bin/python"
-
-if [ -e /opt/swe-rex/bin/swerex-remote ]; then
-    echo "[sidecar-swerex-remote] exists: /opt/swe-rex/bin/swerex-remote"
+if [ -x /opt/swe-rex/bin/swerex-remote ]; then
+    echo "swerex_remote=/opt/swe-rex/bin/swerex-remote"
 else
-    echo "[sidecar-swerex-remote] missing: /opt/swe-rex/bin/swerex-remote"
+    echo "swerex_remote=missing"
 fi
 """
     return sandbox.commands.run(command, timeout=60)
@@ -271,7 +256,7 @@ class YRDeployment(AbstractDeployment):
 
     def __init__(self, run_id: str, **kwargs: Any):
         self.run_id = run_id
-        self._config = _apply_runtime_mount_env_overrides(YRDeploymentConfig(**kwargs))
+        self._config = YRDeploymentConfig(**kwargs)
         self._runtime: RemoteRuntime | None = None
         self._sandbox: Any | None = None
         self._command_handle: Any | None = None
@@ -348,17 +333,23 @@ class YRDeployment(AbstractDeployment):
         self.logger.info(f"Sandbox {self._sandbox.sandbox_id} created in {elapsed_sandbox_creation:.2f}s")
 
         if _runtime_debug_enabled():
-            self.logger.info(
-                "Debugging task image and mounted sidecar runtime before starting swe-rex "
-                f"(image={self._config.image!r}, mounts={self._config.mounts!r})"
-            )
+            self.logger.info("OpenYuanRong runtime debug enabled")
             debug_result = await loop.run_in_executor(None, _debug_python_runtime, self._sandbox)
-            self.logger.info(
-                "OpenYuanRong runtime debug finished (exit_code={})\nstdout:\n{}\nstderr:\n{}",
-                getattr(debug_result, "exit_code", None),
-                getattr(debug_result, "stdout", ""),
-                getattr(debug_result, "stderr", ""),
-            )
+            debug_stdout = getattr(debug_result, "stdout", "").strip()
+            debug_stderr = getattr(debug_result, "stderr", "").strip()
+            if debug_stderr:
+                self.logger.info(
+                    "OpenYuanRong runtime debug (exit_code={})\n{}\nstderr:\n{}",
+                    getattr(debug_result, "exit_code", None),
+                    debug_stdout,
+                    debug_stderr,
+                )
+            else:
+                self.logger.info(
+                    "OpenYuanRong runtime debug (exit_code={})\n{}",
+                    getattr(debug_result, "exit_code", None),
+                    debug_stdout,
+                )
 
         self._hooks.on_custom_step(f"Starting swerex on port {self._port} (background)")
         self._command_handle, self._runtime_url = await loop.run_in_executor(
