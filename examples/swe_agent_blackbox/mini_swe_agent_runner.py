@@ -11,6 +11,7 @@ import base64
 import json
 import logging
 import os
+import shlex
 import time
 from pathlib import Path
 
@@ -76,6 +77,26 @@ def _build_task_config(
     }
 
 
+def build_agent_command(
+    *,
+    config_b64: str,
+    conda_env: str = "testbed",
+) -> str:
+    """Build the command that runs run_agent.py inside the sandbox."""
+    conda_prefix = f"/opt/miniconda3/envs/{conda_env}"
+    env_prefix = (
+        f"CONDA_DEFAULT_ENV={shlex.quote(conda_env)} "
+        f"CONDA_PREFIX={shlex.quote(conda_prefix)} "
+        f"PATH={shlex.quote(conda_prefix + '/bin')}:/opt/miniconda3/bin:$PATH"
+    )
+    return (
+        "unset HTTP_PROXY HTTPS_PROXY http_proxy https_proxy NO_PROXY no_proxy; "
+        f"{env_prefix} "
+        f"echo {config_b64} | base64 -d | "
+        "/opt/mini-swe-agent/bin/python /opt/mini-swe-agent/bin/run_agent.py"
+    )
+
+
 async def mini_swe_agent_runner(
     *,
     raw_prompt,
@@ -85,6 +106,7 @@ async def mini_swe_agent_runner(
     tools_kwargs: dict | None = None,
     tool_image: str = DEFAULT_TOOL_IMAGE,
     run_timeout: int = 7200,
+    conda_env: str = "testbed",
     **kwargs,
 ) -> None:
     """Run mini-swe-agent inside a sandbox with sidecar tool mount.
@@ -137,13 +159,9 @@ async def mini_swe_agent_runner(
             else:
                 logger.info("post_setup_cmd done")
 
-        # Run agent inside sandbox — pipe config via base64-encoded stdin
+        # Run agent inside sandbox — pipe config via base64-encoded stdin.
         config_b64 = base64.b64encode(json.dumps(task_config).encode()).decode()
-        agent_cmd = (
-            "unset HTTP_PROXY HTTPS_PROXY http_proxy https_proxy NO_PROXY no_proxy; "
-            f"echo {config_b64} | base64 -d | "
-            "/opt/mini-swe-agent/bin/python /opt/mini-swe-agent/bin/run_agent.py"
-        )
+        agent_cmd = build_agent_command(config_b64=config_b64, conda_env=conda_env)
         logger.debug("[sample %d] starting agent inside sandbox", sample_index)
         t0 = time.perf_counter()
         agent_result = await sandbox.run(agent_cmd, timeout=int(run_timeout))

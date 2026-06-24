@@ -67,6 +67,7 @@ else
     exit 1
 fi
 SWE_AGENT_RUN_TIMEOUT="${SWE_AGENT_RUN_TIMEOUT:-7200}"
+CONDA_ENV="${CONDA_ENV:-testbed}"
 RUNNER_ARGS=(
     "actor_rollout_ref.rollout.custom.agent_framework.agent_runner_fqn=${AGENT_RUNNER_FQN}"
 )
@@ -74,6 +75,7 @@ if [[ "${RUNNER}" != "uniagent" ]]; then
     RUNNER_ARGS+=(
         "+actor_rollout_ref.rollout.custom.agent_framework.agent_runner_kwargs.tool_image=${SWE_AGENT_TOOL_IMAGE}"
         "+actor_rollout_ref.rollout.custom.agent_framework.agent_runner_kwargs.run_timeout=${SWE_AGENT_RUN_TIMEOUT}"
+        "+actor_rollout_ref.rollout.custom.agent_framework.agent_runner_kwargs.conda_env=${CONDA_ENV}"
     )
 fi
 
