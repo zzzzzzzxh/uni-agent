@@ -15,9 +15,8 @@
       command: /opt/swe-rex/bin/python /opt/swe-rex/bin/swerex-remote --host 0.0.0.0 --port {port} --auth-token {token}
       timeout: 600
       startup_timeout: 600
-      mounts:
-        - target: /opt/swe-rex
-          image_url: swr.cn-east-3.myhuaweicloud.com/openyuanrong/swerex-runtime:1.4.0
+      swerex_runtime_image: swr.cn-east-3.myhuaweicloud.com/openyuanrong/swerex-runtime:1.4.0
+      swerex_runtime_target: /opt/swe-rex
     env_variables:
       PIP_PROGRESS_BAR: "off"
       PIP_CACHE_DIR: "~/.cache/pip"

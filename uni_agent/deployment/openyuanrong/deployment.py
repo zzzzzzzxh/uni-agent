@@ -61,12 +61,14 @@ def _create_sandbox(config: YRDeploymentConfig) -> Any:
         kwargs["name"] = config.name
     if config.cwd is not None:
         kwargs["cwd"] = config.cwd
-    if config.mounts:
+    if config.swerex_runtime_image:
         if "mounts" in config.sandbox_kwargs:
-            raise ValueError("Use either YRDeploymentConfig.mounts or sandbox_kwargs['mounts'], not both")
+            raise ValueError("Use either YRDeploymentConfig.swerex_runtime_image or sandbox_kwargs['mounts'], not both")
         from akernel_sdk import Mount
 
-        kwargs["mounts"] = [Mount(target=mount.target, image_url=mount.image_url) for mount in config.mounts]
+        kwargs["mounts"] = [
+            Mount(target=config.swerex_runtime_target, image_url=config.swerex_runtime_image)
+        ]
     kwargs.update(config.sandbox_kwargs)
     kwargs["env"] = _with_default_pip_index_url(kwargs.get("env"))
     kwargs["port_forwardings"] = [config.port]
@@ -75,9 +77,6 @@ def _create_sandbox(config: YRDeploymentConfig) -> Any:
 
 
 def _local_swerex_log_dir() -> Path:
-    run_infer = Path.cwd() / "examples/swe_agent_blackbox/scripts/run_infer.sh"
-    if run_infer.exists():
-        return run_infer.parent
     return Path.cwd()
 
 
