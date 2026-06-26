@@ -58,19 +58,20 @@ def _create_agent_env(run_id: str, tools_kwargs: dict, agent_config: dict) -> Ag
             deployment.update(nested_deployment)
         deployment.setdefault("type", "local")
         image = extract_image(env_override) or deployment.get("image", "")
-        if "r2e" in image.lower():
-            deployment["command"] = (
-                "/opt/swerex-venv/bin/python3 -m swerex.server"
-                " --auth-token {token}"
-            )
-        else:
-            # SWE-bench images may lack swerex; install it before starting the server.
-            # pip package is "swe-rex", module is "swerex".
-            deployment["command"] = (
-                "/usr/bin/python3.10 -m pip install -q swe-rex"
-                " && exec /usr/bin/python3.10 -m swerex.server"
-                " --auth-token {token}"
-            )
+        if deployment["type"] == "local":
+            if "r2e" in image.lower():
+                deployment["command"] = (
+                    "/opt/swerex-venv/bin/python3 -m swerex.server"
+                    " --auth-token {token}"
+                )
+            else:
+                # SWE-bench images may lack swerex; install it before starting the server.
+                # pip package is "swe-rex", module is "swerex".
+                deployment["command"] = (
+                    "/usr/bin/python3.10 -m pip install -q swe-rex"
+                    " && exec /usr/bin/python3.10 -m swerex.server"
+                    " --auth-token {token}"
+                )
         env_config["deployment"] = deployment
         env_config.update(env_override)
     deployment = dict(env_config.get("deployment", {}))
@@ -106,11 +107,15 @@ async def swe_agent_runner(
         else [{"role": "user", "content": str(raw_prompt)}]
     )
 
-    env = _create_agent_env(f"swe_bb_{sample_index}_{uuid4().hex[:8]}", tools_kwargs, agent_config)
     metadata, eval_timeout = build_reward_context(tools_kwargs)
+    env = _create_agent_env(f"swe_bb_{sample_index}_{uuid4().hex[:8]}", tools_kwargs, agent_config)
 
     try:
-        logger.info("[sample %d] starting env, image=%s", sample_index, agent_config.get("env", {}).get("deployment", {}).get("image", "N/A"))
+        logger.info(
+            "[sample %d] starting env, data_source=%s",
+            sample_index,
+            metadata["data_source"],
+        )
         t0 = time.perf_counter()
         await env.start()
         logger.info("[sample %d] env started (%.1fs)", sample_index, time.perf_counter() - t0)

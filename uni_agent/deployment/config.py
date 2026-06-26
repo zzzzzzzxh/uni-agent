@@ -190,6 +190,10 @@ class YRDeploymentConfig(BaseModel):
     """Verify TLS when connecting to the port-forwarded https URL (self-signed clusters often need False)."""
     sandbox_kwargs: dict[str, Any] = Field(default_factory=dict)
     """Extra keyword arguments passed to akernel_sdk.Sandbox."""
+    swerex_runtime_image: str | None = None
+    """Optional SWE-ReX runtime rootfs image mounted into the sandbox."""
+    swerex_runtime_target: str = "/opt/swe-rex"
+    """Mount point for the SWE-ReX runtime image inside the sandbox."""
 
     type: Literal["openyuanrong"] = "openyuanrong"
     """Discriminator for (de)serialization/CLI. Do not change."""
