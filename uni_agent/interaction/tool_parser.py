@@ -1,7 +1,5 @@
 import ast
 import json
-import logging
-import os
 import uuid
 from typing import Any
 
@@ -14,18 +12,12 @@ from uni_agent.interaction.tool_schemas import (
 )
 
 
-logger = logging.getLogger(__name__)
-
-
 class FunctionCallFormatError(Exception):
     pass
 
 
 # modified from qwen3 coder tool parser
 class XMLToolParser:
-    _LOG_PREVIEW_CHARS_ENV = "UNI_AGENT_XML_TOOL_PARSE_LOG_CHARS"
-    _DEFAULT_LOG_PREVIEW_CHARS = 8192
-
     def __init__(self):
         self.tool_call_start_token: str = "<tool_call>"
         self.tool_call_prefix: str = "<function="
@@ -36,25 +28,6 @@ class XMLToolParser:
         self.tool_call_function_regex = regex.compile(r"<function=(.*?)</function>|<function=(.*)$", regex.DOTALL)
         self.tool_call_parameter_regex = regex.compile(
             r"<parameter=(.*?)(?:</parameter>|(?=<parameter=)|(?=</function>)|$)", regex.DOTALL
-        )
-
-    @classmethod
-    def _log_preview(cls, text: str) -> str:
-        try:
-            limit = int(os.getenv(cls._LOG_PREVIEW_CHARS_ENV, str(cls._DEFAULT_LOG_PREVIEW_CHARS)))
-        except ValueError:
-            limit = cls._DEFAULT_LOG_PREVIEW_CHARS
-        if limit <= 0 or len(text) <= limit:
-            return text
-        return f"{text[:limit]}...<truncated {len(text) - limit} chars>"
-
-    def _log_parse_failure(self, model_output: str, function_call_str: str) -> None:
-        logger.exception(
-            "Failed to parse XML tool call from model output.\n"
-            "Malformed function call:\n%s\n"
-            "Full model output preview:\n%s",
-            self._log_preview(function_call_str),
-            self._log_preview(model_output),
         )
 
     def _get_arguments_config(self, func_name: str, tools: list[OpenAIFunctionToolSchema]) -> dict:
@@ -204,13 +177,7 @@ class XMLToolParser:
         function_calls = self._get_function_calls(model_output)
         if not function_calls:
             return model_output, []
-        tool_calls = []
-        for function_call_str in function_calls:
-            try:
-                tool_calls.append(self._parse_xml_function_call(function_call_str, tools))
-            except FunctionCallFormatError:
-                self._log_parse_failure(model_output, function_call_str)
-                raise
+        tool_calls = [self._parse_xml_function_call(function_call_str, tools) for function_call_str in function_calls]
 
         content_index = model_output.find(self.tool_call_start_token)
         content_index = content_index if content_index >= 0 else model_output.find(self.tool_call_prefix)
