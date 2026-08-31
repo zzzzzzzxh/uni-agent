@@ -306,13 +306,21 @@ class MessageCodec:
         tools: list[dict[str, Any]],
         parser_name: str,
     ) -> tuple[str, list[Any]]:
-        from vllm.entrypoints.openai.chat_completion.protocol import ChatCompletionToolsParam
+        try:
+            from vllm.entrypoints.openai.chat_completion.protocol import ChatCompletionToolsParam
+        except ModuleNotFoundError:
+            # vLLM 0.11 moved the OpenAI protocol types one level up.
+            from vllm.entrypoints.openai.protocol import ChatCompletionToolsParam
 
         cache_key = ("vllm", parser_name, _canonical_tools_hash(tools))
         parser = self._tool_parser_cache.get(cache_key) if self._enable_tool_parser_cache else None
         vllm_tools = [ChatCompletionToolsParam(**tool) if isinstance(tool, dict) else tool for tool in tools]
         if parser is None:
-            from vllm.tool_parsers import ToolParserManager
+            try:
+                from vllm.tool_parsers import ToolParserManager
+            except ModuleNotFoundError:
+                # vLLM 0.11 keeps the parser registry under the OpenAI entrypoint.
+                from vllm.entrypoints.openai.tool_parsers import ToolParserManager
 
             parser_cls = ToolParserManager.get_tool_parser(parser_name)
             parser_parameters = inspect.signature(parser_cls).parameters
