@@ -1,0 +1,17 @@
+# OpenCode sidecar tool image mounted at /opt/opencode.
+FROM alpine:3.20 AS fetch
+ARG OPENCODE_VERSION="1.18.25"
+ARG OPENCODE_TARGET="linux-x64"
+ARG OPENCODE_URL=""
+ARG OPENCODE_SHA256=""
+RUN apk add --no-cache curl ca-certificates tar gzip \
+    && if [ -n "${OPENCODE_URL}" ]; then curl -fsSL "${OPENCODE_URL}" -o /tmp/opencode.tgz; \
+       else curl -fsSL "https://github.com/anomalyco/opencode/releases/download/v${OPENCODE_VERSION}/opencode-${OPENCODE_TARGET}.tar.gz" -o /tmp/opencode.tgz; fi \
+    && if [ -n "${OPENCODE_SHA256}" ]; then echo "${OPENCODE_SHA256}  /tmp/opencode.tgz" | sha256sum -c -; fi \
+    && mkdir -p /opt/opencode \
+    && tar -xzf /tmp/opencode.tgz -C /opt/opencode \
+    && test -x /opt/opencode/bin/opencode \
+    && /opt/opencode/bin/opencode --version
+
+FROM scratch
+COPY --from=fetch /opt/opencode /
