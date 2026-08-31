@@ -20,28 +20,35 @@ from omegaconf import OmegaConf
 from uni_agent.framework.base import AgentFramework
 from uni_agent.gateway.config import GatewayActorConfig
 from uni_agent.gateway.manager import GatewayManager
+from uni_agent.rlinsight_adapter import init_rollout_trace_config
 from verl.utils.config import omega_conf_to_dataclass
 from verl.utils.import_utils import load_class_from_fqn
 from verl.utils.transferqueue_utils import tq
 from verl.workers.config.model import HFModelConfig
 
-_DEFAULT_FRAMEWORK_CLASS = "uni_agent.framework.framework.OpenAICompatibleAgentFramework"
+_DEFAULT_FRAMEWORK_CLASS = "uni_agent.framework.framework.GatewayAgentFramework"
 
 
 def build_gateway_manager(*, config, llm_client) -> GatewayManager:
     """Spawn the gateway actor pool (driver-side, driver-owned) and return its manager."""
     # TODO(phase-b): switch this to actor_rollout_ref.rollout.agent_framework.*
     af_cfg = OmegaConf.select(config, "actor_rollout_ref.rollout.custom.agent_framework", default={}) or {}
+    apply_chat_template_kwargs = OmegaConf.select(config, "data.apply_chat_template_kwargs", default={}) or {}
+    if OmegaConf.is_config(apply_chat_template_kwargs):
+        apply_chat_template_kwargs = OmegaConf.to_container(apply_chat_template_kwargs, resolve=True)
 
     # Match AgentLoopWorker pattern: self-load tokenizer/processor via HFModelConfig.
     model_config: HFModelConfig = omega_conf_to_dataclass(config.actor_rollout_ref.model)
-
     gateway_actor_config = GatewayActorConfig(
         tokenizer=model_config.tokenizer,
         processor=model_config.processor,
         tool_parser_name=config.actor_rollout_ref.rollout.get("multi_turn", {}).get("format"),
+        rollout_backend=config.actor_rollout_ref.rollout.get("name"),
+        enable_tool_parser_cache=af_cfg.get("enable_tool_parser_cache", True),
+        apply_chat_template_kwargs=dict(apply_chat_template_kwargs),
         prompt_length=config.actor_rollout_ref.rollout.prompt_length,
         response_length=config.actor_rollout_ref.rollout.response_length,
+        enable_last_assistant_rollback=af_cfg.get("enable_last_assistant_rollback", True),
     )
 
     return GatewayManager(
@@ -81,6 +88,7 @@ class AgentFrameworkWorker:
 
     def __init__(self, *, config, gateway_manager, reward_loop_worker_handles=None) -> None:
         tq.init()
+        init_rollout_trace_config(config)
         self.framework = build_agent_framework(
             config=config,
             gateway_manager=gateway_manager,
@@ -139,4 +147,17 @@ class AgentFrameworkRolloutAdapter:
             raise RuntimeError("framework must be initialized before generate_sequences")
 
         self.framework_worker.generate_sequences.remote(prompts)
+        return None
+
+    def generate_sequences_and_wait(self, prompts) -> None:
+        """Blocking variant of :meth:`generate_sequences` for standalone (non-trainer) runs.
+
+        :meth:`generate_sequences` is fire-and-forget (the trainer consumes TQ asynchronously
+        via its ReplayBuffer); this awaits the framework worker so the caller knows every
+        session's trajectory has landed in TQ, and re-raises any worker-side error.
+        """
+        if self.framework_worker is None:
+            raise RuntimeError("framework must be initialized before generate_sequences")
+
+        ray.get(self.framework_worker.generate_sequences.remote(prompts))
         return None
