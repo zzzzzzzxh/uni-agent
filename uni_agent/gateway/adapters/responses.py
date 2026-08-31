@@ -213,15 +213,16 @@ def _output_items(outcome: GenerationOutcome) -> list[dict[str, Any]]:
     tool_calls = message.get("tool_calls") or []
     for call in tool_calls:
         function = call.get("function") or {}
+        call_id = str(call.get("id") or uuid4().hex)
         arguments = function.get("arguments", "{}")
         if not isinstance(arguments, str):
             arguments = json.dumps(arguments, ensure_ascii=False)
         items.append(
             {
-                "id": str(call.get("id") or uuid4().hex),
+                "id": call_id,
                 "type": "function_call",
                 "status": "completed",
-                "call_id": str(call.get("id") or uuid4().hex),
+                "call_id": call_id,
                 "name": function.get("name", ""),
                 "arguments": arguments,
             }

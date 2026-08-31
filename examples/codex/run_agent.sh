@@ -2,7 +2,7 @@
 # Codex sidecar entrypoint. The outer OpenYuanRong sandbox is the security boundary.
 set -uo pipefail
 
-TOOL_ROOT="/opt/codex"
+TOOL_ROOT="$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)"
 PROJECT_DIR="${CODEX_PROJECT_DIR:-${PWD}}"
 CODEX_HOME="${CODEX_HOME:-/tmp/codex-home}"
 MODEL="${CODEX_MODEL:?missing CODEX_MODEL}"
@@ -41,3 +41,4 @@ exec "${TOOL_ROOT}/bin/codex" exec \
   --cd "${PROJECT_DIR}" \
   --model "${MODEL}" \
   -
+
