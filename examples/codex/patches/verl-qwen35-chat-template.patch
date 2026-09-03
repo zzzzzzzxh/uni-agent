@@ -42,7 +42,7 @@ index 5dc48d23..b67b3340 100644
 +        # Qwen3.5 apply_chat_template needs messages with at least one user message.
 +        # Keep a leading system message first: prepending the dummy user would
 +        # turn a valid system-first conversation into "System message must be at
-+        # the beginning". This path is used for the initial Codex request,
++        # the beginning".  This path is used for the initial Codex request,
 +        # which may contain only the system prompt.
          dummy_user_message = [{"role": "user", "content": [{"type": "text", "text": ""}]}]
 +        if not any(message.get("role") == "user" for message in messages):
@@ -61,4 +61,4 @@ index 5dc48d23..b67b3340 100644
 +                )
          dummy_user_prefix = processor.apply_chat_template(
              dummy_user_message,
-             tokenize=False,
+             tokenize=tokenize,
