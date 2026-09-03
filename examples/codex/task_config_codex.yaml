@@ -12,7 +12,7 @@
       proxy_port: 38197
       mounts:
         - target: /opt/codex
-          image_url: swr.cn-east-3.myhuaweicloud.com/openyuanrong/codex-tool:0.147.0-direct
+          image_url: swr.cn-east-3.myhuaweicloud.com/openyuanrong/codex-tool:0.147.0-direct-stdin
   agent:
     name: codex
     run_timeout: 7200
@@ -53,7 +53,7 @@
       proxy_port: 38197
       mounts:
         - target: /opt/codex
-          image_url: swr.cn-east-3.myhuaweicloud.com/openyuanrong/codex-tool:0.147.0-direct
+          image_url: swr.cn-east-3.myhuaweicloud.com/openyuanrong/codex-tool:0.147.0-direct-stdin
   agent:
     name: codex
     run_timeout: 7200

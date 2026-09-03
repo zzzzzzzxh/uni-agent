@@ -3,7 +3,7 @@
 set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 IMAGE_NAME="${TOOL_IMAGE:-codex-tool}"
-IMAGE_TAG="${TOOL_TAG:-0.147.0-direct}"
+IMAGE_TAG="${TOOL_TAG:-0.147.0-direct-stdin}"
 CODEX_VERSION="${CODEX_VERSION:-0.147.0}"
 NPM_REGISTRY="${NPM_REGISTRY:-}"
 REGISTRY=""

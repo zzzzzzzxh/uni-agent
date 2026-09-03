@@ -18,7 +18,7 @@ def test_codex_task_config_uses_framework_agent_and_sandbox_mount():
         assert entry["agent"]["name"] == "codex"
         mount = entry["sandbox"]["sandbox_kwargs"]["mounts"][0]
         assert mount["target"] == "/opt/codex"
-        assert mount["image_url"].endswith("codex-tool:0.147.0-direct")
+        assert mount["image_url"].endswith("codex-tool:0.147.0-direct-stdin")
 
 
 def test_codex_training_recipe_uses_formal_framework_runner():
@@ -34,6 +34,7 @@ def test_codex_sidecar_uses_native_responses_without_bridge():
     run_agent = (CODEX_DIR / "run_agent.sh").read_text(encoding="utf-8")
     assert 'wire_api = "responses"' in run_agent
     assert "responses_proxy" not in run_agent
+    assert "--model \"${MODEL}\" -" not in run_agent
 
 
 def test_single_node_smoke_does_not_start_vllm_directly():
@@ -43,5 +44,5 @@ def test_single_node_smoke_does_not_start_vllm_directly():
     assert "N_GPUS_PER_NODE:-8" in smoke
     assert "trajectory.json" in smoke
     assert "TRAJECTORY_LENGTH" in smoke
-    assert "0.147.0-direct" in smoke
+    assert "0.147.0-direct-stdin" in smoke
     assert "VLLM_LANGUAGE_MODEL_ONLY" in smoke

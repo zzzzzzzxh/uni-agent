@@ -32,12 +32,11 @@ unset HTTP_PROXY HTTPS_PROXY http_proxy https_proxy
 
 cd "${PROJECT_DIR}"
 
-# Prompt comes from stdin. Codex exec reads stdin when the prompt argument is '-'.
+# Prompt comes from stdin. With no positional prompt, Codex exec reads piped stdin.
 exec "${TOOL_ROOT}/bin/codex" exec \
   --json \
   --ephemeral \
   --skip-git-repo-check \
   --dangerously-bypass-approvals-and-sandbox \
   --cd "${PROJECT_DIR}" \
-  --model "${MODEL}" \
-  -
+  --model "${MODEL}"

@@ -19,7 +19,7 @@ ARTIFACT_DIR="${ARTIFACT_DIR:-${REPO_ROOT}/artifacts/codex-single-node-framework
 SMOKE_DATA="${SMOKE_DATA:-${ARTIFACT_DIR}/single_sample.parquet}"
 TASK_CONFIG_TEMPLATE="${TASK_CONFIG_TEMPLATE:-${SCRIPT_DIR}/task_config_codex.yaml}"
 TASK_CONFIG="${TASK_CONFIG:-${ARTIFACT_DIR}/task_config_codex.yaml}"
-SIDECAR_IMAGE="${SIDECAR_IMAGE:-swr.cn-east-3.myhuaweicloud.com/openyuanrong/codex-tool:0.147.0-direct}"
+SIDECAR_IMAGE="${SIDECAR_IMAGE:-swr.cn-east-3.myhuaweicloud.com/openyuanrong/codex-tool:0.147.0-direct-stdin}"
 AGENT_LOG_DIR="${AGENT_LOG_DIR:-${ARTIFACT_DIR}/framework_logs}"
 OPENYUANRONG_ENV="${OPENYUANRONG_ENV:-${WORKSPACE_HOME}/.config/uni-agent/openyuanrong.env}"
 

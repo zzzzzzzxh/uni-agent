@@ -13,7 +13,7 @@ bash examples/codex/build_tool.sh \
 构建产物：
 
 ```text
-swr.cn-east-3.myhuaweicloud.com/openyuanrong/codex-tool:0.147.0-direct
+swr.cn-east-3.myhuaweicloud.com/openyuanrong/codex-tool:0.147.0-direct-stdin
 ```
 
 镜像挂载到任务沙箱后，入口为：
@@ -41,10 +41,10 @@ codex exec --json --ephemeral \
   --skip-git-repo-check \
   --dangerously-bypass-approvals-and-sandbox \
   --cd /testbed \
-  --model <model> -
+  --model <model>
 ```
 
-`-` 表示从 stdin 读取任务 prompt。
+不提供 positional prompt 时，Codex CLI 从 stdin 读取任务 prompt。
 
 ## 训练
 
