@@ -98,6 +98,10 @@ UPDATE_WEIGHTS_BUCKET_MB="${UPDATE_WEIGHTS_BUCKET_MB:-2048}"
 USE_DYNAMIC_BSZ="${USE_DYNAMIC_BSZ:-False}"
 MAMBA_CACHE_MODE="${MAMBA_CACHE_MODE:-align}"
 VLLM_USE_FLASHINFER_SAMPLER="${VLLM_USE_FLASHINFER_SAMPLER:-1}"
+# Codex SWE tasks are text-only; disable the unused multimodal modules to
+# release GPU memory for the long-context KV cache. Set to 0 for image/video
+# tasks.
+VLLM_LANGUAGE_MODEL_ONLY="${VLLM_LANGUAGE_MODEL_ONLY:-1}"
 
 # ── Megatron training parallelism ────────────────────────────────────────
 if [[ "${TRAINER_MODE}" == "separate_async" ]]; then
@@ -397,6 +401,9 @@ MAIN_CMD=(
 
 if [[ -n "${MODEL_ATTN_IMPLEMENTATION}" ]]; then
     MAIN_CMD+=("+actor_rollout_ref.model.override_config.attn_implementation=${MODEL_ATTN_IMPLEMENTATION}")
+fi
+if [[ "${VLLM_LANGUAGE_MODEL_ONLY}" == "1" || "${VLLM_LANGUAGE_MODEL_ONLY,,}" == "true" ]]; then
+    MAIN_CMD+=("+actor_rollout_ref.rollout.engine_kwargs.vllm.language_model_only=True")
 fi
 
 if [[ "${VERL_CONFIG_NAME}" == *megatron* ]]; then

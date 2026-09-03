@@ -27,6 +27,7 @@ def test_codex_training_recipe_uses_formal_framework_runner():
     assert "uni_agent.framework.task_runner.run_task" in run_train
     assert "report_reward=True" in run_train
     assert "actor_rollout_ref.rollout.name=${ENGINE}" in run_train
+    assert "language_model_only=True" in run_train
 
 
 def test_codex_sidecar_uses_native_responses_without_bridge():
@@ -43,3 +44,4 @@ def test_single_node_smoke_does_not_start_vllm_directly():
     assert "trajectory.json" in smoke
     assert "TRAJECTORY_LENGTH" in smoke
     assert "0.147.0-direct" in smoke
+    assert "VLLM_LANGUAGE_MODEL_ONLY" in smoke

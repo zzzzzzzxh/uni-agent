@@ -69,6 +69,10 @@ TRAJECTORY_LENGTH=131072 PROMPT_LENGTH=8192 bash examples/codex/run_single_node_
 如果需要的是 128K response，再设置 RESPONSE_LENGTH=131072，此时总
 max_model_len=135168。
 
+Codex SWE 任务默认设置 `VLLM_LANGUAGE_MODEL_ONLY=1`，让 vLLM 只加载
+Qwen3.5 的语言模型部分，为长上下文 KV cache 释放显存。任务包含图片或
+视频时必须设置 `VLLM_LANGUAGE_MODEL_ONLY=0`。
+
 ## 多轮消息兼容
 
 Codex Responses API 可能把一个 assistant turn 拆成独立的 `reasoning` 和
