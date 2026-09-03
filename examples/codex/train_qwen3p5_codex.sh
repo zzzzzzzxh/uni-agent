@@ -71,6 +71,9 @@ RAY_SUBMIT_MODE=${RAY_SUBMIT_MODE:-job}
 export PROJECT_NAME="${project_name}"
 export EXPERIMENT_NAME="${exp_name}"
 export MODEL_PATH TRAIN_FILE TEST_FILE RUNTIME_ENV CKPTS_DIR AGENT_LOG_DIR TASK_CONFIG
+# The recipe-facing names follow the release launcher; run_train.sh consumes
+# the corresponding internal aliases.
+export TRAIN_DATA="${TRAIN_FILE}" VAL_DATA="${TEST_FILE}"
 export TOOL_PARSER CONCURRENCY GATEWAY_COUNT SERVED_MODEL_NAME MASK_UNFINISHED_EPISODE
 export ROLLOUT_MODE="${rollout_mode}" ROLLOUT_NAME="${rollout_name}"
 export NNODES="${nnodes}" N_GPUS_PER_NODE="${ngpus_per_node}"
@@ -91,17 +94,4 @@ export VLLM_MAX_NUM_SEQS VLLM_MAX_NUM_BATCHED_TOKENS VLLM_ENFORCE_EAGER VLLM_CUD
 export VLLM_USE_FLASHINFER_SAMPLER ROLLOUT_GPU_MEM_UTIL MAX_TOKENS_PER_TURN ROLLOUT_TRACE RAY_SUBMIT_MODE
 
 REPO_ROOT="$(CDPATH= cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../.." && pwd)"
-VERL_QWEN35_PATCH=${VERL_QWEN35_PATCH:-"${REPO_ROOT}/examples/codex/patches/verl-qwen35-chat-template.patch"}
-APPLY_VERL_QWEN35_PATCH=${APPLY_VERL_QWEN35_PATCH:-True}
-if [[ "${APPLY_VERL_QWEN35_PATCH,,}" == "1" || "${APPLY_VERL_QWEN35_PATCH,,}" == "true" ]]; then
-    if git -C "${REPO_ROOT}/verl" apply --check "${VERL_QWEN35_PATCH}" 2>/dev/null; then
-        git -C "${REPO_ROOT}/verl" apply "${VERL_QWEN35_PATCH}"
-    elif git -C "${REPO_ROOT}/verl" apply --reverse --check "${VERL_QWEN35_PATCH}" 2>/dev/null; then
-        echo "Qwen3.5 verl chat-template patch already applied"
-    else
-        echo "Cannot apply Qwen3.5 verl patch: ${VERL_QWEN35_PATCH}" >&2
-        exit 2
-    fi
-fi
-
 exec bash "${REPO_ROOT}/examples/codex/run_train.sh" "$@"

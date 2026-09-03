@@ -66,16 +66,17 @@ def test_codex_qwen35_sample_matches_standard_launcher_shape():
     ):
         assert variable in sample
     assert 'exec bash "${REPO_ROOT}/examples/codex/run_train.sh" "$@"' in sample
+    assert 'export TRAIN_DATA="${TRAIN_FILE}" VAL_DATA="${TEST_FILE}"' in sample
     assert "vllm serve" not in sample
     assert "run_single_node_framework_smoke.sh" not in sample
 
 
-def test_codex_qwen35_sample_commits_the_verl_qwen35_patch():
+def test_codex_qwen35_sample_does_not_modify_verl():
     patch = CODEX_DIR / "patches" / "verl-qwen35-chat-template.patch"
-    text = patch.read_text(encoding="utf-8")
-    assert "verl/utils/tokenizer/chat_template.py" in text
-    assert "system_messages" in text
-    assert "dummy_user_message" in text
+    sample = (CODEX_DIR / "train_qwen3p5_codex.sh").read_text(encoding="utf-8")
+    assert not patch.exists()
+    assert "APPLY_VERL_QWEN35_PATCH" not in sample
+    assert "VERL_QWEN35_PATCH" not in sample
 
 
 def test_nonstandard_codex_sample_launchers_are_removed():

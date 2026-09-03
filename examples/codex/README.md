@@ -51,21 +51,8 @@ impose an additional per-turn cap unless `MAX_TOKENS_PER_TURN` is set.
 Qwen3.5 text-only Codex runs use `VLLM_LANGUAGE_MODEL_ONLY=1`,
 `QWEN_ENABLE_THINKING=false`, `VLLM_REASONING_PARSER=qwen3`, and the
 `qwen3_coder` tool parser. Set `VLLM_LANGUAGE_MODEL_ONLY=0` for image/video
-tasks.
-
-## Required Qwen3.5 verl patch
-
-The release `verl` gitlink is pinned to `fefb080`. That revision needs the
-Qwen3.5 chat-template compatibility patch committed in this PR before running
-the Codex recipe:
-
-```bash
-(cd verl && git apply ../examples/codex/patches/verl-qwen35-chat-template.patch)
-```
-
-If the selected `verl` revision already contains the patch, skip this step.
-The patch normalizes system-first messages and preserves a valid dummy-user
-fallback for Qwen3.5's chat template.
+tasks. Qwen3.5's strict no-user chat-template fallback is handled at the
+recipe's `MessageCodec` boundary, so the pinned `verl` checkout stays clean.
 
 ## Sidecar
 
