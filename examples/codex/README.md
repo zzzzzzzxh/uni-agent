@@ -59,7 +59,20 @@ examples/codex/task_config_codex.yaml
 uni_agent.framework.task_runner.run_task
 ```
 
-默认总轨迹容量仍为 16K。需要 128K 总容量时，可以设置：
+单机 8 卡、单题、128K 总轨迹的正式 Codex acceptance sample：
+
+```bash
+MODEL_PATH=/home/zxh/models/Qwen/Qwen3.5-9B \
+SOURCE_DATA=/home/zxh/sandbox/swe_bench_verified_openyuanrong.parquet \
+ARTIFACT_DIR=/home/zxh/outputs/codex-qwen3p5-single-node-128k \
+bash examples/codex/train_qwen3p5_codex_single_node.sh
+```
+
+该入口使用 `verl/main_ppo` 的 rollout manager 启动 vLLM，配置为
+`NNODES=1`、`GEN_TP=8`、`TRAIN_TP=8`、`PP=1`、`CP=1`、`N=1`，并在完成后
+要求输出恰好一个已解决的 `trajectory.json`。它不会直接执行 `vllm serve`。
+
+默认 acceptance sample 总轨迹容量为 128K：
 
 ```bash
 TRAJECTORY_LENGTH=131072 PROMPT_LENGTH=8192 bash examples/codex/run_single_node_framework_smoke.sh

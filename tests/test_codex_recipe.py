@@ -30,6 +30,8 @@ def test_codex_training_recipe_uses_formal_framework_runner():
     assert "language_model_only=True" in run_train
     assert "apply_chat_template_kwargs.enable_thinking=${QWEN_ENABLE_THINKING}" in run_train
     assert "reasoning_parser=${VLLM_REASONING_PARSER}" in run_train
+    assert "max_num_batched_tokens=${VLLM_MAX_NUM_BATCHED_TOKENS}" in run_train
+    assert "max_num_seqs=${VLLM_MAX_NUM_SEQS}" in run_train
     assert 'TEMPERATURE="${TEMPERATURE:-0.6}"' in run_train
     assert 'TOP_P="${TOP_P:-0.95}"' in run_train
     assert 'TOP_K="${TOP_K:-20}"' in run_train
@@ -53,3 +55,16 @@ def test_single_node_smoke_does_not_start_vllm_directly():
     assert "VLLM_LANGUAGE_MODEL_ONLY" in smoke
     assert "QWEN_ENABLE_THINKING" in smoke
     assert "VLLM_REASONING_PARSER" in smoke
+    assert "finished" in smoke
+    assert "reward_score" in smoke
+
+
+def test_codex_single_node_acceptance_sample_is_verl_managed():
+    sample = (CODEX_DIR / "train_qwen3p5_codex_single_node.sh").read_text(encoding="utf-8")
+    assert "run_single_node_framework_smoke.sh" in sample
+    assert "TRAJECTORY_LENGTH:-131072" in sample
+    assert "N_GPUS_PER_NODE:-8" in sample
+    assert "GEN_TP:-8" in sample
+    assert "TRAIN_TP:-8" in sample
+    assert "RAY_SUBMIT_MODE=\"local\"" in sample
+    assert "vllm serve" not in sample

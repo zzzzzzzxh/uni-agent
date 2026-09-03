@@ -123,7 +123,7 @@ export TOOL_PARSER="qwen3_coder"
 export GATEWAY_COUNT=1
 export MAX_CONCURRENT_SESSIONS=1
 export NUM_AGENT_WORKERS=1
-export SESSION_TIMEOUT_SECONDS=900
+export SESSION_TIMEOUT_SECONDS="${SESSION_TIMEOUT_SECONDS:-7200}"
 export N=1
 export TRAIN_MAX_SAMPLES=1
 export VAL_MAX_SAMPLES=0
@@ -132,7 +132,7 @@ export VAL_BATCH_SIZE=1
 export PPO_MINI_BATCH_SIZE=1
 export PPO_MICRO_BATCH_SIZE_PER_GPU=1
 export USE_DYNAMIC_BSZ=True
-export TRAJECTORY_LENGTH="${TRAJECTORY_LENGTH:-16384}"
+export TRAJECTORY_LENGTH="${TRAJECTORY_LENGTH:-131072}"
 export PROMPT_LENGTH="${PROMPT_LENGTH:-8192}"
 if [[ -z "${RESPONSE_LENGTH:-}" ]]; then
     export RESPONSE_LENGTH=$((TRAJECTORY_LENGTH - PROMPT_LENGTH))
@@ -144,7 +144,11 @@ export VLLM_USE_FLASHINFER_SAMPLER="${VLLM_USE_FLASHINFER_SAMPLER:-0}"
 export VLLM_LANGUAGE_MODEL_ONLY="${VLLM_LANGUAGE_MODEL_ONLY:-1}"
 export QWEN_ENABLE_THINKING="${QWEN_ENABLE_THINKING:-false}"
 export VLLM_REASONING_PARSER="${VLLM_REASONING_PARSER:-qwen3}"
-export ROLLOUT_GPU_MEM_UTIL="${ROLLOUT_GPU_MEM_UTIL:-0.20}"
+export VLLM_MAX_NUM_SEQS="${VLLM_MAX_NUM_SEQS:-1}"
+export VLLM_MAX_NUM_BATCHED_TOKENS="${VLLM_MAX_NUM_BATCHED_TOKENS:-16384}"
+export VLLM_ENFORCE_EAGER="${VLLM_ENFORCE_EAGER:-True}"
+export VLLM_CUDAGRAPH_MODE="${VLLM_CUDAGRAPH_MODE:-NONE}"
+export ROLLOUT_GPU_MEM_UTIL="${ROLLOUT_GPU_MEM_UTIL:-0.68}"
 export TOTAL_EPOCHS=1
 export TOTAL_TRAINING_STEPS=1
 export VAL_BEFORE_TRAIN=false
@@ -203,6 +207,11 @@ if trajectory_count != 1:
     raise SystemExit(f"expected exactly one persisted trajectory, found {trajectory_count}")
 if int(records[0].get("num_trajectories", 0)) != 1:
     raise SystemExit("the sole framework trajectory.json does not contain num_trajectories=1")
+trajectory = records[0]["trajectories"][0]
+if trajectory.get("finished") is not True:
+    raise SystemExit(f"the sole trajectory did not finish: {trajectory.get('finished')!r}")
+if float(trajectory.get("reward_score", 0.0)) != 1.0:
+    raise SystemExit(f"the sole trajectory did not solve the task: reward_score={trajectory.get('reward_score')!r}")
 PY
 
-echo "Formal Codex framework smoke passed: exactly one persisted trajectory."
+echo "Formal Codex single-node 128K acceptance passed: one solved trajectory."

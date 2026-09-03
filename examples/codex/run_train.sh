@@ -107,6 +107,10 @@ VLLM_LANGUAGE_MODEL_ONLY="${VLLM_LANGUAGE_MODEL_ONLY:-1}"
 # traces are required.
 QWEN_ENABLE_THINKING="${QWEN_ENABLE_THINKING:-false}"
 VLLM_REASONING_PARSER="${VLLM_REASONING_PARSER:-qwen3}"
+VLLM_MAX_NUM_SEQS="${VLLM_MAX_NUM_SEQS:-256}"
+VLLM_MAX_NUM_BATCHED_TOKENS="${VLLM_MAX_NUM_BATCHED_TOKENS:-${MAX_MODEL_LEN}}"
+VLLM_ENFORCE_EAGER="${VLLM_ENFORCE_EAGER:-False}"
+VLLM_CUDAGRAPH_MODE="${VLLM_CUDAGRAPH_MODE:-FULL_DECODE_ONLY}"
 
 # ── Megatron training parallelism ────────────────────────────────────────
 if [[ "${TRAINER_MODE}" == "separate_async" ]]; then
@@ -337,7 +341,8 @@ MAIN_CMD=(
     actor_rollout_ref.rollout.prompt_length=${PROMPT_LENGTH}
     actor_rollout_ref.rollout.response_length=${RESPONSE_LENGTH}
     actor_rollout_ref.rollout.max_model_len=${MAX_MODEL_LEN}
-    actor_rollout_ref.rollout.max_num_batched_tokens=${MAX_MODEL_LEN}
+    actor_rollout_ref.rollout.max_num_batched_tokens=${VLLM_MAX_NUM_BATCHED_TOKENS}
+    actor_rollout_ref.rollout.max_num_seqs=${VLLM_MAX_NUM_SEQS}
     actor_rollout_ref.rollout.enable_chunked_prefill=True
     +actor_rollout_ref.rollout.enable_sleep_mode=True
     actor_rollout_ref.rollout.calculate_log_probs=True
@@ -357,7 +362,7 @@ MAIN_CMD=(
     actor_rollout_ref.rollout.tensor_model_parallel_size=${GEN_TP}
     actor_rollout_ref.rollout.gpu_memory_utilization=${ROLLOUT_GPU_MEM_UTIL}
     actor_rollout_ref.rollout.disable_log_stats=False
-    "+actor_rollout_ref.rollout.engine_kwargs.vllm.compilation_config.cudagraph_mode=\"FULL_DECODE_ONLY\""
+    "+actor_rollout_ref.rollout.engine_kwargs.vllm.compilation_config.cudagraph_mode=\"${VLLM_CUDAGRAPH_MODE}\""
     "+actor_rollout_ref.rollout.engine_kwargs.vllm.mamba_cache_mode=${MAMBA_CACHE_MODE}"
     "+actor_rollout_ref.rollout.engine_kwargs.vllm.reasoning_parser=${VLLM_REASONING_PARSER}"
     "+actor_rollout_ref.rollout.engine_kwargs.vllm.additional_config.enable_cpu_binding=true"
@@ -411,6 +416,9 @@ if [[ -n "${MODEL_ATTN_IMPLEMENTATION}" ]]; then
 fi
 if [[ "${VLLM_LANGUAGE_MODEL_ONLY}" == "1" || "${VLLM_LANGUAGE_MODEL_ONLY,,}" == "true" ]]; then
     MAIN_CMD+=("+actor_rollout_ref.rollout.engine_kwargs.vllm.language_model_only=True")
+fi
+if [[ "${VLLM_ENFORCE_EAGER}" == "1" || "${VLLM_ENFORCE_EAGER,,}" == "true" ]]; then
+    MAIN_CMD+=("actor_rollout_ref.rollout.enforce_eager=True")
 fi
 
 if [[ "${VERL_CONFIG_NAME}" == *megatron* ]]; then
