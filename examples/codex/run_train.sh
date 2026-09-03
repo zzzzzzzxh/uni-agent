@@ -111,6 +111,13 @@ VLLM_MAX_NUM_SEQS="${VLLM_MAX_NUM_SEQS:-256}"
 VLLM_MAX_NUM_BATCHED_TOKENS="${VLLM_MAX_NUM_BATCHED_TOKENS:-${MAX_MODEL_LEN}}"
 VLLM_ENFORCE_EAGER="${VLLM_ENFORCE_EAGER:-False}"
 VLLM_CUDAGRAPH_MODE="${VLLM_CUDAGRAPH_MODE:-FULL_DECODE_ONLY}"
+# Keep the total trajectory budget independent from one model request. A
+# bounded turn lets Codex return tool calls and continue on the same 128K
+# session instead of spending the whole episode in its first response.
+MAX_TOKENS_PER_TURN="${MAX_TOKENS_PER_TURN:-0}"
+ROLLOUT_TRACE="${ROLLOUT_TRACE:-False}"
+ROLLOUT_TRACE_MAX_CHARS="${ROLLOUT_TRACE_MAX_CHARS:-2000}"
+ROLLOUT_TRACE_INTERVAL_SECONDS="${ROLLOUT_TRACE_INTERVAL_SECONDS:-30}"
 
 # ── Megatron training parallelism ────────────────────────────────────────
 if [[ "${TRAINER_MODE}" == "separate_async" ]]; then
@@ -159,7 +166,14 @@ RUNNER_ARGS=(
     "+actor_rollout_ref.rollout.custom.agent_framework.agent_runners.task.runner_kwargs.report_reward=True"
     "+actor_rollout_ref.rollout.custom.agent_framework.mask_unfinished_episode=${MASK_UNFINISHED_EPISODE}"
     "+actor_rollout_ref.rollout.custom.agent_framework.use_reward_loop_worker=False"
+    "+actor_rollout_ref.rollout.custom.agent_framework.rollout_trace_enabled=${ROLLOUT_TRACE}"
+    "+actor_rollout_ref.rollout.custom.agent_framework.rollout_trace_max_chars=${ROLLOUT_TRACE_MAX_CHARS}"
+    "+actor_rollout_ref.rollout.custom.agent_framework.rollout_trace_interval_seconds=${ROLLOUT_TRACE_INTERVAL_SECONDS}"
+    "+actor_rollout_ref.rollout.custom.agent_framework.served_model_name=${SERVED_MODEL_NAME}"
 )
+if (( MAX_TOKENS_PER_TURN > 0 )); then
+    RUNNER_ARGS+=("+actor_rollout_ref.rollout.custom.agent_framework.max_tokens_per_turn=${MAX_TOKENS_PER_TURN}")
+fi
 
 # ── OpenYuanrong (remote sandbox) ───────────────────────────────────────
 # OPENYUANRONG_SERVER_ADDRESS / OPENYUANRONG_TOKEN are required by the provider.
@@ -196,6 +210,12 @@ export SANDBOX_NAME_PREFIX
 export VERL_LOGGING_LEVEL="${VERL_LOGGING_LEVEL:-INFO}"
 export RAY_DEDUP_LOGS="${RAY_DEDUP_LOGS:-0}"
 export PYTHONUNBUFFERED="${PYTHONUNBUFFERED:-1}"
+# Keep Ray's many short-lived Python workers from exhausting glibc TLS slots
+# on the Ubuntu 20.04 host while they initialize CUDA/NCCL together.
+export OMP_NUM_THREADS="${OMP_NUM_THREADS:-1}"
+export MKL_NUM_THREADS="${MKL_NUM_THREADS:-1}"
+export OPENBLAS_NUM_THREADS="${OPENBLAS_NUM_THREADS:-1}"
+export NUMEXPR_NUM_THREADS="${NUMEXPR_NUM_THREADS:-1}"
 export RL_INSIGHT_SERVER_URL
 export VLLM_USE_FLASHINFER_SAMPLER
 # Logger list: console always; rl_insight only when its endpoint is configured,
@@ -276,6 +296,10 @@ RAY_INIT_ENV_ARGS=(
     "+ray_kwargs.ray_init.runtime_env.env_vars.OPENYUANRONG_TUNNEL_SSL_VERIFY=\"${OPENYUANRONG_TUNNEL_SSL_VERIFY}\""
     "+ray_kwargs.ray_init.runtime_env.env_vars.AKERNEL_SDK_LD_PRELOAD=\"${AKERNEL_SDK_LD_PRELOAD}\""
     "+ray_kwargs.ray_init.runtime_env.env_vars.VLLM_USE_FLASHINFER_SAMPLER=\"${VLLM_USE_FLASHINFER_SAMPLER}\""
+    "+ray_kwargs.ray_init.runtime_env.env_vars.OMP_NUM_THREADS=\"${OMP_NUM_THREADS}\""
+    "+ray_kwargs.ray_init.runtime_env.env_vars.MKL_NUM_THREADS=\"${MKL_NUM_THREADS}\""
+    "+ray_kwargs.ray_init.runtime_env.env_vars.OPENBLAS_NUM_THREADS=\"${OPENBLAS_NUM_THREADS}\""
+    "+ray_kwargs.ray_init.runtime_env.env_vars.NUMEXPR_NUM_THREADS=\"${NUMEXPR_NUM_THREADS}\""
 )
 # TRANSFER_QUEUE_ENABLE is a REQUIRED key here: verl main_ppo overwrites it to
 # "1" itself when transfer_queue.enable=True. It must already exist in the

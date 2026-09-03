@@ -86,16 +86,46 @@ class _GatewayActor:
         )
         self._prompt_length = config.prompt_length
         self._response_length = config.response_length
+        self._max_tokens_per_turn = config.max_tokens_per_turn
+        self._served_model_name = config.served_model_name
+        self._rollout_trace_enabled = config.rollout_trace_enabled
+        self._rollout_trace_max_chars = config.rollout_trace_max_chars
+        self._rollout_trace_interval_seconds = config.rollout_trace_interval_seconds
         self._enable_last_assistant_rollback = config.enable_last_assistant_rollback
         self._sessions: dict[str, GatewaySession] = {}
         self._app = FastAPI()
         self._server_port: int | None = None
         self._server_task: asyncio.Task | None = None
         self._server_base_url: str | None = None
+        logger.warning(
+            "rollout trace config enabled=%s max_chars=%s interval_seconds=%s max_tokens_per_turn=%s",
+            self._rollout_trace_enabled,
+            self._rollout_trace_max_chars,
+            self._rollout_trace_interval_seconds,
+            self._max_tokens_per_turn,
+        )
         self._register_routes()
 
     def _register_routes(self) -> None:
         """Register provider HTTP handlers and reward metadata."""
+
+        @self._app.middleware("http")
+        async def _trace_http_request(request: Request, call_next):
+            if self._rollout_trace_enabled:
+                logger.warning(
+                    "gateway http request method=%s path=%s",
+                    request.method,
+                    request.url.path,
+                )
+            response = await call_next(request)
+            if self._rollout_trace_enabled:
+                logger.warning(
+                    "gateway http response method=%s path=%s status=%s",
+                    request.method,
+                    request.url.path,
+                    response.status_code,
+                )
+            return response
 
         def _error_body_for_path(path: str, status_code: int, message: str) -> dict[str, Any]:
             if path.endswith("/v1/messages"):
@@ -133,7 +163,40 @@ class _GatewayActor:
                 payload = await request.json()
             except ValueError as exc:
                 raise HTTPException(status_code=400, detail="Invalid JSON body") from exc
+            logger.warning(
+                "gateway request received protocol=chat session=%s messages=%s tools=%s stream=%s",
+                session_id,
+                len(payload.get("messages", [])) if isinstance(payload, dict) else "?",
+                len(payload.get("tools", []))
+                if isinstance(payload, dict) and isinstance(payload.get("tools"), list)
+                else 0,
+                payload.get("stream") if isinstance(payload, dict) else None,
+            )
             return await self._handle_openai_chat_completions(session_id=session_id, payload=payload)
+
+        @self._app.get("/sessions/{session_id}/v1/models")
+        async def _openai_models(session_id: str):
+            """Serve the model discovery request issued by some Responses clients."""
+            if session_id not in self._sessions:
+                raise HTTPException(status_code=404, detail=f"Unknown session_id: {session_id}")
+            logger.warning(
+                "gateway request received protocol=models session=%s served_model=%s",
+                session_id,
+                self._served_model_name,
+            )
+            return JSONResponse(
+                {
+                    "object": "list",
+                    "data": [
+                        {
+                            "id": self._served_model_name,
+                            "object": "model",
+                            "created": 0,
+                            "owned_by": "uni-agent",
+                        }
+                    ],
+                }
+            )
 
         @self._app.post("/sessions/{session_id}/v1/responses")
         async def _openai_responses(session_id: str, request: Request):
@@ -141,6 +204,17 @@ class _GatewayActor:
                 payload = await request.json()
             except ValueError as exc:
                 raise HTTPException(status_code=400, detail="Invalid JSON body") from exc
+            logger.warning(
+                "gateway request received protocol=responses session=%s input_items=%s tools=%s stream=%s",
+                session_id,
+                len(payload.get("input", []))
+                if isinstance(payload, dict) and isinstance(payload.get("input"), list)
+                else 1,
+                len(payload.get("tools", []))
+                if isinstance(payload, dict) and isinstance(payload.get("tools"), list)
+                else 0,
+                payload.get("stream") if isinstance(payload, dict) else None,
+            )
             return await self._handle_openai_responses(session_id=session_id, payload=payload)
 
         @self._app.post("/sessions/{session_id}/v1/messages")
@@ -293,6 +367,10 @@ class _GatewayActor:
             codec=self._codec,
             prompt_length=self._prompt_length,
             response_length=self._response_length,
+            max_tokens_per_turn=self._max_tokens_per_turn,
+            rollout_trace_enabled=self._rollout_trace_enabled,
+            rollout_trace_max_chars=self._rollout_trace_max_chars,
+            rollout_trace_interval_seconds=self._rollout_trace_interval_seconds,
             sampling_params=sampling_params,
             enable_last_assistant_rollback=self._enable_last_assistant_rollback,
             metadata=metadata,

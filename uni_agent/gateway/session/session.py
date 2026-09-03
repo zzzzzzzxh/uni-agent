@@ -5,6 +5,8 @@ from __future__ import annotations
 import asyncio
 import hashlib
 import json
+import logging
+import threading
 import time
 from dataclasses import dataclass, field, replace
 from enum import Enum
@@ -17,6 +19,9 @@ from uni_agent.gateway.session.types import InternalGenerationRequest, SessionHa
 from uni_agent.rlinsight_adapter import start_generation_span
 
 _EMPTY_PREFIX_HASH = hashlib.sha256(b"uni-agent-prefix-v1\0empty").hexdigest()
+# Reuse the gateway logger configured by the Ray actor so opt-in session traces
+# are visible in the same worker log as the HTTP-server lifecycle messages.
+logger = logging.getLogger("gateway")
 
 
 class SessionPhase(str, Enum):
@@ -180,6 +185,10 @@ class GatewaySession:
         *,
         prompt_length: int | None = None,
         response_length: int | None = None,
+        max_tokens_per_turn: int | None = None,
+        rollout_trace_enabled: bool = False,
+        rollout_trace_max_chars: int = 2000,
+        rollout_trace_interval_seconds: float = 30.0,
         sampling_params: dict[str, Any] | None = None,
         enable_last_assistant_rollback: bool = True,
         metadata: dict[str, Any] | None = None,
@@ -189,6 +198,20 @@ class GatewaySession:
             raise ValueError(f"prompt_length must be positive when set, got {prompt_length}")
         if response_length is not None and response_length <= 0:
             raise ValueError(f"response_length must be positive when set, got {response_length}")
+        if max_tokens_per_turn is not None and max_tokens_per_turn <= 0:
+            raise ValueError(f"max_tokens_per_turn must be positive when set, got {max_tokens_per_turn}")
+        if type(rollout_trace_enabled) is not bool:
+            raise ValueError(
+                "rollout_trace_enabled must be a bool, "
+                f"got {type(rollout_trace_enabled).__name__}"
+            )
+        if rollout_trace_max_chars <= 0:
+            raise ValueError(f"rollout_trace_max_chars must be positive, got {rollout_trace_max_chars}")
+        if rollout_trace_interval_seconds <= 0:
+            raise ValueError(
+                "rollout_trace_interval_seconds must be positive, "
+                f"got {rollout_trace_interval_seconds}"
+            )
 
         self.handle = handle
         self._codec = codec
@@ -197,6 +220,10 @@ class GatewaySession:
         self._trajectory_capacity = (
             prompt_length + response_length if prompt_length is not None and response_length is not None else None
         )
+        self._max_tokens_per_turn = max_tokens_per_turn
+        self._rollout_trace_enabled = rollout_trace_enabled
+        self._rollout_trace_max_chars = rollout_trace_max_chars
+        self._rollout_trace_interval_seconds = rollout_trace_interval_seconds
         self._sampling_params = dict(sampling_params or {})
         self._enable_last_assistant_rollback = enable_last_assistant_rollback
         self._metadata = dict(metadata or {})
@@ -208,6 +235,7 @@ class GatewaySession:
         self._order_seq = 0
         self._rollback_count = 0
         self._rollback_dropped_trainable_tokens_total = 0
+        self._generation_requests_started = 0
         self.reward_info: dict[str, Any] = {}
         self.phase = SessionPhase.ACTIVE
         self.created_at = time.time()
@@ -241,6 +269,16 @@ class GatewaySession:
                         status_code=409,
                         detail=f"Session {self.handle.session_id} is {self.phase.value.lower()}",
                     )
+                self._generation_requests_started += 1
+                request_index = self._generation_requests_started
+                if self._rollout_trace_enabled:
+                    logger.warning(
+                        "rollout request accepted session=%s request=%s messages=%s tools=%s",
+                        self.handle.session_id,
+                        request_index,
+                        len(request["messages"]),
+                        len(request["tools"] or []),
+                    )
                 # Prepare can touch codec and multimodal extractor state, so only
                 # backend generation runs outside the session lock.
                 encoded = await self._prepare_generation_inputs(request)
@@ -264,13 +302,45 @@ class GatewaySession:
                     reserved_chain_id = encoded.chain_id
 
             try:
-                output = await backend.generate(
-                    request_id=self.handle.session_id,
-                    prompt_ids=encoded.context_ids,
-                    sampling_params=encoded.sampling_params,
-                    image_data=encoded.image_data,
-                    video_data=encoded.video_data,
-                )
+                heartbeat_stop = None
+                heartbeat_thread = None
+                if self._rollout_trace_enabled:
+                    logger.warning(
+                        "rollout generation start session=%s request=%s context_tokens=%s "
+                        "messages=%s tools=%s max_tokens=%s",
+                        self.handle.session_id,
+                        request_index,
+                        len(encoded.context_ids),
+                        len(encoded.messages),
+                        len(encoded.tools or []),
+                        encoded.sampling_params.get("max_tokens"),
+                    )
+                    heartbeat_stop = threading.Event()
+                    heartbeat_thread = threading.Thread(
+                        target=self._rollout_generation_heartbeat,
+                        kwargs={
+                            "request_index": request_index,
+                            "context_tokens": len(encoded.context_ids),
+                            "max_tokens": encoded.sampling_params.get("max_tokens"),
+                            "stop_event": heartbeat_stop,
+                        },
+                        name=f"rollout-trace-{request_index}",
+                        daemon=True,
+                    )
+                    heartbeat_thread.start()
+                try:
+                    output = await backend.generate(
+                        request_id=self.handle.session_id,
+                        prompt_ids=encoded.context_ids,
+                        sampling_params=encoded.sampling_params,
+                        image_data=encoded.image_data,
+                        video_data=encoded.video_data,
+                    )
+                finally:
+                    if heartbeat_stop is not None:
+                        heartbeat_stop.set()
+                    if heartbeat_thread is not None:
+                        heartbeat_thread.join(timeout=1.0)
             except ValueError as e:
                 raise HTTPException(status_code=400, detail=str(e)) from e
             except Exception as e:
@@ -332,6 +402,18 @@ class GatewaySession:
                     assistant_msg=assistant_msg,
                     finish_reason=finish_reason,
                 )
+                if self._rollout_trace_enabled:
+                    logger.warning(
+                        "rollout generation complete session=%s request=%s turn=%s "
+                        "finish_reason=%s prompt_tokens=%s completion_tokens=%s assistant=%s",
+                        self.handle.session_id,
+                        request_index,
+                        self._order_seq,
+                        finish_reason,
+                        len(encoded.context_ids),
+                        len(response_ids),
+                        json.dumps(self._trace_assistant_message(assistant_msg), ensure_ascii=False),
+                    )
                 return GenerationOutcome(
                     assistant_msg=assistant_msg,
                     finish_reason=finish_reason,
@@ -345,6 +427,68 @@ class GatewaySession:
             generation_span.report()
             if reserved_chain_id is not None:
                 await asyncio.shield(self._release_chain_reservation(reserved_chain_id))
+
+    def _rollout_generation_heartbeat(
+        self,
+        *,
+        request_index: int,
+        context_tokens: int,
+        max_tokens: Any,
+        stop_event: threading.Event,
+    ) -> None:
+        """Log progress while a backend request is still generating.
+
+        The vLLM client used by the framework returns a completed sequence,
+        rather than streaming tokens into the gateway. It may also block the
+        gateway actor's asyncio loop while waiting on Ray, so this diagnostic
+        runs in a daemon thread. Heartbeats make a long request observable
+        without dumping prompts or credentials. The completed log records the
+        bounded assistant/tool result.
+        """
+        started = time.monotonic()
+        while not stop_event.wait(self._rollout_trace_interval_seconds):
+            logger.warning(
+                "rollout generation heartbeat session=%s request=%s elapsed_seconds=%.1f "
+                "context_tokens=%s max_tokens=%s",
+                self.handle.session_id,
+                request_index,
+                time.monotonic() - started,
+                context_tokens,
+                max_tokens,
+            )
+
+    def _trace_assistant_message(self, message: dict[str, Any]) -> dict[str, Any]:
+        """Return a bounded, JSON-safe assistant summary for opt-in tracing."""
+        def clip(value: Any) -> str:
+            if isinstance(value, str):
+                text = value
+            else:
+                try:
+                    text = json.dumps(value, ensure_ascii=False, default=str)
+                except (TypeError, ValueError):
+                    text = str(value)
+            if len(text) > self._rollout_trace_max_chars:
+                return text[: self._rollout_trace_max_chars] + "…"
+            return text
+
+        tool_calls = []
+        for call in message.get("tool_calls") or []:
+            if not isinstance(call, dict):
+                continue
+            function = call.get("function") or {}
+            if not isinstance(function, dict):
+                continue
+            tool_calls.append(
+                {
+                    "name": function.get("name", ""),
+                    "arguments": clip(function.get("arguments", "{}")),
+                }
+            )
+        return {
+            "reasoning": clip(message.get("reasoning_content", "")),
+            "content": clip(message.get("content", "")),
+            "tool_calls": tool_calls,
+        }
 
     async def set_reward_info(self, reward_info: dict[str, Any] | None = None) -> None:
         """Store session-level reward metadata without closing the session."""
@@ -523,10 +667,13 @@ class GatewaySession:
             self._trajectory_capacity - len(context_ids) if self._trajectory_capacity is not None else None
         )
         if remaining_trajectory_capacity is not None:
-            sampling_params["max_tokens"] = min(
-                sampling_params.get("max_tokens", remaining_trajectory_capacity),
-                remaining_trajectory_capacity,
-            )
+            max_tokens = sampling_params.get("max_tokens", remaining_trajectory_capacity)
+            if self._max_tokens_per_turn is not None:
+                max_tokens = min(max_tokens, self._max_tokens_per_turn)
+            sampling_params["max_tokens"] = min(max_tokens, remaining_trajectory_capacity)
+        elif self._max_tokens_per_turn is not None:
+            max_tokens = sampling_params.get("max_tokens", self._max_tokens_per_turn)
+            sampling_params["max_tokens"] = min(max_tokens, self._max_tokens_per_turn)
         last_assistant_start = self._snapshot_last_assistant_start(
             buffer=buffer,
             message_history_len=len(messages),

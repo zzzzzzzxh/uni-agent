@@ -48,6 +48,11 @@ def build_gateway_manager(*, config, llm_client) -> GatewayManager:
         apply_chat_template_kwargs=dict(apply_chat_template_kwargs),
         prompt_length=config.actor_rollout_ref.rollout.prompt_length,
         response_length=config.actor_rollout_ref.rollout.response_length,
+        max_tokens_per_turn=af_cfg.get("max_tokens_per_turn"),
+        served_model_name=str(af_cfg.get("served_model_name", "unknown")),
+        rollout_trace_enabled=af_cfg.get("rollout_trace_enabled", False),
+        rollout_trace_max_chars=af_cfg.get("rollout_trace_max_chars", 2000),
+        rollout_trace_interval_seconds=af_cfg.get("rollout_trace_interval_seconds", 30.0),
         enable_last_assistant_rollback=af_cfg.get("enable_last_assistant_rollback", True),
     )
 

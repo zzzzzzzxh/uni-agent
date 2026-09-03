@@ -68,6 +68,12 @@ ARTIFACT_DIR=/home/zxh/outputs/codex-qwen3p5-single-node-128k \
 bash examples/codex/train_qwen3p5_codex_single_node.sh
 ```
 
+The sample retains a total `TRAJECTORY_LENGTH=131072` and does not impose an
+additional per-turn cap by default (`MAX_TOKENS_PER_TURN=0`). Set that variable
+only when deliberately bounding one model request. `ROLLOUT_TRACE=True` emits
+bounded generation heartbeats and assistant/tool summaries into the launcher
+log without dumping the full prompt or credentials.
+
 该入口使用 `verl/main_ppo` 的 rollout manager 启动 vLLM，配置为
 `NNODES=1`、`GEN_TP=8`、`TRAIN_TP=8`、`PP=1`、`CP=1`、`N=1`，并在完成后
 要求输出恰好一个已解决的 `trajectory.json`。它不会直接执行 `vllm serve`。

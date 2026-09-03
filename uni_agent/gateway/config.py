@@ -33,6 +33,17 @@ class GatewayActorConfig:
         prompt_length: Optional prompt component of the total trajectory capacity.
         response_length: Optional response component of the total trajectory capacity.
             The gateway enforces their sum when both values are set.
+        max_tokens_per_turn: Optional per-request generation cap. This is
+            intentionally independent from the total trajectory capacity so a
+            multi-turn agent cannot consume the whole episode budget in its
+            first request.
+        served_model_name: Model identifier returned by the optional models
+            discovery endpoint used by OpenAI-compatible clients.
+        rollout_trace_enabled: Emit bounded per-request rollout diagnostics.
+        rollout_trace_max_chars: Maximum characters retained in assistant
+            content/reasoning/tool-argument diagnostics.
+        rollout_trace_interval_seconds: Heartbeat interval while backend
+            generation is still in progress.
         enable_last_assistant_rollback: Whether latest-assistant rewrites may
             rollback and reuse an existing chain. Enabled by default.
     """
@@ -48,6 +59,11 @@ class GatewayActorConfig:
     vision_info_extractor_kwargs: dict[str, Any] | None = None
     prompt_length: int | None = None
     response_length: int | None = None
+    max_tokens_per_turn: int | None = None
+    served_model_name: str = "unknown"
+    rollout_trace_enabled: bool = False
+    rollout_trace_max_chars: int = 2000
+    rollout_trace_interval_seconds: float = 30.0
     enable_last_assistant_rollback: bool = True
 
     def __post_init__(self) -> None:
@@ -64,3 +80,17 @@ class GatewayActorConfig:
             raise ValueError(f"prompt_length must be positive when set, got {self.prompt_length}")
         if self.response_length is not None and self.response_length <= 0:
             raise ValueError(f"response_length must be positive when set, got {self.response_length}")
+        if self.max_tokens_per_turn is not None and self.max_tokens_per_turn <= 0:
+            raise ValueError(f"max_tokens_per_turn must be positive when set, got {self.max_tokens_per_turn}")
+        if type(self.rollout_trace_enabled) is not bool:
+            raise ValueError(
+                "rollout_trace_enabled must be a bool, "
+                f"got {type(self.rollout_trace_enabled).__name__}"
+            )
+        if self.rollout_trace_max_chars <= 0:
+            raise ValueError(f"rollout_trace_max_chars must be positive, got {self.rollout_trace_max_chars}")
+        if self.rollout_trace_interval_seconds <= 0:
+            raise ValueError(
+                "rollout_trace_interval_seconds must be positive, "
+                f"got {self.rollout_trace_interval_seconds}"
+            )

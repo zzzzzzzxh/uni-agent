@@ -34,6 +34,10 @@ export VLLM_LANGUAGE_MODEL_ONLY="${VLLM_LANGUAGE_MODEL_ONLY:-1}"
 export QWEN_ENABLE_THINKING="${QWEN_ENABLE_THINKING:-false}"
 export VLLM_REASONING_PARSER="${VLLM_REASONING_PARSER:-qwen3}"
 export VLLM_USE_FLASHINFER_SAMPLER="${VLLM_USE_FLASHINFER_SAMPLER:-0}"
+export MAX_TOKENS_PER_TURN="${MAX_TOKENS_PER_TURN:-0}"
+export ROLLOUT_TRACE="${ROLLOUT_TRACE:-True}"
+export ROLLOUT_TRACE_MAX_CHARS="${ROLLOUT_TRACE_MAX_CHARS:-2000}"
+export ROLLOUT_TRACE_INTERVAL_SECONDS="${ROLLOUT_TRACE_INTERVAL_SECONDS:-30}"
 
 # Keep this acceptance sample synchronous so the final trajectory verifier runs
 # after the verl/Ray job has materialized the output.
