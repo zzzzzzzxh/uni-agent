@@ -80,8 +80,13 @@ def _response_input_to_messages(payload: dict[str, Any]) -> list[dict[str, Any]]
                 raise MalformedRequestError("function_call.name must be a non-empty string")
             call_id = str(item.get("call_id") or item.get("id") or uuid4().hex)
             arguments = item.get("arguments", "{}")
-            if not isinstance(arguments, str):
-                arguments = json.dumps(arguments, ensure_ascii=False)
+            if isinstance(arguments, str):
+                try:
+                    arguments = json.loads(arguments)
+                except json.JSONDecodeError as exc:
+                    raise MalformedRequestError("function_call.arguments must be valid JSON") from exc
+            if not isinstance(arguments, dict):
+                raise MalformedRequestError("function_call.arguments must decode to an object")
             messages.append(
                 {
                     "role": "assistant",
