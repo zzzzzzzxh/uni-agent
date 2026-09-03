@@ -5,12 +5,14 @@ import base64
 import json
 from types import SimpleNamespace
 
+from tests.uni_agent.support import FakeTokenizer
 from uni_agent.agents.base import AgentResult, ModelConfig
 from uni_agent.agents.codex.agent import CodexAgent, CodexConfig, build_agent_command, parse_agent_result
 from uni_agent.gateway.adapters.responses import (
     responses_build_response,
     responses_to_internal,
 )
+from uni_agent.gateway.session.codec import MessageCodec
 from uni_agent.sandbox.base import ExecResult
 
 
@@ -72,6 +74,19 @@ def test_parse_agent_result_timeout_and_failure():
     assert failed["error"] == "bad"
 
 
+def test_parse_agent_result_honors_wrapper_process_exit_event():
+    stdout = "\n".join(
+        [
+            json.dumps({"type": "item.completed", "item": {"type": "agent_message", "text": "partial"}}),
+            json.dumps({"type": "process.completed", "exit_code": 17}),
+        ]
+    )
+    failed = parse_agent_result(stdout, 0)
+    assert failed["exit_status"] == "error"
+    assert failed["ok"] is False
+    assert failed["error"] == "codex exited with code 17"
+
+
 def test_codex_agent_runs_and_returns_agent_result():
     sandbox = FakeSandbox(
         stdout=json.dumps({"type": "item.completed", "item": {"type": "agent_message", "text": "done"}})
@@ -114,6 +129,60 @@ def test_responses_input_lowering():
             "function": {"name": "exec_command", "description": "run", "parameters": {"type": "object"}},
         }
     ]
+
+
+def test_responses_continuation_coalesces_reasoning_and_function_call():
+    internal = responses_to_internal(
+        {
+            "instructions": "system rule",
+            "input": [
+                {"type": "message", "role": "user", "content": [{"type": "input_text", "text": "inspect"}]},
+                {"type": "reasoning", "summary": [{"type": "summary_text", "text": "inspect first"}]},
+                {
+                    "type": "function_call",
+                    "call_id": "call_1",
+                    "name": "exec_command",
+                    "arguments": '{"cmd":"find /testbed"}',
+                },
+                {"type": "function_call_output", "call_id": "call_1", "output": "file.py"},
+            ],
+        },
+        base_sampling_params={},
+        allowed_sampling_keys=frozenset(),
+    )
+
+    continuation = internal["messages"][2:]
+    assert [message["role"] for message in continuation] == ["assistant", "tool"]
+    assert continuation[0]["reasoning_content"] == "inspect first"
+    assert continuation[0]["tool_calls"][0]["function"]["name"] == "exec_command"
+    MessageCodec(FakeTokenizer()).encode_incremental(continuation)
+
+
+def test_incremental_codec_coalesces_responses_assistant_fragments():
+    codec = MessageCodec(FakeTokenizer())
+    codec.encode_incremental(
+        [
+            {"role": "assistant", "content": "", "reasoning_content": "thinking"},
+            {"role": "assistant", "content": "", "tool_calls": []},
+            {"role": "tool", "tool_call_id": "call_1", "content": "ok"},
+        ]
+    )
+
+
+def test_responses_canonicalizes_developer_and_late_system_messages():
+    internal = responses_to_internal(
+        {
+            "instructions": "base system",
+            "input": [
+                {"type": "message", "role": "user", "content": "inspect"},
+                {"type": "message", "role": "developer", "content": "late system"},
+            ],
+        },
+        base_sampling_params={},
+        allowed_sampling_keys=frozenset(),
+    )
+    assert [message["role"] for message in internal["messages"]] == ["system", "user"]
+    assert internal["messages"][0]["content"] == "base system\nlate system"
 
 
 def test_responses_build_response_for_text_and_tool_call():

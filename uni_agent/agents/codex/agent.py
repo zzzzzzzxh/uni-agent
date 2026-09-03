@@ -79,6 +79,7 @@ def parse_agent_result(stdout: str, exit_code: int) -> dict[str, Any]:
     events: list[dict[str, Any]] = []
     final_content = ""
     errors: list[str] = []
+    process_exit_code = exit_code
     for line in stdout.splitlines():
         line = line.strip()
         if not line or not line.startswith("{"):
@@ -91,7 +92,11 @@ def parse_agent_result(stdout: str, exit_code: int) -> dict[str, Any]:
             continue
         events.append(event)
         event_type = event.get("type")
-        if event_type in {"error", "turn.failed"}:
+        if event_type == "process.completed":
+            value = event.get("exit_code")
+            if isinstance(value, int):
+                process_exit_code = value
+        elif event_type in {"error", "turn.failed"}:
             error = event.get("error")
             errors.append(str(error.get("message") if isinstance(error, dict) else error or event))
         item = event.get("item")
@@ -105,7 +110,7 @@ def parse_agent_result(stdout: str, exit_code: int) -> dict[str, Any]:
             if isinstance(response, dict) and isinstance(response.get("output_text"), str):
                 final_content = response["output_text"]
 
-    ok = exit_code == 0
+    ok = process_exit_code == 0 and not errors
     result: dict[str, Any] = {
         "exit_status": "ok" if ok else "error",
         "ok": ok,
@@ -115,7 +120,7 @@ def parse_agent_result(stdout: str, exit_code: int) -> dict[str, Any]:
     if errors:
         result["error"] = errors[-1]
     elif not ok:
-        result["error"] = f"codex exited with code {exit_code}"
+        result["error"] = f"codex exited with code {process_exit_code}"
     return result
 
 
@@ -180,8 +185,8 @@ class CodexAgent(Agent):
         parsed = parse_agent_result(proc.stdout or "", proc.exit_code)
         out_tail = (proc.stdout or "").strip()[-4000:]
         err_tail = (proc.stderr or "").strip()[-2000:]
-        if proc.exit_code != 0:
-            logger.warning("codex: exited %s; stderr tail=%s", proc.exit_code, err_tail)
+        if proc.exit_code != 0 or parsed.get("error") or not parsed.get("content"):
+            logger.warning("codex: result=%s stdout_tail=%s stderr_tail=%s", parsed, out_tail, err_tail)
         return AgentResult(
             output=parsed,
             transcript=list(messages),
@@ -191,5 +196,5 @@ class CodexAgent(Agent):
                 "stdout_tail": out_tail,
                 "stderr_tail": err_tail,
             },
-            finished=proc.exit_code == 0,
+            finished=parsed.get("ok") is True,
         )

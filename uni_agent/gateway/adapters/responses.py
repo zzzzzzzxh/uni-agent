@@ -13,6 +13,8 @@ from collections.abc import AsyncIterator
 from typing import TYPE_CHECKING, Any
 from uuid import uuid4
 
+from uni_agent.gateway.message_normalization import canonicalize_messages
+
 if TYPE_CHECKING:
     from uni_agent.gateway.session.session import GenerationOutcome
     from uni_agent.gateway.session.types import InternalGenerationRequest
@@ -37,7 +39,7 @@ def _text_content(content: Any) -> str:
         if not isinstance(item, dict):
             raise MalformedRequestError("Responses message content items must be objects")
         kind = item.get("type")
-        if kind in {"input_text", "output_text", "text"}:
+        if kind in {"input_text", "output_text", "summary_text", "text"}:
             text = item.get("text", "")
             if not isinstance(text, str):
                 raise MalformedRequestError("Responses text content must contain string text")
@@ -57,7 +59,7 @@ def _response_input_to_messages(payload: dict[str, Any]) -> list[dict[str, Any]]
     input_value = payload.get("input")
     if isinstance(input_value, str):
         messages.append({"role": "user", "content": input_value})
-        return messages
+        return canonicalize_messages(messages)
     if not isinstance(input_value, list) or not input_value:
         raise MalformedRequestError("input must be a non-empty string or list")
 
@@ -67,7 +69,9 @@ def _response_input_to_messages(payload: dict[str, Any]) -> list[dict[str, Any]]
         item_type = item.get("type", "message")
         if item_type == "message":
             role = item.get("role")
-            if role not in {"system", "developer", "user", "assistant"}:
+            if role == "developer":
+                role = "system"
+            if role not in {"system", "user", "assistant"}:
                 raise MalformedRequestError(f"unsupported Responses message role: {role!r}")
             messages.append({"role": role, "content": _text_content(item.get("content", ""))})
         elif item_type == "function_call":
@@ -115,9 +119,9 @@ def _response_input_to_messages(payload: dict[str, Any]) -> list[dict[str, Any]]
             # Codex includes metadata/tool items that do not belong in the
             # model chat context. Ignore them rather than dropping the request.
             continue
-    if not messages or not any(message.get("role") in {"user", "developer", "system"} for message in messages):
-        raise MalformedRequestError("input does not contain a user/developer/system message")
-    return messages
+    if not messages or not any(message.get("role") in {"user", "system"} for message in messages):
+        raise MalformedRequestError("input does not contain a user/system message")
+    return canonicalize_messages(messages)
 
 
 def _responses_tools_to_chat(tools: Any) -> list[dict[str, Any]] | None:

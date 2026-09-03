@@ -23,7 +23,7 @@ REPO_ROOT="${REPO_ROOT:-$(cd "${SCRIPT_DIR}/../.." && pwd)}"
 cd "${REPO_ROOT}"
 
 # ── Model & data ─────────────────────────────────────────────────────────
-MODEL_PATH="${MODEL_PATH:-${HOME}/models/Qwen3.5-9B}"
+MODEL_PATH="${MODEL_PATH:-${HOME}/models/Qwen/Qwen3.5-9B}"
 TRAIN_DATA="${TRAIN_DATA:-${HOME}/data/swe_agent/swe_rebench_filtered.parquet}"
 VAL_DATA="${VAL_DATA:-${HOME}/data/swe_agent/swe_bench_verified.parquet}"
 RUNTIME_ENV="${RUNTIME_ENV:-}"
@@ -35,6 +35,8 @@ PARAMETER_SYNC_STEP="${PARAMETER_SYNC_STEP:-4}"
 RAY_SUBMIT_MODE="${RAY_SUBMIT_MODE:-job}"
 RAY_INIT_ADDRESS="${RAY_INIT_ADDRESS:-auto}"
 RAY_STATUS_TIMEOUT="${RAY_STATUS_TIMEOUT:-5}"
+VERL_CONFIG_NAME="${VERL_CONFIG_NAME:-ppo_megatron_trainer}"
+RAY_RESOURCE_KEY="${RAY_RESOURCE_KEY:-GPU}"
 
 # ── Hardware ─────────────────────────────────────────────────────────────
 NNODES="${NNODES:-${NNODES_TRAIN:-4}}"
@@ -64,8 +66,22 @@ LOSS_AGG_MODE="${LOSS_AGG_MODE:-token-mean}"
 LOSS_MODE="${LOSS_MODE:-gspo}"
 
 # ── Sequence lengths ─────────────────────────────────────────────────────
-PROMPT_LENGTH="${PROMPT_LENGTH:-4096}"
-RESPONSE_LENGTH="${RESPONSE_LENGTH:-131072}"
+# TRAJECTORY_LENGTH is the total prompt + response budget. Keep
+# RESPONSE_LENGTH overridable for the common SWE-bench convention where the
+# response budget is 128K and the prompt is an additional 4K.
+PROMPT_LENGTH="${PROMPT_LENGTH:-8192}"
+if [[ -z "${TRAJECTORY_LENGTH:-}" ]]; then
+    if [[ -n "${RESPONSE_LENGTH:-}" ]]; then
+        TRAJECTORY_LENGTH=$((PROMPT_LENGTH + RESPONSE_LENGTH))
+    else
+        TRAJECTORY_LENGTH=16384
+    fi
+fi
+RESPONSE_LENGTH="${RESPONSE_LENGTH:-$((TRAJECTORY_LENGTH - PROMPT_LENGTH))}"
+if (( PROMPT_LENGTH <= 0 || RESPONSE_LENGTH <= 0 )); then
+    echo "PROMPT_LENGTH and RESPONSE_LENGTH must be positive (prompt=${PROMPT_LENGTH}, response=${RESPONSE_LENGTH})" >&2
+    exit 2
+fi
 MAX_MODEL_LEN=$((PROMPT_LENGTH + RESPONSE_LENGTH))
 
 # ── Rollout parameters ───────────────────────────────────────────────────
@@ -81,6 +97,8 @@ VAL_TOP_K="${VAL_TOP_K:--1}"
 ROLLOUT_GPU_MEM_UTIL="${ROLLOUT_GPU_MEM_UTIL:-0.7}"
 UPDATE_WEIGHTS_BUCKET_MB="${UPDATE_WEIGHTS_BUCKET_MB:-2048}"
 USE_DYNAMIC_BSZ="${USE_DYNAMIC_BSZ:-False}"
+MAMBA_CACHE_MODE="${MAMBA_CACHE_MODE:-align}"
+VLLM_USE_FLASHINFER_SAMPLER="${VLLM_USE_FLASHINFER_SAMPLER:-1}"
 
 # ── Megatron training parallelism ────────────────────────────────────────
 if [[ "${TRAINER_MODE}" == "separate_async" ]]; then
@@ -102,6 +120,7 @@ PPO_MICRO_BATCH_SIZE_PER_GPU="${PPO_MICRO_BATCH_SIZE_PER_GPU:-1}"
 # configured in TASK_CONFIG (task_config_codex.yaml).
 TASK_CONFIG="${TASK_CONFIG:-examples/codex/task_config_codex.yaml}"
 TOOL_PARSER="${TOOL_PARSER:-qwen3_coder}"   # gateway tool-call parser; must match the model chat template
+MODEL_ATTN_IMPLEMENTATION="${MODEL_ATTN_IMPLEMENTATION:-}"
 GATEWAY_COUNT="${GATEWAY_COUNT:-8}"
 MAX_CONCURRENT_SESSIONS="${MAX_CONCURRENT_SESSIONS:-256}"
 # Hard cap per-session runtime (seconds). A runner that hangs without raising
@@ -159,11 +178,14 @@ RL_INSIGHT_SERVER_URL="${RL_INSIGHT_SERVER_URL:-}"
 export OPENYUANRONG_SERVER_ADDRESS
 export OPENYUANRONG_TOKEN
 export OPENYUANRONG_TUNNEL_SSL_VERIFY
+AKERNEL_SDK_LD_PRELOAD="${AKERNEL_SDK_LD_PRELOAD:-/usr/lib/x86_64-linux-gnu/libffi.so.7}"
+export AKERNEL_SDK_LD_PRELOAD
 export SANDBOX_NAME_PREFIX
 export VERL_LOGGING_LEVEL="${VERL_LOGGING_LEVEL:-INFO}"
 export RAY_DEDUP_LOGS="${RAY_DEDUP_LOGS:-0}"
 export PYTHONUNBUFFERED="${PYTHONUNBUFFERED:-1}"
 export RL_INSIGHT_SERVER_URL
+export VLLM_USE_FLASHINFER_SAMPLER
 # Logger list: console always; rl_insight only when its endpoint is configured,
 # so an empty RL_INSIGHT_SERVER_URL does not enable a logger that cannot connect.
 LOGGER='["console"]'
@@ -172,8 +194,15 @@ if [[ -n "${RL_INSIGHT_SERVER_URL}" ]]; then
 fi
 # NCCL tuning for the multi-node NPU cluster (previously set via the job
 # runtime-env-json, now forwarded through verl's ray.init runtime_env below).
-export NCCL_P2P_DISABLE="${NCCL_P2P_DISABLE:-1}"
-export NCCL_SHM_DISABLE="${NCCL_SHM_DISABLE:-1}"
+if [[ "${RAY_RESOURCE_KEY}" == "GPU" ]]; then
+    NCCL_P2P_DISABLE="${NCCL_P2P_DISABLE:-0}"
+    NCCL_SHM_DISABLE="${NCCL_SHM_DISABLE:-0}"
+else
+    NCCL_P2P_DISABLE="${NCCL_P2P_DISABLE:-1}"
+    NCCL_SHM_DISABLE="${NCCL_SHM_DISABLE:-1}"
+fi
+export NCCL_P2P_DISABLE
+export NCCL_SHM_DISABLE
 export PYTHONPATH="${REPO_ROOT}:${REPO_ROOT}/verl:${PYTHONPATH:-}"
 
 echo "=== Codex Blackbox Megatron Async Training ==="
@@ -186,7 +215,7 @@ echo "Tool parser: ${TOOL_PARSER}"
 echo "Mask:        mask_unfinished_episode=${MASK_UNFINISHED_EPISODE}"
 echo "Batch:       n=${N}, mini_bsz=${PPO_MINI_BATCH_SIZE}"
 echo "Sequence:    prompt=${PROMPT_LENGTH}, response=${RESPONSE_LENGTH}"
-echo "Trainer:     V1 ${TRAINER_MODE}"
+echo "Trainer:     V1 ${TRAINER_MODE} (config=${VERL_CONFIG_NAME})"
 if [[ "${TRAINER_MODE}" == "separate_async" ]]; then
     echo "Resources:   trainer=${NNODES}x${N_GPUS_PER_NODE}, rollout=${ROLLOUT_NNODES}x${ROLLOUT_NGPUS_PER_NODE}"
 else
@@ -214,7 +243,8 @@ fi
 # hydra keeps them as str, not int -- Ray requires Dict[str,str]). These keys
 # are declared statically:
 #   TRANSFER_QUEUE_ENABLE / NCCL_P2P_DISABLE / NCCL_SHM_DISABLE /
-#   SANDBOX_NAME_PREFIX / RL_INSIGHT_SERVER_URL / OPENYUANRONG_*
+#   SANDBOX_NAME_PREFIX / RL_INSIGHT_SERVER_URL / OPENYUANRONG_* /
+#   VLLM_USE_FLASHINFER_SAMPLER
 #
 # The OPENYUANRONG_* credentials MUST ride the runtime_env: `ray job submit`
 # launches the driver via the cluster-side Job Agent, which does NOT inherit
@@ -225,13 +255,15 @@ fi
 # PYTHONPATH is omitted here: Ray injects it from the job working_dir; the actor
 # PYTHONPATH is set by verl's get_ppo_ray_runtime_env.
 RAY_INIT_ENV_ARGS=(
-    "+ray_kwargs.ray_init.runtime_env.env_vars.NCCL_P2P_DISABLE=\"1\""
-    "+ray_kwargs.ray_init.runtime_env.env_vars.NCCL_SHM_DISABLE=\"1\""
+    "+ray_kwargs.ray_init.runtime_env.env_vars.NCCL_P2P_DISABLE=\"${NCCL_P2P_DISABLE}\""
+    "+ray_kwargs.ray_init.runtime_env.env_vars.NCCL_SHM_DISABLE=\"${NCCL_SHM_DISABLE}\""
     "+ray_kwargs.ray_init.runtime_env.env_vars.SANDBOX_NAME_PREFIX=\"${SANDBOX_NAME_PREFIX}\""
     "+ray_kwargs.ray_init.runtime_env.env_vars.RL_INSIGHT_SERVER_URL=\"${RL_INSIGHT_SERVER_URL}\""
     "+ray_kwargs.ray_init.runtime_env.env_vars.OPENYUANRONG_SERVER_ADDRESS=\"${OPENYUANRONG_SERVER_ADDRESS}\""
     "+ray_kwargs.ray_init.runtime_env.env_vars.OPENYUANRONG_TOKEN=\"${OPENYUANRONG_TOKEN}\""
     "+ray_kwargs.ray_init.runtime_env.env_vars.OPENYUANRONG_TUNNEL_SSL_VERIFY=\"${OPENYUANRONG_TUNNEL_SSL_VERIFY}\""
+    "+ray_kwargs.ray_init.runtime_env.env_vars.AKERNEL_SDK_LD_PRELOAD=\"${AKERNEL_SDK_LD_PRELOAD}\""
+    "+ray_kwargs.ray_init.runtime_env.env_vars.VLLM_USE_FLASHINFER_SAMPLER=\"${VLLM_USE_FLASHINFER_SAMPLER}\""
 )
 # TRANSFER_QUEUE_ENABLE is a REQUIRED key here: verl main_ppo overwrites it to
 # "1" itself when transfer_queue.enable=True. It must already exist in the
@@ -249,8 +281,11 @@ else
 fi
 if ! timeout "${RAY_STATUS_TIMEOUT}" ray status &>/dev/null; then
     echo "Starting Ray cluster (${TOTAL_GPUS} GPUs)..."
-    # NPU env head resources; for GPU env switch to --num-gpus="${TOTAL_GPUS}"
-    ray start --head --resources="{\"NPU\": ${TOTAL_GPUS}}" --disable-usage-stats
+    if [[ "${RAY_RESOURCE_KEY}" == "GPU" ]]; then
+        ray start --head --num-gpus="${TOTAL_GPUS}" --disable-usage-stats
+    else
+        ray start --head --resources="{\"${RAY_RESOURCE_KEY}\": ${TOTAL_GPUS}}" --disable-usage-stats
+    fi
 else
     echo "Ray cluster already running."
 fi
@@ -260,7 +295,7 @@ WORKING_DIR="${WORKING_DIR:-$(pwd)}"
 
 MAIN_CMD=(
     python3 -m verl.trainer.main_ppo
-    --config-name=ppo_megatron_trainer
+    "--config-name=${VERL_CONFIG_NAME}"
     hydra.searchpath=[pkg://verl.trainer.config]
     +ray_kwargs.ray_init.address="${RAY_INIT_ADDRESS}"
     "${RAY_INIT_ENV_ARGS[@]}"
@@ -314,7 +349,7 @@ MAIN_CMD=(
     actor_rollout_ref.rollout.gpu_memory_utilization=${ROLLOUT_GPU_MEM_UTIL}
     actor_rollout_ref.rollout.disable_log_stats=False
     "+actor_rollout_ref.rollout.engine_kwargs.vllm.compilation_config.cudagraph_mode=\"FULL_DECODE_ONLY\""
-    "+actor_rollout_ref.rollout.engine_kwargs.vllm.mamba_cache_mode=align"
+    "+actor_rollout_ref.rollout.engine_kwargs.vllm.mamba_cache_mode=${MAMBA_CACHE_MODE}"
     "+actor_rollout_ref.rollout.engine_kwargs.vllm.additional_config.enable_cpu_binding=true"
     "+actor_rollout_ref.rollout.engine_kwargs.vllm.async_scheduling=true"
     actor_rollout_ref.rollout.multi_turn.enable=True
@@ -334,38 +369,13 @@ MAIN_CMD=(
     actor_rollout_ref.actor.ppo_max_token_len_per_gpu=${ACTOR_PPO_MAX_TOKEN_LEN}
     actor_rollout_ref.actor.optim.lr=${ACTOR_LR}
     actor_rollout_ref.actor.optim.weight_decay=0.1
-    actor_rollout_ref.actor.optim.lr_decay_style=constant
-    +actor_rollout_ref.actor.optim.override_optimizer_config.optimizer_offload_fraction=${OPTIMIZER_OFFLOAD_FRACTION}
-    +actor_rollout_ref.actor.optim.override_optimizer_config.overlap_cpu_optimizer_d2h_h2d=True
-    +actor_rollout_ref.actor.optim.override_optimizer_config.use_precision_aware_optimizer=True
-    +actor_rollout_ref.actor.optim.override_optimizer_config.optimizer_cpu_offload=True
     actor_rollout_ref.actor.use_kl_loss=${USE_KL_LOSS}
     actor_rollout_ref.actor.kl_loss_coef=${KL_LOSS_COEF}
     actor_rollout_ref.actor.loss_agg_mode=${LOSS_AGG_MODE}
     actor_rollout_ref.actor.policy_loss.loss_mode=${LOSS_MODE} \
     actor_rollout_ref.actor.entropy_coeff=0
     actor_rollout_ref.actor.entropy_from_logits_with_chunking=False
-    actor_rollout_ref.actor.megatron.param_offload=${OFFLOAD}
-    actor_rollout_ref.actor.megatron.grad_offload=${OFFLOAD}
-    actor_rollout_ref.actor.megatron.optimizer_offload=${OFFLOAD}
-    actor_rollout_ref.actor.megatron.tensor_model_parallel_size=${TRAIN_TP}
-    actor_rollout_ref.actor.megatron.pipeline_model_parallel_size=${TRAIN_PP}
-    actor_rollout_ref.actor.megatron.context_parallel_size=${TRAIN_CP}
-    actor_rollout_ref.actor.megatron.use_mbridge=${USE_MBRIDGE}
-    actor_rollout_ref.actor.megatron.vanilla_mbridge=False
-    actor_rollout_ref.actor.megatron.use_remove_padding=False
-    +actor_rollout_ref.actor.megatron.override_transformer_config.use_flash_attn=True
-    +actor_rollout_ref.actor.megatron.override_transformer_config.use_naive_l2norm=True
-    +actor_rollout_ref.actor.megatron.override_transformer_config.moe_token_dispatcher_type=alltoall
-    actor_rollout_ref.actor.megatron.override_transformer_config.attention_backend=auto
-    +actor_rollout_ref.actor.megatron.override_transformer_config.recompute_method=uniform
-    +actor_rollout_ref.actor.megatron.override_transformer_config.recompute_granularity=full
-    +actor_rollout_ref.actor.megatron.override_transformer_config.recompute_num_layers=1
     actor_rollout_ref.ref.log_prob_micro_batch_size_per_gpu=1
-    actor_rollout_ref.ref.megatron.param_offload=${OFFLOAD}
-    actor_rollout_ref.ref.megatron.tensor_model_parallel_size=${TRAIN_TP}
-    actor_rollout_ref.ref.megatron.pipeline_model_parallel_size=${TRAIN_PP}
-    actor_rollout_ref.ref.megatron.context_parallel_size=${TRAIN_CP}
     actor_rollout_ref.rollout.log_prob_micro_batch_size_per_gpu=1
     actor_rollout_ref.rollout.log_prob_max_token_len_per_gpu=${INFER_PPO_MAX_TOKEN_LEN}
     actor_rollout_ref.ref.log_prob_max_token_len_per_gpu=${INFER_PPO_MAX_TOKEN_LEN}
@@ -385,6 +395,38 @@ MAIN_CMD=(
     trainer.n_gpus_per_node=${N_GPUS_PER_NODE}
     "$@"
 )
+
+if [[ -n "${MODEL_ATTN_IMPLEMENTATION}" ]]; then
+    MAIN_CMD+=("+actor_rollout_ref.model.override_config.attn_implementation=${MODEL_ATTN_IMPLEMENTATION}")
+fi
+
+if [[ "${VERL_CONFIG_NAME}" == *megatron* ]]; then
+    MAIN_CMD+=(
+        +actor_rollout_ref.actor.optim.override_optimizer_config.optimizer_offload_fraction=${OPTIMIZER_OFFLOAD_FRACTION}
+        +actor_rollout_ref.actor.optim.override_optimizer_config.overlap_cpu_optimizer_d2h_h2d=True
+        +actor_rollout_ref.actor.optim.override_optimizer_config.use_precision_aware_optimizer=True
+        +actor_rollout_ref.actor.optim.override_optimizer_config.optimizer_cpu_offload=True
+        actor_rollout_ref.actor.megatron.param_offload=${OFFLOAD}
+        actor_rollout_ref.actor.megatron.grad_offload=${OFFLOAD}
+        actor_rollout_ref.actor.megatron.optimizer_offload=${OFFLOAD}
+        actor_rollout_ref.actor.megatron.tensor_model_parallel_size=${TRAIN_TP}
+        actor_rollout_ref.actor.megatron.pipeline_model_parallel_size=${TRAIN_PP}
+        actor_rollout_ref.actor.megatron.context_parallel_size=${TRAIN_CP}
+        actor_rollout_ref.actor.megatron.use_mbridge=${USE_MBRIDGE}
+        actor_rollout_ref.actor.megatron.vanilla_mbridge=False
+        actor_rollout_ref.actor.megatron.use_remove_padding=False
+        +actor_rollout_ref.actor.megatron.override_transformer_config.moe_token_dispatcher_type=alltoall
+        actor_rollout_ref.actor.megatron.override_transformer_config.attention_backend=auto
+        +actor_rollout_ref.actor.megatron.override_transformer_config.gradient_accumulation_fusion=False
+        +actor_rollout_ref.actor.megatron.override_transformer_config.recompute_method=uniform
+        +actor_rollout_ref.actor.megatron.override_transformer_config.recompute_granularity=full
+        +actor_rollout_ref.actor.megatron.override_transformer_config.recompute_num_layers=1
+        actor_rollout_ref.ref.megatron.param_offload=${OFFLOAD}
+        actor_rollout_ref.ref.megatron.tensor_model_parallel_size=${TRAIN_TP}
+        actor_rollout_ref.ref.megatron.pipeline_model_parallel_size=${TRAIN_PP}
+        actor_rollout_ref.ref.megatron.context_parallel_size=${TRAIN_CP}
+    )
+fi
 
 if [[ -n "${TOTAL_TRAINING_STEPS}" ]]; then
     MAIN_CMD+=(trainer.total_training_steps=${TOTAL_TRAINING_STEPS})

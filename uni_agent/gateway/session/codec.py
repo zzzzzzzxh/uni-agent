@@ -13,6 +13,7 @@ from types import SimpleNamespace
 from typing import Any
 from uuid import uuid4
 
+from uni_agent.gateway.message_normalization import coalesce_consecutive_assistant_messages
 from verl.utils.tokenizer import normalize_token_ids
 from verl.utils.tokenizer.chat_template import apply_chat_template as _apply_chat_template
 from verl.utils.tokenizer.chat_template import initialize_turn_separator
@@ -240,6 +241,7 @@ class MessageCodec:
         if not messages:
             return []
 
+        messages = coalesce_consecutive_assistant_messages(messages)
         processing_class = self._processor if self._processor is not None else self._tokenizer
         anchor_content = [{"type": "text", "text": ""}] if self._processor is not None else ""
         anchor = [{"role": "user", "content": anchor_content}]

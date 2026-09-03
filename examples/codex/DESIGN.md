@@ -19,6 +19,10 @@ AgentFrameworkRolloutAdapter
   -> reward
 ```
 
+Gateway 同时保留 `/v1/chat/completions` 供现有 ReAct 等客户端调用；两条
+wire path 最终都会降级到同一套内部 message 表示。Codex sidecar 只调用
+Responses endpoint，不在 sidecar 内启动 Responses-to-Chat bridge。
+
 ## 组件职责
 
 - `uni_agent/agents/codex/agent.py`：定义 `CodexConfig`、构造沙箱命令、传递 Gateway 配置、解析 Codex JSONL 结果、返回 `AgentResult`。
@@ -26,6 +30,9 @@ AgentFrameworkRolloutAdapter
 - `examples/codex/run_agent.sh`：在沙箱内创建隔离 `CODEX_HOME/config.toml`，配置 Responses API endpoint，关闭 Codex 内部审批和沙箱，使用外层 OpenYuanRong Sandbox 作为安全边界。
 - `examples/codex/task_config_codex.yaml`：声明 SWE 任务、镜像映射和 `/opt/codex` 挂载。
 - `uni_agent/gateway/adapters/responses.py`：把 Codex Responses API 请求降级为内部 canonical chat request，并把模型结果重新封装为 Responses JSON/SSE。
+- `uni_agent/gateway/adapters/openai.py`：承接现有 OpenAI Chat Completions 客户端请求。
+- `uni_agent/gateway/message_normalization.py`：合并 Responses `reasoning` / `function_call` 产生的连续 assistant fragments，保持 session history 和增量编码稳定。
+- `uni_agent/gateway/session/codec.py`：对 continuation 做防御性 assistant-fragment canonicalization，同时保留旧协议顺序校验。
 - `uni_agent/sandbox/`：负责沙箱生命周期、命令执行、文件传输和 sidecar mount；Codex Agent 不直接依赖 OpenYuanRong SDK。
 - `uni_agent/tasks/`：负责 task 配置、沙箱生命周期和 reward；Agent 不负责 reward。
 
@@ -42,6 +49,7 @@ Codex 0.147.0 使用 Responses API，不能再使用已移除的 `wire_api = "ch
 - `instructions` → system message；
 - Responses `input` message → canonical message；
 - `function_call` / `function_call_output` → assistant tool call / tool message；
+- 相邻的 `reasoning` 与 `function_call` assistant items → 一条 canonical assistant message；
 - Responses function / namespace tools → OpenAI chat tool schema；
 - `max_output_tokens` → 内部 `max_tokens`。
 
