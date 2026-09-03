@@ -13,6 +13,7 @@ from uuid import uuid4
 
 from fastapi.responses import StreamingResponse
 
+from uni_agent.gateway.message_normalization import canonicalize_messages
 from uni_agent.gateway.session.session import GenerationOutcome
 from uni_agent.gateway.session.types import InternalGenerationRequest
 
@@ -213,8 +214,9 @@ def openai_to_internal(
         if key in payload:
             sampling_params[key] = payload[key]
 
+    normalized_messages = [_normalize_message(message) for message in messages]
     return {
-        "messages": [_normalize_message(message) for message in messages],
+        "messages": canonicalize_messages(normalized_messages),
         "tools": tools,
         "sampling_params": sampling_params,
     }

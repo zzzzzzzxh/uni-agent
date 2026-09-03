@@ -266,6 +266,6 @@ class OpenyuanrongSandbox(Sandbox):
         exit_code = int(result.exit_code)
         stdout = _to_str(getattr(result, "stdout", ""))
         stderr = _to_str(getattr(result, "stderr", ""))
-        if exit_code != 0:
-            raise RuntimeError(stderr or f"command exited with {exit_code}")
-        return ExecResult(exit_code=0, stdout=stdout, stderr=stderr)
+        # Preserve the provider exit status and captured streams so black-box
+        # agents can parse structured failure events from their stdout.
+        return ExecResult(exit_code=exit_code, stdout=stdout, stderr=stderr)
