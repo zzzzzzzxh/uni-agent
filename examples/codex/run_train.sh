@@ -87,9 +87,9 @@ MAX_MODEL_LEN=$((PROMPT_LENGTH + RESPONSE_LENGTH))
 ENGINE="${ENGINE:-vllm}"
 GEN_TP="${GEN_TP:-${TP:-${ROLLOUT_NGPUS_PER_NODE}}}"
 N="${N:-8}"
-TEMPERATURE="${TEMPERATURE:-1.0}"
-TOP_P="${TOP_P:-1.0}"
-TOP_K="${TOP_K:--1}"
+TEMPERATURE="${TEMPERATURE:-0.6}"
+TOP_P="${TOP_P:-0.95}"
+TOP_K="${TOP_K:-20}"
 VAL_TEMPERATURE="${VAL_TEMPERATURE:-1.0}"
 VAL_TOP_P="${VAL_TOP_P:-0.95}"
 VAL_TOP_K="${VAL_TOP_K:--1}"
@@ -102,6 +102,11 @@ VLLM_USE_FLASHINFER_SAMPLER="${VLLM_USE_FLASHINFER_SAMPLER:-1}"
 # release GPU memory for the long-context KV cache. Set to 0 for image/video
 # tasks.
 VLLM_LANGUAGE_MODEL_ONLY="${VLLM_LANGUAGE_MODEL_ONLY:-1}"
+# Qwen3.5 thinks by default. Codex tool use is much more robust in the
+# non-thinking chat-template mode; set this to true when deliberate reasoning
+# traces are required.
+QWEN_ENABLE_THINKING="${QWEN_ENABLE_THINKING:-false}"
+VLLM_REASONING_PARSER="${VLLM_REASONING_PARSER:-qwen3}"
 
 # ── Megatron training parallelism ────────────────────────────────────────
 if [[ "${TRAINER_MODE}" == "separate_async" ]]; then
@@ -318,6 +323,7 @@ MAIN_CMD=(
     data.return_raw_chat=True
     data.filter_overlong_prompts=True
     data.trust_remote_code=True
+    ++data.apply_chat_template_kwargs.enable_thinking=${QWEN_ENABLE_THINKING}
     data.dataloader_num_workers=0
     data.max_prompt_length=${PROMPT_LENGTH}
     data.max_response_length=${RESPONSE_LENGTH}
@@ -353,6 +359,7 @@ MAIN_CMD=(
     actor_rollout_ref.rollout.disable_log_stats=False
     "+actor_rollout_ref.rollout.engine_kwargs.vllm.compilation_config.cudagraph_mode=\"FULL_DECODE_ONLY\""
     "+actor_rollout_ref.rollout.engine_kwargs.vllm.mamba_cache_mode=${MAMBA_CACHE_MODE}"
+    "+actor_rollout_ref.rollout.engine_kwargs.vllm.reasoning_parser=${VLLM_REASONING_PARSER}"
     "+actor_rollout_ref.rollout.engine_kwargs.vllm.additional_config.enable_cpu_binding=true"
     "+actor_rollout_ref.rollout.engine_kwargs.vllm.async_scheduling=true"
     actor_rollout_ref.rollout.multi_turn.enable=True

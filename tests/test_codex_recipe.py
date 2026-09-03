@@ -28,6 +28,11 @@ def test_codex_training_recipe_uses_formal_framework_runner():
     assert "report_reward=True" in run_train
     assert "actor_rollout_ref.rollout.name=${ENGINE}" in run_train
     assert "language_model_only=True" in run_train
+    assert "apply_chat_template_kwargs.enable_thinking=${QWEN_ENABLE_THINKING}" in run_train
+    assert "reasoning_parser=${VLLM_REASONING_PARSER}" in run_train
+    assert 'TEMPERATURE="${TEMPERATURE:-0.6}"' in run_train
+    assert 'TOP_P="${TOP_P:-0.95}"' in run_train
+    assert 'TOP_K="${TOP_K:-20}"' in run_train
 
 
 def test_codex_sidecar_uses_native_responses_without_bridge():
@@ -46,3 +51,5 @@ def test_single_node_smoke_does_not_start_vllm_directly():
     assert "TRAJECTORY_LENGTH" in smoke
     assert "0.147.0-direct-stdin" in smoke
     assert "VLLM_LANGUAGE_MODEL_ONLY" in smoke
+    assert "QWEN_ENABLE_THINKING" in smoke
+    assert "VLLM_REASONING_PARSER" in smoke

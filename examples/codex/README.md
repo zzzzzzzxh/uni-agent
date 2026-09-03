@@ -73,6 +73,11 @@ Codex SWE 任务默认设置 `VLLM_LANGUAGE_MODEL_ONLY=1`，让 vLLM 只加载
 Qwen3.5 的语言模型部分，为长上下文 KV cache 释放显存。任务包含图片或
 视频时必须设置 `VLLM_LANGUAGE_MODEL_ONLY=0`。
 
+Qwen3.5 默认会生成思考内容。Codex 工具调用 smoke 默认设置
+`QWEN_ENABLE_THINKING=false`，并使用 vLLM `reasoning_parser=qwen3`；需要思考
+轨迹时可设置 `QWEN_ENABLE_THINKING=true`。编码场景的默认采样参数为
+`temperature=0.6`、`top_p=0.95`、`top_k=20`。
+
 ## 多轮消息兼容
 
 Codex Responses API 可能把一个 assistant turn 拆成独立的 `reasoning` 和
