@@ -44,27 +44,40 @@ def test_codex_sidecar_uses_native_responses_without_bridge():
     assert "--model \"${MODEL}\" -" not in run_agent
 
 
-def test_single_node_smoke_does_not_start_vllm_directly():
-    smoke = (CODEX_DIR / "run_single_node_framework_smoke.sh").read_text(encoding="utf-8")
-    assert "vllm serve" not in smoke
-    assert "VERL_CONFIG_NAME=\"ppo_megatron_trainer\"" in smoke
-    assert "N_GPUS_PER_NODE:-8" in smoke
-    assert "trajectory.json" in smoke
-    assert "TRAJECTORY_LENGTH" in smoke
-    assert "0.147.0-direct-stdin" in smoke
-    assert "VLLM_LANGUAGE_MODEL_ONLY" in smoke
-    assert "QWEN_ENABLE_THINKING" in smoke
-    assert "VLLM_REASONING_PARSER" in smoke
-    assert "finished" in smoke
-    assert "reward_score" in smoke
-
-
-def test_codex_single_node_acceptance_sample_is_verl_managed():
-    sample = (CODEX_DIR / "train_qwen3p5_codex_single_node.sh").read_text(encoding="utf-8")
-    assert "run_single_node_framework_smoke.sh" in sample
-    assert "TRAJECTORY_LENGTH:-131072" in sample
-    assert "N_GPUS_PER_NODE:-8" in sample
-    assert "GEN_TP:-8" in sample
-    assert "TRAIN_TP:-8" in sample
-    assert "RAY_SUBMIT_MODE=\"local\"" in sample
+def test_codex_qwen35_sample_matches_standard_launcher_shape():
+    sample = (CODEX_DIR / "train_qwen3p5_codex.sh").read_text(encoding="utf-8")
+    for variable in (
+        "DATA_DIR",
+        "RUNTIME_DIR",
+        "NNODES",
+        "CONCURRENCY",
+        "GEN_TP",
+        "TP",
+        "PP",
+        "CP",
+        "TRAIN_PROMPT_BSZ",
+        "N_RESP_PER_PROMPT",
+        "PPO_MINI_BATCH_SIZE",
+        "TASK_CONFIG",
+        "MASK_UNFINISHED_EPISODE",
+        "EXP_NAME",
+        "ADV_ESTIMATOR",
+        "TEST_FREQ",
+    ):
+        assert variable in sample
+    assert 'exec bash "${REPO_ROOT}/examples/codex/run_train.sh" "$@"' in sample
     assert "vllm serve" not in sample
+    assert "run_single_node_framework_smoke.sh" not in sample
+
+
+def test_codex_qwen35_sample_commits_the_verl_qwen35_patch():
+    patch = CODEX_DIR / "patches" / "verl-qwen35-chat-template.patch"
+    text = patch.read_text(encoding="utf-8")
+    assert "verl/utils/tokenizer/chat_template.py" in text
+    assert "system_messages" in text
+    assert "dummy_user_message" in text
+
+
+def test_nonstandard_codex_sample_launchers_are_removed():
+    assert not (CODEX_DIR / "run_single_node_framework_smoke.sh").exists()
+    assert not (CODEX_DIR / "train_qwen3p5_codex_single_node.sh").exists()

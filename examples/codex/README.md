@@ -1,8 +1,75 @@
-# Codex sidecar recipe
+# Codex Qwen3.5 recipe
 
-本目录实现新版 `uni_agent` 架构下的 Codex 黑盒 Agent。
+This directory adds Codex as a black-box agent to the current `uni_agent`
+architecture. Codex runs in the mounted sidecar and talks directly to the
+session's Responses endpoint:
 
-## 构建
+```text
+verl/main_ppo -> AgentFrameworkRolloutAdapter -> run_task -> CodexAgent
+  -> /opt/codex/bin/run_agent.sh -> /v1/responses -> reward
+```
+
+The recipe keeps the release launcher shape: configuration is supplied through
+environment variables and the launcher delegates the actual training command
+to `verl/main_ppo`. It does not start `vllm serve` directly.
+
+## Standard-style launch
+
+The single-node 128K Codex acceptance shape is:
+
+```bash
+DATA_DIR=/home/zxh/data \
+RUNTIME_DIR=/home/zxh/runtime \
+NNODES=1 \
+CONCURRENCY=1 \
+GEN_TP=8 \
+TP=8 PP=1 CP=1 \
+TRAIN_PROMPT_BSZ=1 \
+N_RESP_PER_PROMPT=1 \
+PPO_MINI_BATCH_SIZE=1 \
+TASK_CONFIG=examples/codex/task_config_codex.yaml \
+MASK_UNFINISHED_EPISODE=True \
+EXP_NAME=codex_qwen3p5_9b_128k \
+ADV_ESTIMATOR=grpo \
+CLIP_RATIO_LOW=0.0004 \
+CLIP_RATIO_HIGH=0.0004 \
+CLIP_RATIO_C=10 \
+LOSS_AGG_MODE=token-mean \
+TEST_FREQ=-1 \
+bash examples/codex/train_qwen3p5_codex.sh
+```
+
+Override `MODEL_PATH`, `TRAIN_FILE`, and `TEST_FILE` when the local data layout
+differs. For a synchronous local acceptance run, set `RAY_SUBMIT_MODE=local`;
+the release-style default is `job`.
+
+The default target uses Qwen3.5-9B, one node/eight GPUs, `GEN_TP=8`,
+`TP=8 PP=1 CP=1`, one prompt, one response, and a 128K total trajectory
+(`MAX_PROMPT_LENGTH=8192`, `MAX_RESPONSE_LENGTH=122880`). The gateway does not
+impose an additional per-turn cap unless `MAX_TOKENS_PER_TURN` is set.
+
+Qwen3.5 text-only Codex runs use `VLLM_LANGUAGE_MODEL_ONLY=1`,
+`QWEN_ENABLE_THINKING=false`, `VLLM_REASONING_PARSER=qwen3`, and the
+`qwen3_coder` tool parser. Set `VLLM_LANGUAGE_MODEL_ONLY=0` for image/video
+tasks.
+
+## Required Qwen3.5 verl patch
+
+The release `verl` gitlink is pinned to `fefb080`. That revision needs the
+Qwen3.5 chat-template compatibility patch committed in this PR before running
+the Codex recipe:
+
+```bash
+(cd verl && git apply ../examples/codex/patches/verl-qwen35-chat-template.patch)
+```
+
+If the selected `verl` revision already contains the patch, skip this step.
+The patch normalizes system-first messages and preserves a valid dummy-user
+fallback for Qwen3.5's chat template.
+
+## Sidecar
+
+Build the fixed Codex sidecar with:
 
 ```bash
 bash examples/codex/build_tool.sh \
@@ -10,106 +77,5 @@ bash examples/codex/build_tool.sh \
   --registry swr.cn-east-3.myhuaweicloud.com/openyuanrong
 ```
 
-构建产物：
-
-```text
-swr.cn-east-3.myhuaweicloud.com/openyuanrong/codex-tool:0.147.0-direct-stdin
-```
-
-镜像挂载到任务沙箱后，入口为：
-
-```text
-/opt/codex/bin/run_agent.sh
-```
-
-## 运行参数
-
-宿主机 Agent 会传入：
-
-```text
-CODEX_API_BASE
-CODEX_MODEL
-CODEX_API_KEY
-CODEX_PROJECT_DIR
-CODEX_HOME
-```
-
-Codex CLI 在沙箱中执行：
-
-```bash
-codex exec --json --ephemeral \
-  --skip-git-repo-check \
-  --dangerously-bypass-approvals-and-sandbox \
-  --cd /testbed \
-  --model <model>
-```
-
-不提供 positional prompt 时，Codex CLI 从 stdin 读取任务 prompt。
-
-## 训练
-
-```bash
-bash examples/codex/run_train.sh
-```
-
-训练入口使用：
-
-```text
-examples/codex/task_config_codex.yaml
-uni_agent.framework.task_runner.run_task
-```
-
-单机 8 卡、单题、128K 总轨迹的正式 Codex acceptance sample：
-
-```bash
-MODEL_PATH=/home/zxh/models/Qwen/Qwen3.5-9B \
-SOURCE_DATA=/home/zxh/sandbox/swe_bench_verified_openyuanrong.parquet \
-ARTIFACT_DIR=/home/zxh/outputs/codex-qwen3p5-single-node-128k \
-bash examples/codex/train_qwen3p5_codex_single_node.sh
-```
-
-The sample retains a total `TRAJECTORY_LENGTH=131072` and does not impose an
-additional per-turn cap by default (`MAX_TOKENS_PER_TURN=0`). Set that variable
-only when deliberately bounding one model request. `ROLLOUT_TRACE=True` emits
-bounded generation heartbeats and assistant/tool summaries into the launcher
-log without dumping the full prompt or credentials.
-
-该入口使用 `verl/main_ppo` 的 rollout manager 启动 vLLM，配置为
-`NNODES=1`、`GEN_TP=8`、`TRAIN_TP=8`、`PP=1`、`CP=1`、`N=1`，并在完成后
-要求输出恰好一个已解决的 `trajectory.json`。它不会直接执行 `vllm serve`。
-
-默认 acceptance sample 总轨迹容量为 128K：
-
-```bash
-TRAJECTORY_LENGTH=131072 PROMPT_LENGTH=8192 bash examples/codex/run_single_node_framework_smoke.sh
-```
-
-这会得到 prompt=8192、response=122880、max_model_len=131072。
-如果需要的是 128K response，再设置 RESPONSE_LENGTH=131072，此时总
-max_model_len=135168。
-
-Codex SWE 任务默认设置 `VLLM_LANGUAGE_MODEL_ONLY=1`，让 vLLM 只加载
-Qwen3.5 的语言模型部分，为长上下文 KV cache 释放显存。任务包含图片或
-视频时必须设置 `VLLM_LANGUAGE_MODEL_ONLY=0`。
-
-Qwen3.5 默认会生成思考内容。Codex 工具调用 smoke 默认设置
-`QWEN_ENABLE_THINKING=false`，并使用 vLLM `reasoning_parser=qwen3`；需要思考
-轨迹时可设置 `QWEN_ENABLE_THINKING=true`。编码场景的默认采样参数为
-`temperature=0.6`、`top_p=0.95`、`top_k=20`。
-
-## 多轮消息兼容
-
-Codex Responses API 可能把一个 assistant turn 拆成独立的 `reasoning` 和
-`function_call` items。Gateway 会在 session prefix matching 和
-`encode_incremental` 之前，把相邻 assistant fragments 归一化为一条内部
-assistant message；后续的 `function_call_output` 则作为下一次生成的 tool
-message。这样 Codex continuation 可以兼容现有 ReAct/swe-agent 的 transcript
-格式。
-
-## 注意事项
-
-Codex 0.147.0 走 Responses API。Gateway 的直接 endpoint 是
-`/sessions/<session_id>/v1/responses`，checked-in sidecar 直接使用该 endpoint。
-现有 ReAct/SWE-agent 客户端仍使用
-`/sessions/<session_id>/v1/chat/completions`；两条入口在 gateway 内部共享
-canonical continuation 处理，Codex sidecar 不再启动 Responses-to-Chat bridge。
+The image is mounted at `/opt/codex`; `run_agent.sh` configures Codex's
+Responses provider and reads the task prompt from stdin.
