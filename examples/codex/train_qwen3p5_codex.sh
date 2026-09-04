@@ -54,8 +54,10 @@ lr_decay_steps=${LR_DECAY_STEPS:-10000}
 test_freq=${TEST_FREQ:--1}
 
 # Qwen3.5 text-only Codex defaults. Set VLLM_LANGUAGE_MODEL_ONLY=0 for
-# image/video tasks. MAX_TOKENS_PER_TURN=0 preserves the full per-turn budget;
-# the gateway still enforces the total prompt+response trajectory capacity.
+# image/video tasks. Keep a high but finite per-turn budget so a tool-call
+# continuation cannot consume the whole 128K episode without returning; the
+# gateway still enforces the total prompt+response trajectory capacity. Set
+# MAX_TOKENS_PER_TURN=0 explicitly to restore an unlimited per-request budget.
 VLLM_LANGUAGE_MODEL_ONLY=${VLLM_LANGUAGE_MODEL_ONLY:-1}
 QWEN_ENABLE_THINKING=${QWEN_ENABLE_THINKING:-false}
 VLLM_REASONING_PARSER=${VLLM_REASONING_PARSER:-qwen3}
@@ -65,7 +67,7 @@ VLLM_ENFORCE_EAGER=${VLLM_ENFORCE_EAGER:-True}
 VLLM_CUDAGRAPH_MODE=${VLLM_CUDAGRAPH_MODE:-NONE}
 VLLM_USE_FLASHINFER_SAMPLER=${VLLM_USE_FLASHINFER_SAMPLER:-0}
 ROLLOUT_GPU_MEM_UTIL=${ROLLOUT_GPU_MEM_UTIL:-0.68}
-MAX_TOKENS_PER_TURN=${MAX_TOKENS_PER_TURN:-0}
+MAX_TOKENS_PER_TURN=${MAX_TOKENS_PER_TURN:-8192}
 ROLLOUT_TRACE=${ROLLOUT_TRACE:-False}
 RAY_SUBMIT_MODE=${RAY_SUBMIT_MODE:-job}
 

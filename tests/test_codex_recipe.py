@@ -70,6 +70,7 @@ def test_codex_qwen35_sample_matches_standard_launcher_shape():
     assert 'exec bash "${REPO_ROOT}/examples/codex/run_train.sh" "$@"' in sample
     assert 'export TRAIN_DATA="${TRAIN_FILE}" VAL_DATA="${TEST_FILE}"' in sample
     assert 'NUM_WARMUP_BATCHES=${NUM_WARMUP_BATCHES:-0}' in sample
+    assert 'MAX_TOKENS_PER_TURN=${MAX_TOKENS_PER_TURN:-8192}' in sample
     assert "export NUM_WARMUP_BATCHES" in sample
     assert "vllm serve" not in sample
     assert "run_single_node_framework_smoke.sh" not in sample

@@ -45,8 +45,10 @@ the release-style default is `job`.
 
 The default target uses Qwen3.5-9B, one node/eight GPUs, `GEN_TP=8`,
 `TP=8 PP=1 CP=1`, one prompt, one response, and a 128K total trajectory
-(`MAX_PROMPT_LENGTH=8192`, `MAX_RESPONSE_LENGTH=122880`). The gateway does not
-impose an additional per-turn cap unless `MAX_TOKENS_PER_TURN` is set.
+(`MAX_PROMPT_LENGTH=8192`, `MAX_RESPONSE_LENGTH=122880`). The Qwen3.5 wrapper
+uses a high 8192-token per-turn budget by default so a Codex tool continuation
+returns before consuming the whole episode; set `MAX_TOKENS_PER_TURN=0` only
+when an unlimited per-request budget is explicitly required.
 
 Qwen3.5 text-only Codex runs use `VLLM_LANGUAGE_MODEL_ONLY=1`,
 `QWEN_ENABLE_THINKING=false`, `VLLM_REASONING_PARSER=qwen3`, and the
