@@ -27,6 +27,8 @@ def test_codex_training_recipe_uses_formal_framework_runner():
     assert "uni_agent.framework.task_runner.run_task" in run_train
     assert "report_reward=True" in run_train
     assert "actor_rollout_ref.rollout.name=${ENGINE}" in run_train
+    assert "trainer.v1.colocate_async.num_warmup_batches=${NUM_WARMUP_BATCHES}" in run_train
+    assert "trainer.v1.separate_async.num_warmup_batches=${NUM_WARMUP_BATCHES}" in run_train
     assert "language_model_only=True" in run_train
     assert "apply_chat_template_kwargs.enable_thinking=${QWEN_ENABLE_THINKING}" in run_train
     assert "reasoning_parser=${VLLM_REASONING_PARSER}" in run_train

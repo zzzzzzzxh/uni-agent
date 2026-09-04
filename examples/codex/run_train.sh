@@ -337,6 +337,7 @@ MAIN_CMD=(
     "${RAY_INIT_ENV_ARGS[@]}"
     trainer.use_v1=True
     trainer.v1.trainer_mode="${TRAINER_MODE}"
+    trainer.v1.colocate_async.num_warmup_batches=${NUM_WARMUP_BATCHES}
     trainer.v1.separate_async.num_warmup_batches=${NUM_WARMUP_BATCHES}
     trainer.v1.separate_async.parameter_sync_step=${PARAMETER_SYNC_STEP}
     transfer_queue.enable=True
