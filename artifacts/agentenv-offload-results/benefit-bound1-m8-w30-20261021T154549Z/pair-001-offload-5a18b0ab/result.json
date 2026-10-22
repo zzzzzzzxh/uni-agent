@@ -1,0 +1,118 @@
+{
+  "trial_id": "pair-001-offload-5a18b0ab",
+  "pair_index": 1,
+  "mode": "offload",
+  "success": true,
+  "cycles": [
+    {
+      "cycle": 0,
+      "pause_seconds": 0.505952209001407,
+      "resume_seconds": 0.5145562109537423,
+      "restore_oracle_seconds": 0.8241647880058736,
+      "first_tool_seconds": 0.8739652680233121,
+      "idle_actual_seconds": 30.0,
+      "idle_end_ssh_observation_seconds": 0.0,
+      "resume_api_seconds": 0.45500687998719513,
+      "resume_ssh_observation_seconds": 0.059091310016810894
+    },
+    {
+      "cycle": 1,
+      "pause_seconds": 0.37838038709014654,
+      "resume_seconds": 0.5982790391426533,
+      "restore_oracle_seconds": 0.8523962378967553,
+      "first_tool_seconds": 0.8898199880495667,
+      "idle_actual_seconds": 30.0,
+      "idle_end_ssh_observation_seconds": 0.0,
+      "resume_api_seconds": 0.5374770690687001,
+      "resume_ssh_observation_seconds": 0.060344774974510074
+    }
+  ],
+  "validation_only": false,
+  "clock_calibration": {
+    "node_monotonic_seconds": 5575.857620443,
+    "client_midpoint_monotonic_seconds": 1169240.2895899694,
+    "client_minus_node_seconds": 1163664.4319695265,
+    "uncertainty_seconds": 0.023099780548363924,
+    "node_wall_time_ns": 1792597375526509409
+  },
+  "measurement_started_monotonic_seconds": 1169240.31306642,
+  "create_seconds": 4.576565257972106,
+  "sandbox_id": "01a15f21-4349-7920-906a-b0cfe94311de",
+  "ssh_aenv_bootstrap_seconds": 0.7324441380333155,
+  "task_seconds": 68.12846310599707,
+  "final_cleanup_state": "running",
+  "measurement_finished_monotonic_seconds": 1169330.313193065,
+  "cleanup": {
+    "confirmed": true,
+    "api_pid_confirmed": true,
+    "api_absent": true,
+    "owned_firecracker_gone": true,
+    "resource_audit": {
+      "before": {
+        "audit_schema_version": 2,
+        "ublk_devices": [
+          "ublkb0"
+        ],
+        "netns": [
+          "/run/agentenv-offload/netns/agentenv-ns-01a15f0d-4bf0-7931-8038-0263628cc6ad",
+          "/run/agentenv-offload/netns/agentenv-ns-01a15f14-7ea0-7e02-b938-d92af8f492e8"
+        ],
+        "netns_by_directory": {
+          "/run/agentenv-offload/netns": [
+            "/run/agentenv-offload/netns/agentenv-ns-01a15f0d-4bf0-7931-8038-0263628cc6ad",
+            "/run/agentenv-offload/netns/agentenv-ns-01a15f14-7ea0-7e02-b938-d92af8f492e8"
+          ],
+          "/run/netns": []
+        },
+        "runtime_entries": [
+          "netns",
+          "ublk-daemon.sock"
+        ],
+        "owned_artifacts": [],
+        "errors": []
+      },
+      "after": {
+        "audit_schema_version": 2,
+        "ublk_devices": [
+          "ublkb0"
+        ],
+        "netns": [
+          "/run/agentenv-offload/netns/agentenv-ns-01a15f0d-4bf0-7931-8038-0263628cc6ad",
+          "/run/agentenv-offload/netns/agentenv-ns-01a15f14-7ea0-7e02-b938-d92af8f492e8"
+        ],
+        "netns_by_directory": {
+          "/run/agentenv-offload/netns": [
+            "/run/agentenv-offload/netns/agentenv-ns-01a15f0d-4bf0-7931-8038-0263628cc6ad",
+            "/run/agentenv-offload/netns/agentenv-ns-01a15f14-7ea0-7e02-b938-d92af8f492e8"
+          ],
+          "/run/netns": []
+        },
+        "runtime_entries": [
+          "netns",
+          "ublk-daemon.sock"
+        ],
+        "owned_artifacts": [
+          {
+            "path": "/opt/agentenv-offload/state/persisted-sandboxes/artifacts/01a15f21-4349-7920-906a-b0cfe94311de",
+            "exists": false,
+            "logical_bytes": 0,
+            "allocated_bytes": 0
+          },
+          {
+            "path": "/opt/agentenv-offload/state/firecracker-work/managed-snapshots/01a15f21-4349-7920-906a-b0cfe94311de",
+            "exists": false,
+            "logical_bytes": 0,
+            "allocated_bytes": 0
+          }
+        ],
+        "errors": []
+      },
+      "new_ublk_devices": [],
+      "new_netns": [],
+      "owned_artifacts_remaining": [],
+      "status": "no_observed_residue"
+    },
+    "final_cleanup_state": "running"
+  },
+  "lifecycle_seconds": 90.8451631590724
+}

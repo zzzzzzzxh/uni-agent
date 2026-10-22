@@ -1,0 +1,263 @@
+{
+  "observed_at_utc": "2026-10-21T14:54:42.025057+00:00",
+  "source_revision": "a27b2db909b035f58696ba8798ea0e285c7bfa17",
+  "sandbox_id": "01a15ef0-ee09-76a3-8d19-5baa98ac74a7",
+  "conclusion": "本次沙箱的 rootfs 设备已删除；ublkb0 是服务持有的最近使用 tools drive 缓存，不是仍存活的本次沙箱。",
+  "classification": "service_retained_tools_device",
+  "allowed_existing_background_devices": [
+    "ublkb0"
+  ],
+  "allowlist_scope": "仅本服务实例、该设备身份与该 tools 版本；不能把新增其他设备自动加入白名单。后续 trial 仍检查新增设备、PID、netns 和暂停产物差异。",
+  "observed_device": {
+    "path": "/dev/ublkb0",
+    "major_minor": "259:1",
+    "kernel_ro": 0,
+    "virtual_size_bytes": 68719476736,
+    "image_config": "/opt/agentenv-offload/state/deps/tools/0.1.1/image.json",
+    "image_config_sha256": "4015fd419bb93dafcde56195a9f82a8d5f383fbc8c008d9dbe89e4004cf05c5d",
+    "tools_version": "0.1.1",
+    "tools_commit_files": [
+      {
+        "path": "/opt/agentenv-offload/state/deps/tools/0.1.1/sha256-0025158ff64f93188a0cac3d58f6bf641441d2cfffe9897cd390077427166e13.commit",
+        "size_bytes": 83315712
+      }
+    ]
+  },
+  "measured_open_references": {
+    "34475": [
+      {
+        "fd": 31,
+        "target": "/dev/ublkb0"
+      }
+    ],
+    "34501": [
+      {
+        "fd": 24,
+        "target": "/opt/agentenv-offload/state/deps/tools/0.1.1/sha256-0025158ff64f93188a0cac3d58f6bf641441d2cfffe9897cd390077427166e13.commit"
+      },
+      {
+        "fd": 25,
+        "target": "/dev/ublk-control"
+      },
+      {
+        "fd": 26,
+        "target": "/dev/ublkc0"
+      }
+    ]
+  },
+  "ownership_source_evidence": [
+    {
+      "url": "https://github.com/kvcache-ai/AgentENV/blob/a27b2db909b035f58696ba8798ea0e285c7bfa17/src/sandbox/ublk/device.rs#L591-L604",
+      "meaning": "get_or_create_shared_tools 为 recent_tools_device 保留 device.clone；该路径未按 pool_enabled 禁止。"
+    },
+    {
+      "url": "https://github.com/kvcache-ai/AgentENV/blob/a27b2db909b035f58696ba8798ea0e285c7bfa17/src/sandbox/ublk/device.rs#L855-L875",
+      "meaning": "SharedReadOnlyDevice.release 发现其他 Arc 强引用时返回，不删除底层设备。"
+    },
+    {
+      "url": "https://github.com/kvcache-ai/AgentENV/blob/a27b2db909b035f58696ba8798ea0e285c7bfa17/src/sandbox/ublk/device.rs#L557-L563",
+      "meaning": "shutdown_daemon 才取出并释放 retained tools handle。"
+    },
+    {
+      "url": "https://github.com/kvcache-ai/AgentENV/blob/a27b2db909b035f58696ba8798ea0e285c7bfa17/src/sandbox/firecracker/resources.rs#L77-L83",
+      "meaning": "沙箱 stop 显式释放自身 tools handle。"
+    }
+  ],
+  "refcount_observability": "未直接读取进程内 Arc 强引用计数；源码保留引用与进程 fd 是证据，不能报告为实测 refcount=1。daemon 协议未提供通用设备引用列表。",
+  "daemon_log_path": "/opt/agentenv-offload/state/logs/ublk-daemon.log",
+  "daemon_log_evidence": [
+    "2026-10-21T14:50:10.389142Z  INFO uvm_ublk_daemon::server: creating raw overlaybd device image_config=/opt/agentenv-offload/state/deps/tools/0.1.1/image.json global_config=/opt/agentenv-offload/state/overlaybd/overlaybd-global.json",
+    "2026-10-21T14:50:10.390813Z  INFO uvm_ublk::dev: device has been added to ublkdrv dev_id=0 zero_copy=false",
+    "2026-10-21T14:50:10.450472Z  INFO uvm_ublk_daemon::server: overlaybd device created dev_id=0 path=/dev/ublkb0",
+    "2026-10-21T14:50:10.452642Z  INFO uvm_ublk::dev: device has been added to ublkdrv dev_id=1 zero_copy=false",
+    "2026-10-21T14:50:10.502229Z  INFO uvm_ublk_daemon::server: overlaybd device created dev_id=1 path=/dev/ublkb1",
+    "2026-10-21T14:50:12.925139Z  INFO uvm_ublk_daemon::server: sandbox reported envd-ready; releasing held downloads device_key=\"/opt/agentenv-offload/state/deps/tools/0.1.1/image.json\"",
+    "2026-10-21T14:50:12.925354Z  INFO uvm_ublk_daemon::server: sandbox reported envd-ready; releasing held downloads device_key=\"/opt/agentenv-offload/state/image-cache/configs/sha256-8fb0b110b022c70cbe09d3ff1fb313654f31f9c814abb0d48180af56d906a199-image.json\"",
+    "2026-10-21T14:50:14.601005Z  INFO uvm_ublk::ctrl: stop_dev ctrl cmd completed dev_id=1 res=0",
+    "2026-10-21T14:50:14.601451Z  INFO uvm_ublk::ctrl: stop_dev ctrl cmd completed dev_id=1 res=0",
+    "2026-10-21T14:50:14.601624Z  INFO uvm_ublk_daemon::server: device deleted dev_id=1"
+  ],
+  "sandbox_http_status_after_cleanup": 404,
+  "node_counts": [
+    {
+      "id": "node-a",
+      "commit": "a27b2db",
+      "sandboxCount": 0,
+      "sandboxStartingCount": 0,
+      "sandboxPausedCount": 0,
+      "createSuccesses": 1,
+      "createFails": 0
+    }
+  ],
+  "firecracker_pids": [],
+  "remaining_ublk_block_devices": [
+    "ublkb0"
+  ],
+  "owned_paused_artifact_path": "/opt/agentenv-offload/state/persisted-sandboxes/artifacts/01a15ef0-ee09-76a3-8d19-5baa98ac74a7",
+  "owned_paused_artifact_exists": false,
+  "actions": "仅只读检查并保存本记录；未删除共享设备/缓存、未重启服务或 daemon、未创建其他沙箱。",
+  "network_slot_cache": {
+    "observed_at_utc": "2026-10-21T15:17:09.539773+00:00",
+    "classification": "service_retained_network_slot",
+    "conclusion": "关闭 network maintenance 只禁止后台补池；release 仍把槽保留在 high_watermark 内。此处是无进程使用、供后续沙箱复用的槽 1；不是仍存活的业务 VM。",
+    "exact_namespace": {
+      "path": "/run/agentenv-offload/netns/agentenv-ns-01a15ef0-ef4a-7431-a19a-d01ecc4e8238",
+      "inode": 4026532236,
+      "mount": {
+        "filesystems": [
+          {
+            "target": "/run/agentenv-offload/netns/agentenv-ns-01a15ef0-ef4a-7431-a19a-d01ecc4e8238",
+            "source": "nsfs[net:[4026532236]]",
+            "fstype": "nsfs",
+            "options": "rw"
+          }
+        ]
+      },
+      "slot_index": 1,
+      "host_veth": "veth-1"
+    },
+    "namespace_links": [
+      {
+        "ifindex": 1,
+        "ifname": "lo",
+        "flags": [
+          "LOOPBACK",
+          "UP",
+          "LOWER_UP"
+        ],
+        "mtu": 65536,
+        "qdisc": "noqueue",
+        "operstate": "UNKNOWN",
+        "linkmode": "DEFAULT",
+        "group": "default",
+        "txqlen": 1000,
+        "link_type": "loopback",
+        "address": "00:00:00:00:00:00",
+        "broadcast": "00:00:00:00:00:00"
+      },
+      {
+        "ifindex": 2,
+        "link_index": 3,
+        "ifname": "vpeer",
+        "flags": [
+          "BROADCAST",
+          "MULTICAST",
+          "UP",
+          "LOWER_UP"
+        ],
+        "mtu": 1500,
+        "qdisc": "noqueue",
+        "operstate": "UP",
+        "linkmode": "DEFAULT",
+        "group": "default",
+        "txqlen": 1000,
+        "link_type": "ether",
+        "address": "92:a4:0c:f6:e3:a4",
+        "broadcast": "ff:ff:ff:ff:ff:ff",
+        "link_netnsid": 0
+      },
+      {
+        "ifindex": 4,
+        "ifname": "tap0",
+        "flags": [
+          "NO-CARRIER",
+          "BROADCAST",
+          "MULTICAST",
+          "UP"
+        ],
+        "mtu": 1500,
+        "qdisc": "fq_codel",
+        "operstate": "DOWN",
+        "linkmode": "DEFAULT",
+        "group": "default",
+        "txqlen": 1000,
+        "link_type": "ether",
+        "address": "3e:f8:5f:62:1f:10",
+        "broadcast": "ff:ff:ff:ff:ff:ff"
+      }
+    ],
+    "host_veth_links": [
+      {
+        "ifindex": 3,
+        "link_index": 2,
+        "ifname": "veth-1",
+        "flags": [
+          "BROADCAST",
+          "MULTICAST",
+          "UP",
+          "LOWER_UP"
+        ],
+        "mtu": 1500,
+        "qdisc": "noqueue",
+        "operstate": "UP",
+        "linkmode": "DEFAULT",
+        "group": "default",
+        "txqlen": 1000,
+        "link_type": "ether",
+        "address": "02:b6:15:64:1a:64",
+        "broadcast": "ff:ff:ff:ff:ff:ff",
+        "link_netnsid": 0
+      }
+    ],
+    "resident_processes_in_namespace": [],
+    "node_counts": [
+      {
+        "id": "node-a",
+        "sandboxCount": 0,
+        "sandboxStartingCount": 0,
+        "sandboxPausedCount": 0,
+        "createSuccesses": 5,
+        "createFails": 0
+      }
+    ],
+    "runtime_netns_entries": [
+      "agentenv-ns-01a15ef0-ef4a-7431-a19a-d01ecc4e8238"
+    ],
+    "default_run_netns_entries": [],
+    "configured_pool": {
+      "low_watermark": 2,
+      "high_watermark": 64,
+      "network": {
+        "maintenance_enabled": false
+      },
+      "block": {
+        "enabled": false
+      },
+      "firecracker": {
+        "enabled": false,
+        "startup_prewarm": false,
+        "fill_concurrency": 4
+      }
+    },
+    "source_evidence": [
+      {
+        "url": "https://github.com/kvcache-ai/AgentENV/blob/a27b2db909b035f58696ba8798ea0e285c7bfa17/src/cfg.rs#L878-L886",
+        "claim": "network_pool_config 始终返回含全局 watermarks 的池；enabled 与 maintenance_enabled 只合并为后台维护开关。"
+      },
+      {
+        "url": "https://github.com/kvcache-ai/AgentENV/blob/a27b2db909b035f58696ba8798ea0e285c7bfa17/src/sandbox/network/manager.rs#L234-L260",
+        "claim": "allocate_any 优先取已缓存的 warm slot。"
+      },
+      {
+        "url": "https://github.com/kvcache-ai/AgentENV/blob/a27b2db909b035f58696ba8798ea0e285c7bfa17/src/sandbox/network/manager.rs#L360-L386",
+        "claim": "release 会缓存槽；maintenance 关闭时池未满仍保留，满后才执行真实清理。"
+      },
+      {
+        "url": "https://github.com/kvcache-ai/AgentENV/blob/a27b2db909b035f58696ba8798ea0e285c7bfa17/crates/warm-pool/src/lib.rs#L265-L294",
+        "claim": "maintenance=false 时，pool.len < high_watermark 的 release 仍成功入池。"
+      },
+      {
+        "url": "https://github.com/kvcache-ai/AgentENV/blob/a27b2db909b035f58696ba8798ea0e285c7bfa17/src/sandbox/network/slot.rs#L79-L83",
+        "claim": "host veth 名称 veth-<idx> 标识槽号；测得 veth-1 与 namespace vpeer 的 ifindex/link_index 对应。"
+      },
+      {
+        "url": "https://github.com/kvcache-ai/AgentENV/blob/a27b2db909b035f58696ba8798ea0e285c7bfa17/src/sandbox/network/mod.rs#L21-L27",
+        "claim": "真实 namespace 目录来自 runtime_path/netns，而不是默认 /run/netns。"
+      }
+    ],
+    "observability_limits": "内存中的 pool 队列没有公开逐槽查询；归属依据为固定源码缓存语义、同节点唯一 AgentEnv、精确 namespace/veth 内核映射及零业务实例/零 namespace 进程。未声称读取了内部 pool 对象。",
+    "future_audit_rule": "在同服务实例基线保留该确切 path+inode+veth；不能以 /run/netns 为空判断无资源。下一 cohort 同时比较 runtime/netns、默认目录、veth、业务 PID 与后台池开销。服务重启后必须重建基线。",
+    "actions": "仅只读核查并追加证据；未删除 namespace、未修改配置、未重启服务。"
+  },
+  "network_slot_cache_previous_document_sha256": "8ed22862db06f5e409182c5ed3914ec9f3ed77be7706a1f24a8968bd592f6013"
+}

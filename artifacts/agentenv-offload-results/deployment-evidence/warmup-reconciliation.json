@@ -1,0 +1,461 @@
+{
+  "scope": "warmup及随后的M8 pilot均终态后的稳定背景核验",
+  "workload_results": [
+    "/home/zxh/uni-agent-sandbox-offload/results/warmup-bound1-v2-20261021T153454Z",
+    "/home/zxh/uni-agent-sandbox-offload/results/pilot-bound1-m8-w30-20261021T153834Z"
+  ],
+  "source_revision": "a27b2db909b035f58696ba8798ea0e285c7bfa17",
+  "config_sha256": "5fde917e5ef742136092c9acd78f9fead00079b96cd7c0980a695c3698ebdf71",
+  "owned_cleanup_checks": [
+    {
+      "sandbox_id": "01a15f14-7e06-78e2-b565-0dcd3a86f709",
+      "http_status": 404,
+      "owned_paused_artifact_exists": false
+    },
+    {
+      "sandbox_id": "01a15f17-df55-74a1-895f-19cb4a5b3a82",
+      "http_status": 404,
+      "owned_paused_artifact_exists": false
+    },
+    {
+      "sandbox_id": "01a15f19-3eda-7252-ac27-fef94f71e180",
+      "http_status": 404,
+      "owned_paused_artifact_exists": false
+    }
+  ],
+  "inventory_samples": [
+    {
+      "observed_at_utc": "2026-10-21T15:38:40.207650+00:00",
+      "counts": [
+        {
+          "id": "node-a",
+          "sandboxCount": 0,
+          "sandboxStartingCount": 0,
+          "sandboxPausedCount": 0
+        }
+      ],
+      "warm_firecracker": [
+        {
+          "pid": 36639,
+          "ppid": 35896,
+          "starttime_ticks": 502755,
+          "comm": "firecracker",
+          "netns_inode": 4026532302,
+          "api_socket": "/opt/agentenv-offload/state/firecracker-work/agentenv-fc-CwCxxa/firecracker.socket",
+          "state": "Not started",
+          "memory": {
+            "Rss_bytes": 2154496,
+            "Pss_bytes": 2150400
+          }
+        }
+      ],
+      "runtime_namespaces": [
+        {
+          "path": "/run/agentenv-offload/netns/agentenv-ns-01a15f14-7ea0-7e02-b938-d92af8f492e8",
+          "inode": 4026532302,
+          "processes": [
+            {
+              "pid": 36639,
+              "ppid": 35896,
+              "starttime_ticks": 502755,
+              "comm": "firecracker",
+              "netns_inode": 4026532302
+            }
+          ],
+          "classification": "warm_firecracker_slot"
+        },
+        {
+          "path": "/run/agentenv-offload/netns/agentenv-ns-01a15f0d-4bf0-7931-8038-0263628cc6ad",
+          "inode": 4026532236,
+          "processes": [],
+          "classification": "idle_network_slot_cache"
+        }
+      ],
+      "ublk_devices": [
+        "ublkb0"
+      ],
+      "open_tools_references": {
+        "35896": [
+          {
+            "fd": 43,
+            "target": "/dev/ublkb0"
+          }
+        ],
+        "35918": [
+          {
+            "fd": 24,
+            "target": "/opt/agentenv-offload/state/deps/tools/0.1.1/sha256-0025158ff64f93188a0cac3d58f6bf641441d2cfffe9897cd390077427166e13.commit"
+          },
+          {
+            "fd": 25,
+            "target": "/dev/ublk-control"
+          },
+          {
+            "fd": 26,
+            "target": "/dev/ublkc0"
+          }
+        ]
+      },
+      "firecracker_work_dirs": [
+        "/opt/agentenv-offload/state/firecracker-work/agentenv-fc-CwCxxa"
+      ]
+    },
+    {
+      "observed_at_utc": "2026-10-21T15:38:42.226134+00:00",
+      "counts": [
+        {
+          "id": "node-a",
+          "sandboxCount": 0,
+          "sandboxStartingCount": 0,
+          "sandboxPausedCount": 0
+        }
+      ],
+      "warm_firecracker": [
+        {
+          "pid": 36639,
+          "ppid": 35896,
+          "starttime_ticks": 502755,
+          "comm": "firecracker",
+          "netns_inode": 4026532302,
+          "api_socket": "/opt/agentenv-offload/state/firecracker-work/agentenv-fc-CwCxxa/firecracker.socket",
+          "state": "Not started",
+          "memory": {
+            "Rss_bytes": 2154496,
+            "Pss_bytes": 2150400
+          }
+        }
+      ],
+      "runtime_namespaces": [
+        {
+          "path": "/run/agentenv-offload/netns/agentenv-ns-01a15f14-7ea0-7e02-b938-d92af8f492e8",
+          "inode": 4026532302,
+          "processes": [
+            {
+              "pid": 36639,
+              "ppid": 35896,
+              "starttime_ticks": 502755,
+              "comm": "firecracker",
+              "netns_inode": 4026532302
+            }
+          ],
+          "classification": "warm_firecracker_slot"
+        },
+        {
+          "path": "/run/agentenv-offload/netns/agentenv-ns-01a15f0d-4bf0-7931-8038-0263628cc6ad",
+          "inode": 4026532236,
+          "processes": [],
+          "classification": "idle_network_slot_cache"
+        }
+      ],
+      "ublk_devices": [
+        "ublkb0"
+      ],
+      "open_tools_references": {
+        "35896": [
+          {
+            "fd": 43,
+            "target": "/dev/ublkb0"
+          }
+        ],
+        "35918": [
+          {
+            "fd": 24,
+            "target": "/opt/agentenv-offload/state/deps/tools/0.1.1/sha256-0025158ff64f93188a0cac3d58f6bf641441d2cfffe9897cd390077427166e13.commit"
+          },
+          {
+            "fd": 25,
+            "target": "/dev/ublk-control"
+          },
+          {
+            "fd": 26,
+            "target": "/dev/ublkc0"
+          }
+        ]
+      },
+      "firecracker_work_dirs": [
+        "/opt/agentenv-offload/state/firecracker-work/agentenv-fc-CwCxxa"
+      ]
+    },
+    {
+      "observed_at_utc": "2026-10-21T15:38:44.243846+00:00",
+      "counts": [
+        {
+          "id": "node-a",
+          "sandboxCount": 0,
+          "sandboxStartingCount": 0,
+          "sandboxPausedCount": 0
+        }
+      ],
+      "warm_firecracker": [
+        {
+          "pid": 36639,
+          "ppid": 35896,
+          "starttime_ticks": 502755,
+          "comm": "firecracker",
+          "netns_inode": 4026532302,
+          "api_socket": "/opt/agentenv-offload/state/firecracker-work/agentenv-fc-CwCxxa/firecracker.socket",
+          "state": "Not started",
+          "memory": {
+            "Rss_bytes": 2154496,
+            "Pss_bytes": 2150400
+          }
+        }
+      ],
+      "runtime_namespaces": [
+        {
+          "path": "/run/agentenv-offload/netns/agentenv-ns-01a15f14-7ea0-7e02-b938-d92af8f492e8",
+          "inode": 4026532302,
+          "processes": [
+            {
+              "pid": 36639,
+              "ppid": 35896,
+              "starttime_ticks": 502755,
+              "comm": "firecracker",
+              "netns_inode": 4026532302
+            }
+          ],
+          "classification": "warm_firecracker_slot"
+        },
+        {
+          "path": "/run/agentenv-offload/netns/agentenv-ns-01a15f0d-4bf0-7931-8038-0263628cc6ad",
+          "inode": 4026532236,
+          "processes": [],
+          "classification": "idle_network_slot_cache"
+        }
+      ],
+      "ublk_devices": [
+        "ublkb0"
+      ],
+      "open_tools_references": {
+        "35896": [
+          {
+            "fd": 43,
+            "target": "/dev/ublkb0"
+          }
+        ],
+        "35918": [
+          {
+            "fd": 24,
+            "target": "/opt/agentenv-offload/state/deps/tools/0.1.1/sha256-0025158ff64f93188a0cac3d58f6bf641441d2cfffe9897cd390077427166e13.commit"
+          },
+          {
+            "fd": 25,
+            "target": "/dev/ublk-control"
+          },
+          {
+            "fd": 26,
+            "target": "/dev/ublkc0"
+          }
+        ]
+      },
+      "firecracker_work_dirs": [
+        "/opt/agentenv-offload/state/firecracker-work/agentenv-fc-CwCxxa"
+      ]
+    }
+  ],
+  "server_lifecycle_log_evidence": [
+    "2026-10-21T15:29:00.934199Z  INFO create_sandbox: agentenv::orchestrator::service: creating sandbox timeout=Some(3006s) template_builder=false sandbox_id=01a15f14-7e06-78e2-b565-0dcd3a86f709",
+    "2026-10-21T15:29:03.382420Z  INFO create_sandbox:launch_sandbox: agentenv::orchestrator::service: sandbox launch completed template_builder=false sandbox_id=01a15f14-7e06-78e2-b565-0dcd3a86f709",
+    "2026-10-21T15:29:04.078917Z  WARN agentenv::api::proxy: upstream proxy request failed sandbox_id=01a15f14-7e06-78e2-b565-0dcd3a86f709 error=client error (Connect)",
+    "2026-10-21T15:29:04.181392Z  WARN agentenv::api::proxy: upstream proxy request failed sandbox_id=01a15f14-7e06-78e2-b565-0dcd3a86f709 error=client error (Connect)",
+    "2026-10-21T15:29:04.283601Z  WARN agentenv::api::proxy: upstream proxy request failed sandbox_id=01a15f14-7e06-78e2-b565-0dcd3a86f709 error=client error (Connect)",
+    "2026-10-21T15:29:04.385788Z  WARN agentenv::api::proxy: upstream proxy request failed sandbox_id=01a15f14-7e06-78e2-b565-0dcd3a86f709 error=client error (Connect)",
+    "2026-10-21T15:29:04.487812Z  WARN agentenv::api::proxy: upstream proxy request failed sandbox_id=01a15f14-7e06-78e2-b565-0dcd3a86f709 error=client error (Connect)",
+    "2026-10-21T15:29:04.590111Z  WARN agentenv::api::proxy: upstream proxy request failed sandbox_id=01a15f14-7e06-78e2-b565-0dcd3a86f709 error=client error (Connect)",
+    "2026-10-21T15:29:04.692039Z  WARN agentenv::api::proxy: upstream proxy request failed sandbox_id=01a15f14-7e06-78e2-b565-0dcd3a86f709 error=client error (Connect)",
+    "2026-10-21T15:29:04.794083Z  WARN agentenv::api::proxy: upstream proxy request failed sandbox_id=01a15f14-7e06-78e2-b565-0dcd3a86f709 error=client error (Connect)",
+    "2026-10-21T15:29:04.950569Z  INFO sandboxes_sandbox_id_refreshes_post:keep_alive_for: agentenv::orchestrator::service: sandbox keep-alive timeout updated valid_timeout=3006s timeout=Some(3006s) sandbox_id=01a15f14-7e06-78e2-b565-0dcd3a86f709 allow_shorter=false",
+    "2026-10-21T15:29:04.952070Z  INFO pause_sandbox: agentenv::orchestrator::service: pausing sandbox sandbox_id=01a15f14-7e06-78e2-b565-0dcd3a86f709",
+    "2026-10-21T15:29:05.397635Z  INFO pause_sandbox: agentenv::orchestrator::service: sandbox paused sandbox_id=01a15f14-7e06-78e2-b565-0dcd3a86f709",
+    "2026-10-21T15:29:06.952924Z  INFO resume_sandbox: agentenv::orchestrator::service: resuming sandbox sandbox_id=01a15f14-7e06-78e2-b565-0dcd3a86f709 timeout=Set(3006s)",
+    "2026-10-21T15:29:07.380670Z  INFO resume_sandbox:launch_sandbox: agentenv::orchestrator::service: sandbox launch completed sandbox_id=01a15f14-7e06-78e2-b565-0dcd3a86f709 timeout=Set(3006s)",
+    "2026-10-21T15:29:08.025464Z  INFO sandboxes_sandbox_id_refreshes_post:keep_alive_for: agentenv::orchestrator::service: sandbox keep-alive timeout updated valid_timeout=3006s timeout=Some(3006s) sandbox_id=01a15f14-7e06-78e2-b565-0dcd3a86f709 allow_shorter=false",
+    "2026-10-21T15:29:08.026911Z  INFO pause_sandbox: agentenv::orchestrator::service: pausing sandbox sandbox_id=01a15f14-7e06-78e2-b565-0dcd3a86f709",
+    "2026-10-21T15:29:08.293448Z  INFO pause_sandbox: agentenv::orchestrator::service: sandbox paused sandbox_id=01a15f14-7e06-78e2-b565-0dcd3a86f709",
+    "2026-10-21T15:29:10.027497Z  INFO resume_sandbox: agentenv::orchestrator::service: resuming sandbox sandbox_id=01a15f14-7e06-78e2-b565-0dcd3a86f709 timeout=Set(3006s)",
+    "2026-10-21T15:29:10.404406Z  INFO resume_sandbox:launch_sandbox: agentenv::orchestrator::service: sandbox launch completed sandbox_id=01a15f14-7e06-78e2-b565-0dcd3a86f709 timeout=Set(3006s)",
+    "2026-10-21T15:29:11.032371Z  INFO sandboxes_sandbox_id_refreshes_post:keep_alive_for: agentenv::orchestrator::service: sandbox keep-alive timeout updated valid_timeout=3006s timeout=Some(3006s) sandbox_id=01a15f14-7e06-78e2-b565-0dcd3a86f709 allow_shorter=false",
+    "2026-10-21T15:29:11.033832Z  INFO pause_sandbox: agentenv::orchestrator::service: pausing sandbox sandbox_id=01a15f14-7e06-78e2-b565-0dcd3a86f709",
+    "2026-10-21T15:29:11.335453Z  INFO pause_sandbox: agentenv::orchestrator::service: sandbox paused sandbox_id=01a15f14-7e06-78e2-b565-0dcd3a86f709",
+    "2026-10-21T15:29:13.034742Z  INFO resume_sandbox: agentenv::orchestrator::service: resuming sandbox sandbox_id=01a15f14-7e06-78e2-b565-0dcd3a86f709 timeout=Set(3006s)",
+    "2026-10-21T15:29:13.437283Z  INFO resume_sandbox:launch_sandbox: agentenv::orchestrator::service: sandbox launch completed sandbox_id=01a15f14-7e06-78e2-b565-0dcd3a86f709 timeout=Set(3006s)",
+    "2026-10-21T15:29:14.113065Z  INFO delete_sandbox: agentenv::orchestrator::service: deleting sandbox sandbox_id=01a15f14-7e06-78e2-b565-0dcd3a86f709",
+    "2026-10-21T15:29:14.288135Z  INFO delete_sandbox: agentenv::orchestrator::service: sandbox deleted sandbox_id=01a15f14-7e06-78e2-b565-0dcd3a86f709",
+    "2026-10-21T15:32:42.453311Z  INFO create_sandbox: agentenv::orchestrator::service: creating sandbox timeout=Some(2160s) template_builder=false sandbox_id=01a15f17-df55-74a1-895f-19cb4a5b3a82",
+    "2026-10-21T15:32:44.788058Z  INFO create_sandbox:launch_sandbox: agentenv::orchestrator::service: sandbox launch completed template_builder=false sandbox_id=01a15f17-df55-74a1-895f-19cb4a5b3a82",
+    "2026-10-21T15:32:45.483696Z  WARN agentenv::api::proxy: upstream proxy request failed sandbox_id=01a15f17-df55-74a1-895f-19cb4a5b3a82 error=client error (Connect)",
+    "2026-10-21T15:32:45.585944Z  WARN agentenv::api::proxy: upstream proxy request failed sandbox_id=01a15f17-df55-74a1-895f-19cb4a5b3a82 error=client error (Connect)",
+    "2026-10-21T15:32:45.688193Z  WARN agentenv::api::proxy: upstream proxy request failed sandbox_id=01a15f17-df55-74a1-895f-19cb4a5b3a82 error=client error (Connect)",
+    "2026-10-21T15:32:45.790499Z  WARN agentenv::api::proxy: upstream proxy request failed sandbox_id=01a15f17-df55-74a1-895f-19cb4a5b3a82 error=client error (Connect)",
+    "2026-10-21T15:32:45.892756Z  WARN agentenv::api::proxy: upstream proxy request failed sandbox_id=01a15f17-df55-74a1-895f-19cb4a5b3a82 error=client error (Connect)",
+    "2026-10-21T15:32:45.995537Z  WARN agentenv::api::proxy: upstream proxy request failed sandbox_id=01a15f17-df55-74a1-895f-19cb4a5b3a82 error=client error (Connect)",
+    "2026-10-21T15:32:46.131493Z  INFO sandboxes_sandbox_id_refreshes_post:keep_alive_for: agentenv::orchestrator::service: sandbox keep-alive timeout updated valid_timeout=2160s timeout=Some(2160s) sandbox_id=01a15f17-df55-74a1-895f-19cb4a5b3a82 allow_shorter=false",
+    "2026-10-21T15:32:46.132973Z  INFO pause_sandbox: agentenv::orchestrator::service: pausing sandbox sandbox_id=01a15f17-df55-74a1-895f-19cb4a5b3a82",
+    "2026-10-21T15:32:46.534617Z  INFO pause_sandbox: agentenv::orchestrator::service: sandbox paused sandbox_id=01a15f17-df55-74a1-895f-19cb4a5b3a82",
+    "2026-10-21T15:33:16.133614Z  INFO resume_sandbox: agentenv::orchestrator::service: resuming sandbox sandbox_id=01a15f17-df55-74a1-895f-19cb4a5b3a82 timeout=Set(2160s)",
+    "2026-10-21T15:33:16.653680Z  INFO resume_sandbox:launch_sandbox: agentenv::orchestrator::service: sandbox launch completed sandbox_id=01a15f17-df55-74a1-895f-19cb4a5b3a82 timeout=Set(2160s)",
+    "2026-10-21T15:33:17.092234Z  INFO sandboxes_sandbox_id_refreshes_post:keep_alive_for: agentenv::orchestrator::service: sandbox keep-alive timeout updated valid_timeout=2160s timeout=Some(2160s) sandbox_id=01a15f17-df55-74a1-895f-19cb4a5b3a82 allow_shorter=false",
+    "2026-10-21T15:33:17.093584Z  INFO pause_sandbox: agentenv::orchestrator::service: pausing sandbox sandbox_id=01a15f17-df55-74a1-895f-19cb4a5b3a82",
+    "2026-10-21T15:33:17.452421Z  INFO pause_sandbox: agentenv::orchestrator::service: sandbox paused sandbox_id=01a15f17-df55-74a1-895f-19cb4a5b3a82",
+    "2026-10-21T15:33:47.093993Z  INFO resume_sandbox: agentenv::orchestrator::service: resuming sandbox sandbox_id=01a15f17-df55-74a1-895f-19cb4a5b3a82 timeout=Set(2160s)",
+    "2026-10-21T15:33:47.585134Z  INFO resume_sandbox:launch_sandbox: agentenv::orchestrator::service: sandbox launch completed sandbox_id=01a15f17-df55-74a1-895f-19cb4a5b3a82 timeout=Set(2160s)",
+    "2026-10-21T15:33:47.987720Z  INFO delete_sandbox: agentenv::orchestrator::service: deleting sandbox sandbox_id=01a15f17-df55-74a1-895f-19cb4a5b3a82",
+    "2026-10-21T15:33:48.137109Z  INFO delete_sandbox: agentenv::orchestrator::service: sandbox deleted sandbox_id=01a15f17-df55-74a1-895f-19cb4a5b3a82",
+    "2026-10-21T15:34:12.442327Z  INFO create_sandbox: agentenv::orchestrator::service: creating sandbox timeout=Some(2160s) template_builder=false sandbox_id=01a15f19-3eda-7252-ac27-fef94f71e180",
+    "2026-10-21T15:34:14.722342Z  INFO create_sandbox:launch_sandbox: agentenv::orchestrator::service: sandbox launch completed template_builder=false sandbox_id=01a15f19-3eda-7252-ac27-fef94f71e180",
+    "2026-10-21T15:34:15.415397Z  WARN agentenv::api::proxy: upstream proxy request failed sandbox_id=01a15f19-3eda-7252-ac27-fef94f71e180 error=client error (Connect)",
+    "2026-10-21T15:34:15.517883Z  WARN agentenv::api::proxy: upstream proxy request failed sandbox_id=01a15f19-3eda-7252-ac27-fef94f71e180 error=client error (Connect)",
+    "2026-10-21T15:34:15.620117Z  WARN agentenv::api::proxy: upstream proxy request failed sandbox_id=01a15f19-3eda-7252-ac27-fef94f71e180 error=client error (Connect)",
+    "2026-10-21T15:34:15.722221Z  WARN agentenv::api::proxy: upstream proxy request failed sandbox_id=01a15f19-3eda-7252-ac27-fef94f71e180 error=client error (Connect)",
+    "2026-10-21T15:34:15.824379Z  WARN agentenv::api::proxy: upstream proxy request failed sandbox_id=01a15f19-3eda-7252-ac27-fef94f71e180 error=client error (Connect)",
+    "2026-10-21T15:34:15.926510Z  WARN agentenv::api::proxy: upstream proxy request failed sandbox_id=01a15f19-3eda-7252-ac27-fef94f71e180 error=client error (Connect)",
+    "2026-10-21T15:34:16.064542Z  INFO sandboxes_sandbox_id_refreshes_post:keep_alive_for: agentenv::orchestrator::service: sandbox keep-alive timeout updated valid_timeout=2160s timeout=Some(2160s) sandbox_id=01a15f19-3eda-7252-ac27-fef94f71e180 allow_shorter=false",
+    "2026-10-21T15:34:46.135536Z  INFO sandboxes_sandbox_id_refreshes_post:keep_alive_for: agentenv::orchestrator::service: sandbox keep-alive timeout updated valid_timeout=2160s timeout=Some(2160s) sandbox_id=01a15f19-3eda-7252-ac27-fef94f71e180 allow_shorter=false",
+    "2026-10-21T15:35:16.203678Z  INFO delete_sandbox: agentenv::orchestrator::service: deleting sandbox sandbox_id=01a15f19-3eda-7252-ac27-fef94f71e180",
+    "2026-10-21T15:35:16.318651Z  INFO delete_sandbox: agentenv::orchestrator::service: sandbox deleted sandbox_id=01a15f19-3eda-7252-ac27-fef94f71e180"
+  ],
+  "daemon_device_log_evidence": [
+    "2026-10-21T15:29:00.967975Z  INFO uvm_ublk_daemon::server: creating raw overlaybd device image_config=/opt/agentenv-offload/state/deps/tools/0.1.1/image.json global_config=/opt/agentenv-offload/state/overlaybd/overlaybd-global.json",
+    "2026-10-21T15:29:00.968664Z  INFO uvm_ublk::dev: try add_dev requested_dev_id=4294967295 zero_copy=false",
+    "2026-10-21T15:29:00.969000Z  INFO uvm_ublk::dev: device has been added to ublkdrv dev_id=0 zero_copy=false",
+    "2026-10-21T15:29:01.028437Z  INFO uvm_ublk_daemon::server: overlaybd device created dev_id=0 path=/dev/ublkb0",
+    "2026-10-21T15:29:01.029701Z  INFO uvm_ublk::dev: try add_dev requested_dev_id=4294967295 zero_copy=false",
+    "2026-10-21T15:29:01.029866Z  INFO uvm_ublk::dev: device has been added to ublkdrv dev_id=1 zero_copy=false",
+    "2026-10-21T15:29:01.088826Z  INFO uvm_ublk_daemon::server: overlaybd device created dev_id=1 path=/dev/ublkb1",
+    "2026-10-21T15:29:03.363099Z  INFO uvm_ublk_daemon::server: sandbox reported envd-ready; releasing held downloads device_key=\"/opt/agentenv-offload/state/deps/tools/0.1.1/image.json\"",
+    "2026-10-21T15:29:03.363301Z  INFO uvm_ublk_daemon::server: sandbox reported envd-ready; releasing held downloads device_key=\"/opt/agentenv-offload/state/image-cache/configs/sha256-8fb0b110b022c70cbe09d3ff1fb313654f31f9c814abb0d48180af56d906a199-image.json\"",
+    "2026-10-21T15:29:05.234149Z  INFO uvm_ublk_daemon::server: creating restack snapshot dev_id=1 output=/opt/agentenv-offload/state/persisted-sandboxes/artifacts/01a15f14-7e06-78e2-b565-0dcd3a86f709/01a15f14-8e03-7592-8e34-2e88115e0266/rootfs/snapshot.commit",
+    "2026-10-21T15:29:05.235429Z  INFO uvm_ublk_daemon::server: ublk daemon restack snapshot completed dev_id=1 output=/opt/agentenv-offload/state/persisted-sandboxes/artifacts/01a15f14-7e06-78e2-b565-0dcd3a86f709/01a15f14-8e03-7592-8e34-2e88115e0266/rootfs/snapshot.commit",
+    "2026-10-21T15:29:05.397287Z  INFO uvm_ublk::ctrl: stop_dev ctrl cmd completed dev_id=1 res=0",
+    "2026-10-21T15:29:05.397325Z  INFO uvm_ublk_daemon::server: deleting device dev_id=1",
+    "2026-10-21T15:29:05.397395Z  INFO uvm_ublk::ctrl: stop_dev ctrl cmd completed dev_id=1 res=0",
+    "2026-10-21T15:29:05.397518Z  INFO uvm_ublk_daemon::server: device deleted dev_id=1",
+    "2026-10-21T15:29:07.031269Z  INFO uvm_ublk::dev: try add_dev requested_dev_id=4294967295 zero_copy=false",
+    "2026-10-21T15:29:07.031630Z  INFO uvm_ublk::dev: device has been added to ublkdrv dev_id=1 zero_copy=false",
+    "2026-10-21T15:29:07.079927Z  INFO uvm_ublk_daemon::server: overlaybd device created dev_id=1 path=/dev/ublkb1",
+    "2026-10-21T15:29:07.080299Z  INFO uvm_ublk_daemon::server: creating raw overlaybd device image_config=/opt/agentenv-offload/state/persisted-sandboxes/artifacts/01a15f14-7e06-78e2-b565-0dcd3a86f709/01a15f14-8e03-7592-8e34-2e88115e0266/mem_image.json global_config=/opt/agentenv-offload/state/overlaybd/mem-overlaybd-global.json",
+    "2026-10-21T15:29:07.080753Z  INFO uvm_ublk::dev: try add_dev requested_dev_id=4294967295 zero_copy=false",
+    "2026-10-21T15:29:07.080916Z  INFO uvm_ublk::dev: device has been added to ublkdrv dev_id=2 zero_copy=false",
+    "2026-10-21T15:29:07.140690Z  INFO uvm_ublk_daemon::server: overlaybd device created dev_id=2 path=/dev/ublkb2",
+    "2026-10-21T15:29:07.286249Z  INFO uvm_ublk_daemon::server: sandbox reported envd-ready; releasing held downloads device_key=\"/opt/agentenv-offload/state/deps/tools/0.1.1/image.json\"",
+    "2026-10-21T15:29:07.286548Z  INFO uvm_ublk_daemon::server: sandbox reported envd-ready; releasing held downloads device_key=\"/opt/agentenv-offload/state/persisted-sandboxes/artifacts/01a15f14-7e06-78e2-b565-0dcd3a86f709/01a15f14-8e03-7592-8e34-2e88115e0266/mem_image.json\"",
+    "2026-10-21T15:29:07.286707Z  INFO uvm_ublk_daemon::server: sandbox reported envd-ready; releasing held downloads device_key=\"/opt/agentenv-offload/state/persisted-sandboxes/artifacts/01a15f14-7e06-78e2-b565-0dcd3a86f709/01a15f14-8e03-7592-8e34-2e88115e0266/rootfs/image.json\"",
+    "2026-10-21T15:29:08.124340Z  INFO uvm_ublk_daemon::server: creating restack snapshot dev_id=1 output=/opt/agentenv-offload/state/persisted-sandboxes/artifacts/01a15f14-7e06-78e2-b565-0dcd3a86f709/01a15f14-99da-7622-b962-ae24a10ca7eb/rootfs/snapshot.commit",
+    "2026-10-21T15:29:08.125508Z  INFO uvm_ublk_daemon::server: ublk daemon restack snapshot completed dev_id=1 output=/opt/agentenv-offload/state/persisted-sandboxes/artifacts/01a15f14-7e06-78e2-b565-0dcd3a86f709/01a15f14-99da-7622-b962-ae24a10ca7eb/rootfs/snapshot.commit",
+    "2026-10-21T15:29:08.266966Z  INFO uvm_ublk::ctrl: stop_dev ctrl cmd completed dev_id=1 res=0",
+    "2026-10-21T15:29:08.267256Z  INFO uvm_ublk_daemon::server: deleting device dev_id=1",
+    "2026-10-21T15:29:08.267328Z  INFO uvm_ublk::ctrl: stop_dev ctrl cmd completed dev_id=1 res=0",
+    "2026-10-21T15:29:08.267459Z  INFO uvm_ublk_daemon::server: device deleted dev_id=1",
+    "2026-10-21T15:29:08.292944Z  INFO uvm_ublk::ctrl: stop_dev ctrl cmd completed dev_id=2 res=0",
+    "2026-10-21T15:29:08.293185Z  INFO uvm_ublk_daemon::server: deleting device dev_id=2",
+    "2026-10-21T15:29:08.293241Z  INFO uvm_ublk::ctrl: stop_dev ctrl cmd completed dev_id=2 res=0",
+    "2026-10-21T15:29:08.293337Z  INFO uvm_ublk_daemon::server: device deleted dev_id=2",
+    "2026-10-21T15:29:10.104567Z  INFO uvm_ublk::dev: try add_dev requested_dev_id=4294967295 zero_copy=false",
+    "2026-10-21T15:29:10.104786Z  INFO uvm_ublk::dev: device has been added to ublkdrv dev_id=1 zero_copy=false",
+    "2026-10-21T15:29:10.153450Z  INFO uvm_ublk_daemon::server: overlaybd device created dev_id=1 path=/dev/ublkb1",
+    "2026-10-21T15:29:10.153784Z  INFO uvm_ublk_daemon::server: creating raw overlaybd device image_config=/opt/agentenv-offload/state/persisted-sandboxes/artifacts/01a15f14-7e06-78e2-b565-0dcd3a86f709/01a15f14-99da-7622-b962-ae24a10ca7eb/mem_image.json global_config=/opt/agentenv-offload/state/overlaybd/mem-overlaybd-global.json",
+    "2026-10-21T15:29:10.154755Z  INFO uvm_ublk::dev: try add_dev requested_dev_id=4294967295 zero_copy=false",
+    "2026-10-21T15:29:10.154943Z  INFO uvm_ublk::dev: device has been added to ublkdrv dev_id=2 zero_copy=false",
+    "2026-10-21T15:29:10.203056Z  INFO uvm_ublk_daemon::server: overlaybd device created dev_id=2 path=/dev/ublkb2",
+    "2026-10-21T15:29:10.343598Z  INFO uvm_ublk_daemon::server: sandbox reported envd-ready; releasing held downloads device_key=\"/opt/agentenv-offload/state/deps/tools/0.1.1/image.json\"",
+    "2026-10-21T15:29:10.343799Z  INFO uvm_ublk_daemon::server: sandbox reported envd-ready; releasing held downloads device_key=\"/opt/agentenv-offload/state/persisted-sandboxes/artifacts/01a15f14-7e06-78e2-b565-0dcd3a86f709/01a15f14-99da-7622-b962-ae24a10ca7eb/mem_image.json\"",
+    "2026-10-21T15:29:10.343939Z  INFO uvm_ublk_daemon::server: sandbox reported envd-ready; releasing held downloads device_key=\"/opt/agentenv-offload/state/persisted-sandboxes/artifacts/01a15f14-7e06-78e2-b565-0dcd3a86f709/01a15f14-99da-7622-b962-ae24a10ca7eb/rootfs/image.json\"",
+    "2026-10-21T15:29:11.144553Z  INFO uvm_ublk_daemon::server: creating restack snapshot dev_id=1 output=/opt/agentenv-offload/state/persisted-sandboxes/artifacts/01a15f14-7e06-78e2-b565-0dcd3a86f709/01a15f14-a5b0-7520-b045-1c08a9e8bf72/rootfs/snapshot.commit",
+    "2026-10-21T15:29:11.151716Z  INFO uvm_ublk_daemon::server: ublk daemon restack snapshot completed dev_id=1 output=/opt/agentenv-offload/state/persisted-sandboxes/artifacts/01a15f14-7e06-78e2-b565-0dcd3a86f709/01a15f14-a5b0-7520-b045-1c08a9e8bf72/rootfs/snapshot.commit",
+    "2026-10-21T15:29:11.313987Z  INFO uvm_ublk::ctrl: stop_dev ctrl cmd completed dev_id=1 res=0",
+    "2026-10-21T15:29:11.314231Z  INFO uvm_ublk_daemon::server: deleting device dev_id=1",
+    "2026-10-21T15:29:11.314308Z  INFO uvm_ublk::ctrl: stop_dev ctrl cmd completed dev_id=1 res=0",
+    "2026-10-21T15:29:11.314445Z  INFO uvm_ublk_daemon::server: device deleted dev_id=1",
+    "2026-10-21T15:29:11.334962Z  INFO uvm_ublk::ctrl: stop_dev ctrl cmd completed dev_id=2 res=0",
+    "2026-10-21T15:29:11.335194Z  INFO uvm_ublk_daemon::server: deleting device dev_id=2",
+    "2026-10-21T15:29:11.335259Z  INFO uvm_ublk::ctrl: stop_dev ctrl cmd completed dev_id=2 res=0",
+    "2026-10-21T15:29:11.335366Z  INFO uvm_ublk_daemon::server: device deleted dev_id=2",
+    "2026-10-21T15:29:13.121355Z  INFO uvm_ublk::dev: try add_dev requested_dev_id=4294967295 zero_copy=false",
+    "2026-10-21T15:29:13.121604Z  INFO uvm_ublk::dev: device has been added to ublkdrv dev_id=1 zero_copy=false",
+    "2026-10-21T15:29:13.170111Z  INFO uvm_ublk_daemon::server: overlaybd device created dev_id=1 path=/dev/ublkb1",
+    "2026-10-21T15:29:13.170487Z  INFO uvm_ublk_daemon::server: creating raw overlaybd device image_config=/opt/agentenv-offload/state/persisted-sandboxes/artifacts/01a15f14-7e06-78e2-b565-0dcd3a86f709/01a15f14-a5b0-7520-b045-1c08a9e8bf72/mem_image.json global_config=/opt/agentenv-offload/state/overlaybd/mem-overlaybd-global.json",
+    "2026-10-21T15:29:13.171760Z  INFO uvm_ublk::dev: try add_dev requested_dev_id=4294967295 zero_copy=false",
+    "2026-10-21T15:29:13.171917Z  INFO uvm_ublk::dev: device has been added to ublkdrv dev_id=2 zero_copy=false",
+    "2026-10-21T15:29:13.230187Z  INFO uvm_ublk_daemon::server: overlaybd device created dev_id=2 path=/dev/ublkb2",
+    "2026-10-21T15:29:13.375080Z  INFO uvm_ublk_daemon::server: sandbox reported envd-ready; releasing held downloads device_key=\"/opt/agentenv-offload/state/deps/tools/0.1.1/image.json\"",
+    "2026-10-21T15:29:13.375266Z  INFO uvm_ublk_daemon::server: sandbox reported envd-ready; releasing held downloads device_key=\"/opt/agentenv-offload/state/persisted-sandboxes/artifacts/01a15f14-7e06-78e2-b565-0dcd3a86f709/01a15f14-a5b0-7520-b045-1c08a9e8bf72/mem_image.json\"",
+    "2026-10-21T15:29:13.375354Z  INFO uvm_ublk_daemon::server: sandbox reported envd-ready; releasing held downloads device_key=\"/opt/agentenv-offload/state/persisted-sandboxes/artifacts/01a15f14-7e06-78e2-b565-0dcd3a86f709/01a15f14-a5b0-7520-b045-1c08a9e8bf72/rootfs/image.json\"",
+    "2026-10-21T15:29:14.151992Z  INFO uvm_ublk::ctrl: stop_dev ctrl cmd completed dev_id=1 res=0",
+    "2026-10-21T15:29:14.152431Z  INFO uvm_ublk_daemon::server: deleting device dev_id=1",
+    "2026-10-21T15:29:14.152511Z  INFO uvm_ublk::ctrl: stop_dev ctrl cmd completed dev_id=1 res=0",
+    "2026-10-21T15:29:14.152652Z  INFO uvm_ublk_daemon::server: device deleted dev_id=1",
+    "2026-10-21T15:29:14.177960Z  INFO uvm_ublk::ctrl: stop_dev ctrl cmd completed dev_id=2 res=0",
+    "2026-10-21T15:29:14.178187Z  INFO uvm_ublk_daemon::server: deleting device dev_id=2",
+    "2026-10-21T15:29:14.178259Z  INFO uvm_ublk::ctrl: stop_dev ctrl cmd completed dev_id=2 res=0",
+    "2026-10-21T15:29:14.178359Z  INFO uvm_ublk_daemon::server: device deleted dev_id=2",
+    "2026-10-21T15:32:42.504975Z  INFO uvm_ublk::dev: try add_dev requested_dev_id=4294967295 zero_copy=false",
+    "2026-10-21T15:32:42.505271Z  INFO uvm_ublk::dev: device has been added to ublkdrv dev_id=1 zero_copy=false",
+    "2026-10-21T15:32:42.564541Z  INFO uvm_ublk_daemon::server: overlaybd device created dev_id=1 path=/dev/ublkb1",
+    "2026-10-21T15:32:44.765370Z  INFO uvm_ublk_daemon::server: sandbox reported envd-ready; releasing held downloads device_key=\"/opt/agentenv-offload/state/deps/tools/0.1.1/image.json\"",
+    "2026-10-21T15:32:44.765580Z  INFO uvm_ublk_daemon::server: sandbox reported envd-ready; releasing held downloads device_key=\"/opt/agentenv-offload/state/image-cache/configs/sha256-8fb0b110b022c70cbe09d3ff1fb313654f31f9c814abb0d48180af56d906a199-image.json\"",
+    "2026-10-21T15:32:46.367700Z  INFO uvm_ublk_daemon::server: creating restack snapshot dev_id=1 output=/opt/agentenv-offload/state/persisted-sandboxes/artifacts/01a15f17-df55-74a1-895f-19cb4a5b3a82/01a15f17-edfd-7dd2-8f9d-1dc66480f79a/rootfs/snapshot.commit",
+    "2026-10-21T15:32:46.368910Z  INFO uvm_ublk_daemon::server: ublk daemon restack snapshot completed dev_id=1 output=/opt/agentenv-offload/state/persisted-sandboxes/artifacts/01a15f17-df55-74a1-895f-19cb4a5b3a82/01a15f17-edfd-7dd2-8f9d-1dc66480f79a/rootfs/snapshot.commit",
+    "2026-10-21T15:32:46.533989Z  INFO uvm_ublk::ctrl: stop_dev ctrl cmd completed dev_id=1 res=0",
+    "2026-10-21T15:32:46.534294Z  INFO uvm_ublk_daemon::server: deleting device dev_id=1",
+    "2026-10-21T15:32:46.534380Z  INFO uvm_ublk::ctrl: stop_dev ctrl cmd completed dev_id=1 res=0",
+    "2026-10-21T15:32:46.534517Z  INFO uvm_ublk_daemon::server: device deleted dev_id=1",
+    "2026-10-21T15:33:16.246050Z  INFO uvm_ublk::dev: try add_dev requested_dev_id=4294967295 zero_copy=false",
+    "2026-10-21T15:33:16.246292Z  INFO uvm_ublk::dev: device has been added to ublkdrv dev_id=1 zero_copy=false",
+    "2026-10-21T15:33:16.305620Z  INFO uvm_ublk_daemon::server: overlaybd device created dev_id=1 path=/dev/ublkb1",
+    "2026-10-21T15:33:16.306027Z  INFO uvm_ublk_daemon::server: creating raw overlaybd device image_config=/opt/agentenv-offload/state/persisted-sandboxes/artifacts/01a15f17-df55-74a1-895f-19cb4a5b3a82/01a15f17-edfd-7dd2-8f9d-1dc66480f79a/mem_image.json global_config=/opt/agentenv-offload/state/overlaybd/mem-overlaybd-global.json",
+    "2026-10-21T15:33:16.306249Z  INFO uvm_ublk::dev: try add_dev requested_dev_id=4294967295 zero_copy=false",
+    "2026-10-21T15:33:16.306400Z  INFO uvm_ublk::dev: device has been added to ublkdrv dev_id=2 zero_copy=false",
+    "2026-10-21T15:33:16.354916Z  INFO uvm_ublk_daemon::server: overlaybd device created dev_id=2 path=/dev/ublkb2",
+    "2026-10-21T15:33:16.562841Z  INFO uvm_ublk_daemon::server: sandbox reported envd-ready; releasing held downloads device_key=\"/opt/agentenv-offload/state/deps/tools/0.1.1/image.json\"",
+    "2026-10-21T15:33:16.563036Z  INFO uvm_ublk_daemon::server: sandbox reported envd-ready; releasing held downloads device_key=\"/opt/agentenv-offload/state/persisted-sandboxes/artifacts/01a15f17-df55-74a1-895f-19cb4a5b3a82/01a15f17-edfd-7dd2-8f9d-1dc66480f79a/mem_image.json\"",
+    "2026-10-21T15:33:16.563133Z  INFO uvm_ublk_daemon::server: sandbox reported envd-ready; releasing held downloads device_key=\"/opt/agentenv-offload/state/persisted-sandboxes/artifacts/01a15f17-df55-74a1-895f-19cb4a5b3a82/01a15f17-edfd-7dd2-8f9d-1dc66480f79a/rootfs/image.json\"",
+    "2026-10-21T15:33:17.216366Z  INFO uvm_ublk_daemon::server: creating restack snapshot dev_id=1 output=/opt/agentenv-offload/state/persisted-sandboxes/artifacts/01a15f17-df55-74a1-895f-19cb4a5b3a82/01a15f18-66e2-75b3-a2cc-0281537c4888/rootfs/snapshot.commit",
+    "2026-10-21T15:33:17.217375Z  INFO uvm_ublk_daemon::server: ublk daemon restack snapshot completed dev_id=1 output=/opt/agentenv-offload/state/persisted-sandboxes/artifacts/01a15f17-df55-74a1-895f-19cb4a5b3a82/01a15f18-66e2-75b3-a2cc-0281537c4888/rootfs/snapshot.commit",
+    "2026-10-21T15:33:17.428267Z  INFO uvm_ublk::ctrl: stop_dev ctrl cmd completed dev_id=1 res=0",
+    "2026-10-21T15:33:17.428314Z  INFO uvm_ublk_daemon::server: deleting device dev_id=1",
+    "2026-10-21T15:33:17.428394Z  INFO uvm_ublk::ctrl: stop_dev ctrl cmd completed dev_id=1 res=0",
+    "2026-10-21T15:33:17.428512Z  INFO uvm_ublk_daemon::server: device deleted dev_id=1",
+    "2026-10-21T15:33:17.451963Z  INFO uvm_ublk::ctrl: stop_dev ctrl cmd completed dev_id=2 res=0",
+    "2026-10-21T15:33:17.452177Z  INFO uvm_ublk_daemon::server: deleting device dev_id=2",
+    "2026-10-21T15:33:17.452242Z  INFO uvm_ublk::ctrl: stop_dev ctrl cmd completed dev_id=2 res=0",
+    "2026-10-21T15:33:17.452346Z  INFO uvm_ublk_daemon::server: device deleted dev_id=2",
+    "2026-10-21T15:33:47.227507Z  INFO uvm_ublk::dev: try add_dev requested_dev_id=4294967295 zero_copy=false",
+    "2026-10-21T15:33:47.227729Z  INFO uvm_ublk::dev: device has been added to ublkdrv dev_id=1 zero_copy=false",
+    "2026-10-21T15:33:47.286791Z  INFO uvm_ublk_daemon::server: overlaybd device created dev_id=1 path=/dev/ublkb1",
+    "2026-10-21T15:33:47.287134Z  INFO uvm_ublk_daemon::server: creating raw overlaybd device image_config=/opt/agentenv-offload/state/persisted-sandboxes/artifacts/01a15f17-df55-74a1-895f-19cb4a5b3a82/01a15f18-66e2-75b3-a2cc-0281537c4888/mem_image.json global_config=/opt/agentenv-offload/state/overlaybd/mem-overlaybd-global.json",
+    "2026-10-21T15:33:47.287926Z  INFO uvm_ublk::dev: try add_dev requested_dev_id=4294967295 zero_copy=false",
+    "2026-10-21T15:33:47.288080Z  INFO uvm_ublk::dev: device has been added to ublkdrv dev_id=2 zero_copy=false",
+    "2026-10-21T15:33:47.344538Z  INFO uvm_ublk_daemon::server: overlaybd device created dev_id=2 path=/dev/ublkb2",
+    "2026-10-21T15:33:47.526172Z  INFO uvm_ublk_daemon::server: sandbox reported envd-ready; releasing held downloads device_key=\"/opt/agentenv-offload/state/deps/tools/0.1.1/image.json\"",
+    "2026-10-21T15:33:47.526356Z  INFO uvm_ublk_daemon::server: sandbox reported envd-ready; releasing held downloads device_key=\"/opt/agentenv-offload/state/persisted-sandboxes/artifacts/01a15f17-df55-74a1-895f-19cb4a5b3a82/01a15f18-66e2-75b3-a2cc-0281537c4888/mem_image.json\"",
+    "2026-10-21T15:33:47.526462Z  INFO uvm_ublk_daemon::server: sandbox reported envd-ready; releasing held downloads device_key=\"/opt/agentenv-offload/state/persisted-sandboxes/artifacts/01a15f17-df55-74a1-895f-19cb4a5b3a82/01a15f18-66e2-75b3-a2cc-0281537c4888/rootfs/image.json\"",
+    "2026-10-21T15:33:48.030976Z  INFO uvm_ublk::ctrl: stop_dev ctrl cmd completed dev_id=1 res=0",
+    "2026-10-21T15:33:48.031268Z  INFO uvm_ublk_daemon::server: deleting device dev_id=1",
+    "2026-10-21T15:33:48.031345Z  INFO uvm_ublk::ctrl: stop_dev ctrl cmd completed dev_id=1 res=0",
+    "2026-10-21T15:33:48.031468Z  INFO uvm_ublk_daemon::server: device deleted dev_id=1",
+    "2026-10-21T15:33:48.054960Z  INFO uvm_ublk::ctrl: stop_dev ctrl cmd completed dev_id=2 res=0",
+    "2026-10-21T15:33:48.055230Z  INFO uvm_ublk_daemon::server: deleting device dev_id=2",
+    "2026-10-21T15:33:48.055299Z  INFO uvm_ublk::ctrl: stop_dev ctrl cmd completed dev_id=2 res=0",
+    "2026-10-21T15:33:48.055389Z  INFO uvm_ublk_daemon::server: device deleted dev_id=2",
+    "2026-10-21T15:34:12.468764Z  INFO uvm_ublk::dev: try add_dev requested_dev_id=4294967295 zero_copy=false",
+    "2026-10-21T15:34:12.468992Z  INFO uvm_ublk::dev: device has been added to ublkdrv dev_id=1 zero_copy=false",
+    "2026-10-21T15:34:12.527630Z  INFO uvm_ublk_daemon::server: overlaybd device created dev_id=1 path=/dev/ublkb1",
+    "2026-10-21T15:34:14.706422Z  INFO uvm_ublk_daemon::server: sandbox reported envd-ready; releasing held downloads device_key=\"/opt/agentenv-offload/state/deps/tools/0.1.1/image.json\"",
+    "2026-10-21T15:34:14.706639Z  INFO uvm_ublk_daemon::server: sandbox reported envd-ready; releasing held downloads device_key=\"/opt/agentenv-offload/state/image-cache/configs/sha256-8fb0b110b022c70cbe09d3ff1fb313654f31f9c814abb0d48180af56d906a199-image.json\"",
+    "2026-10-21T15:35:16.251991Z  INFO uvm_ublk::ctrl: stop_dev ctrl cmd completed dev_id=1 res=0",
+    "2026-10-21T15:35:16.252299Z  INFO uvm_ublk_daemon::server: deleting device dev_id=1",
+    "2026-10-21T15:35:16.252371Z  INFO uvm_ublk::ctrl: stop_dev ctrl cmd completed dev_id=1 res=0",
+    "2026-10-21T15:35:16.252504Z  INFO uvm_ublk_daemon::server: device deleted dev_id=1"
+  ],
+  "tools_image_config": "/opt/agentenv-offload/state/deps/tools/0.1.1/image.json",
+  "source_evidence": {
+    "tools_retained_reference": "https://github.com/kvcache-ai/AgentENV/blob/a27b2db909b035f58696ba8798ea0e285c7bfa17/src/sandbox/ublk/device.rs#L591-L604",
+    "network_slot_release_cache": "https://github.com/kvcache-ai/AgentENV/blob/a27b2db909b035f58696ba8798ea0e285c7bfa17/src/sandbox/network/manager.rs#L360-L386",
+    "network_cache_bound": "https://github.com/kvcache-ai/AgentENV/blob/a27b2db909b035f58696ba8798ea0e285c7bfa17/crates/warm-pool/src/lib.rs#L265-L294",
+    "warm_entry_owns_namespace": "https://github.com/kvcache-ai/AgentENV/blob/a27b2db909b035f58696ba8798ea0e285c7bfa17/src/sandbox/firecracker/pool.rs#L298-L348"
+  },
+  "conclusion": "三次稳定观测均为0业务/0starting/0paused、1个Not started预生FC、其namespace、另1个无进程network缓存namespace及tools设备ublkb0。三个业务沙箱的rootfs/内存设备与暂停产物已清理。",
+  "reference_count_limit": "未读取进程内Arc计数；共享tools引用由实测fd和固定源码保留句柄共同证明。",
+  "future_baseline": "正式cohort before/after包含本次精确2NS+b0；warmFC补池PID可能更换，仍须核验归属、状态、池上限及所有新增差异。",
+  "actions": "仅只读检查与保存证据；未重启、删除或改变配置。"
+}

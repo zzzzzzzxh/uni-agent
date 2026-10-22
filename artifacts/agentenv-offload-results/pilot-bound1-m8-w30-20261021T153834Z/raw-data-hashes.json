@@ -1,0 +1,16 @@
+{
+  "archive": "raw-data.zip",
+  "archive_sha256": "2dc2e4b6f2195ed8d06621ad6fa6956c48c73df789480c65097e00e3f83bb362",
+  "members_sha256": {
+    "pair-000-offload-02d0cd04/metrics.jsonl": "f20c697c763f1d1ce7046958c0e5379842bf7c9c1b40e486f658a5a3e0317a20",
+    "pair-000-offload-02d0cd04/sampler.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "pair-000-resident-05414394/metrics.jsonl": "6ddf13b5832c47f0a6dff49154721e6dccb5d49fbaaf1c380a9a84739d9b611b",
+    "pair-000-resident-05414394/sampler.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "source/analyze.py": "bb7601f69449d925f0b73e2ab7e6a25030d3a4272a3bcc955dbf1522b5a9072e",
+    "source/demo.py": "93fed18bb6762d40439901bffecc229d491528291b559bd3995e0ef8953c5562",
+    "source/guest_probe.py": "35cbbd846c174337250dbf85a5bcddcb1c1971f049074b1f2e94eae442030c78",
+    "source/host_sampler.py": "cef976aef872ffc94cbeb4f442286909e54583a4292587b2a8601f637f67dc52",
+    "source/run_case.sh": "fd78dd8413157dcd68317177f644e950491e6a7918d506cc9f530ea9b0a9df7b"
+  },
+  "note": "保留原始指标、日志和当轮源码字节；分析和绘图前解压到本轮目录。"
+}

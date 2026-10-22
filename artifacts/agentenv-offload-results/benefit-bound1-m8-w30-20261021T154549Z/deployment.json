@@ -1,0 +1,211 @@
+{
+  "variant": "bounded_firecracker_pool_1",
+  "applied_at_utc": "20261021T152108Z",
+  "source_revision": "a27b2db909b035f58696ba8798ea0e285c7bfa17",
+  "source_worktree_clean": true,
+  "config_backup": "/opt/agentenv-offload/config.before-bound1-20261021T152108Z.toml",
+  "config_sha256_before": "c78cb93fae083b1edb34fea92abdbbe997c892eecb0ac2491e8280c3e5cfa977",
+  "config_sha256_after": "5fde917e5ef742136092c9acd78f9fead00079b96cd7c0980a695c3698ebdf71",
+  "pool_fields_before": {
+    "low_watermark": 2,
+    "high_watermark": 64,
+    "network": {
+      "maintenance_enabled": false
+    },
+    "block": {
+      "enabled": false
+    },
+    "firecracker": {
+      "enabled": false,
+      "startup_prewarm": false,
+      "fill_concurrency": 4
+    }
+  },
+  "pool_fields_after": {
+    "low_watermark": 1,
+    "high_watermark": 1,
+    "network": {
+      "maintenance_enabled": false
+    },
+    "block": {
+      "enabled": false
+    },
+    "firecracker": {
+      "enabled": true,
+      "startup_prewarm": true,
+      "fill_concurrency": 1,
+      "maintenance_enabled": true
+    }
+  },
+  "binary_sha256": {
+    "/opt/agentenv-offload/source/target/release/server": "473bae11be45a2f0a21465bd5c6140510dec0cd06d839dd0373bbd6fb050624c",
+    "/opt/agentenv-offload/source/target/release/uvm-ublk-daemon": "fbae16918a237437391f97a0ea2da0563844b2f2b7fe6257fdb2f3cfbb2336cc",
+    "/opt/agentenv-offload/source/target/release/aenv": "c4c3e4a1d664880030ccae9ad184d7c31567962698f841adffedb7843ce6e733"
+  },
+  "binaries_unchanged": true,
+  "api_key_reused": true,
+  "api_key_reuse_evidence": "与重启前已配置且本次未改写的 root CLI credentials 值比较相等；未保存内容或摘要。",
+  "business_inventory_before": {
+    "verified_zero_immediately_before_restart": true
+  },
+  "business_inventory_after": [
+    {
+      "id": "node-a",
+      "commit": "a27b2db",
+      "sandboxCount": 0,
+      "sandboxStartingCount": 0,
+      "sandboxPausedCount": 0
+    }
+  ],
+  "inventory_samples": [
+    {
+      "observed_at_utc": "2026-10-21T15:22:29.018471+00:00",
+      "server": {
+        "pid": 35896,
+        "ppid": 1,
+        "starttime_ticks": 426963
+      },
+      "storage_roots": [
+        {
+          "pid": 35918,
+          "ppid": 35896,
+          "starttime_ticks": 426967,
+          "comm": "uvm-ublk-daemon"
+        }
+      ],
+      "warm_firecracker": [
+        {
+          "pid": 35955,
+          "ppid": 35896,
+          "starttime_ticks": 426971,
+          "comm": "firecracker",
+          "pss": {
+            "Rss_bytes": 2158592,
+            "Pss_bytes": 2154496,
+            "Shared_Clean_bytes": 4096,
+            "Shared_Dirty_bytes": 0,
+            "Private_Clean_bytes": 1966080,
+            "Private_Dirty_bytes": 188416
+          },
+          "network_namespace_inode": 4026532236,
+          "api_socket": "/opt/agentenv-offload/state/firecracker-work/agentenv-fc-FEPjXa/firecracker.socket",
+          "instance_info": {
+            "id": "anonymous-instance",
+            "state": "Not started",
+            "vmm_version": "1.15.1-patch-v1",
+            "app_name": "Firecracker"
+          }
+        }
+      ],
+      "runtime_namespaces": [
+        {
+          "path": "/run/agentenv-offload/netns/agentenv-ns-01a15f0d-4bf0-7931-8038-0263628cc6ad",
+          "inode": 4026532236
+        }
+      ],
+      "ublk_devices": []
+    },
+    {
+      "observed_at_utc": "2026-10-21T15:22:31.030860+00:00",
+      "server": {
+        "pid": 35896,
+        "ppid": 1,
+        "starttime_ticks": 426963
+      },
+      "storage_roots": [
+        {
+          "pid": 35918,
+          "ppid": 35896,
+          "starttime_ticks": 426967,
+          "comm": "uvm-ublk-daemon"
+        }
+      ],
+      "warm_firecracker": [
+        {
+          "pid": 35955,
+          "ppid": 35896,
+          "starttime_ticks": 426971,
+          "comm": "firecracker",
+          "pss": {
+            "Rss_bytes": 2158592,
+            "Pss_bytes": 2154496,
+            "Shared_Clean_bytes": 4096,
+            "Shared_Dirty_bytes": 0,
+            "Private_Clean_bytes": 1966080,
+            "Private_Dirty_bytes": 188416
+          },
+          "network_namespace_inode": 4026532236,
+          "api_socket": "/opt/agentenv-offload/state/firecracker-work/agentenv-fc-FEPjXa/firecracker.socket",
+          "instance_info": {
+            "id": "anonymous-instance",
+            "state": "Not started",
+            "vmm_version": "1.15.1-patch-v1",
+            "app_name": "Firecracker"
+          }
+        }
+      ],
+      "runtime_namespaces": [
+        {
+          "path": "/run/agentenv-offload/netns/agentenv-ns-01a15f0d-4bf0-7931-8038-0263628cc6ad",
+          "inode": 4026532236
+        }
+      ],
+      "ublk_devices": []
+    },
+    {
+      "observed_at_utc": "2026-10-21T15:22:33.043110+00:00",
+      "server": {
+        "pid": 35896,
+        "ppid": 1,
+        "starttime_ticks": 426963
+      },
+      "storage_roots": [
+        {
+          "pid": 35918,
+          "ppid": 35896,
+          "starttime_ticks": 426967,
+          "comm": "uvm-ublk-daemon"
+        }
+      ],
+      "warm_firecracker": [
+        {
+          "pid": 35955,
+          "ppid": 35896,
+          "starttime_ticks": 426971,
+          "comm": "firecracker",
+          "pss": {
+            "Rss_bytes": 2158592,
+            "Pss_bytes": 2154496,
+            "Shared_Clean_bytes": 4096,
+            "Shared_Dirty_bytes": 0,
+            "Private_Clean_bytes": 1966080,
+            "Private_Dirty_bytes": 188416
+          },
+          "network_namespace_inode": 4026532236,
+          "api_socket": "/opt/agentenv-offload/state/firecracker-work/agentenv-fc-FEPjXa/firecracker.socket",
+          "instance_info": {
+            "id": "anonymous-instance",
+            "state": "Not started",
+            "vmm_version": "1.15.1-patch-v1",
+            "app_name": "Firecracker"
+          }
+        }
+      ],
+      "runtime_namespaces": [
+        {
+          "path": "/run/agentenv-offload/netns/agentenv-ns-01a15f0d-4bf0-7931-8038-0263628cc6ad",
+          "inode": 4026532236
+        }
+      ],
+      "ublk_devices": []
+    }
+  ],
+  "provider_pid_registry": "/opt/agentenv-offload/provider-pids.json",
+  "provider_pid_registry_backup": "/opt/agentenv-offload/provider-pids.before-bound1-20261021T152108Z.json",
+  "notes": [
+    "low/high 是全局池水位，配对基线须同水位。",
+    "预生FC不含用户页，实际开销需测量。",
+    "服务正常重启后记录新背景库存，未手工删除namespace或共享缓存。",
+    "Unix GET /按Content-Length读取，不等待连接EOF。"
+  ]
+}

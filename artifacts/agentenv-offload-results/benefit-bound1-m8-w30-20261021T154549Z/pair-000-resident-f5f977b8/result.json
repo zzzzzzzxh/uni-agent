@@ -1,0 +1,114 @@
+{
+  "trial_id": "pair-000-resident-f5f977b8",
+  "pair_index": 0,
+  "mode": "resident",
+  "success": true,
+  "cycles": [
+    {
+      "cycle": 0,
+      "pause_seconds": 0.0,
+      "resume_seconds": 0.0,
+      "restore_oracle_seconds": 0.04532459704205394,
+      "first_tool_seconds": 0.07152596209198236,
+      "idle_actual_seconds": 30.0,
+      "idle_end_ssh_observation_seconds": 0.0
+    },
+    {
+      "cycle": 1,
+      "pause_seconds": 0.0,
+      "resume_seconds": 0.0,
+      "restore_oracle_seconds": 0.038934259908273816,
+      "first_tool_seconds": 0.06531639979220927,
+      "idle_actual_seconds": 30.0,
+      "idle_end_ssh_observation_seconds": 0.0
+    }
+  ],
+  "validation_only": false,
+  "clock_calibration": {
+    "node_monotonic_seconds": 5484.986819695,
+    "client_midpoint_monotonic_seconds": 1169149.4159750196,
+    "client_minus_node_seconds": 1163664.4291553246,
+    "uncertainty_seconds": 0.02354601351544261,
+    "node_wall_time_ns": 1792597284655708580
+  },
+  "measurement_started_monotonic_seconds": 1169149.439861404,
+  "create_seconds": 4.28517913306132,
+  "sandbox_id": "01a15f1f-df63-7791-8afb-79b888fb0000",
+  "ssh_aenv_bootstrap_seconds": 0.6197891251649708,
+  "task_seconds": 66.09592261910439,
+  "final_cleanup_state": "running",
+  "measurement_finished_monotonic_seconds": 1169239.439992499,
+  "cleanup": {
+    "confirmed": true,
+    "api_pid_confirmed": true,
+    "api_absent": true,
+    "owned_firecracker_gone": true,
+    "resource_audit": {
+      "before": {
+        "audit_schema_version": 2,
+        "ublk_devices": [
+          "ublkb0"
+        ],
+        "netns": [
+          "/run/agentenv-offload/netns/agentenv-ns-01a15f0d-4bf0-7931-8038-0263628cc6ad",
+          "/run/agentenv-offload/netns/agentenv-ns-01a15f14-7ea0-7e02-b938-d92af8f492e8"
+        ],
+        "netns_by_directory": {
+          "/run/agentenv-offload/netns": [
+            "/run/agentenv-offload/netns/agentenv-ns-01a15f0d-4bf0-7931-8038-0263628cc6ad",
+            "/run/agentenv-offload/netns/agentenv-ns-01a15f14-7ea0-7e02-b938-d92af8f492e8"
+          ],
+          "/run/netns": []
+        },
+        "runtime_entries": [
+          "netns",
+          "ublk-daemon.sock"
+        ],
+        "owned_artifacts": [],
+        "errors": []
+      },
+      "after": {
+        "audit_schema_version": 2,
+        "ublk_devices": [
+          "ublkb0"
+        ],
+        "netns": [
+          "/run/agentenv-offload/netns/agentenv-ns-01a15f0d-4bf0-7931-8038-0263628cc6ad",
+          "/run/agentenv-offload/netns/agentenv-ns-01a15f14-7ea0-7e02-b938-d92af8f492e8"
+        ],
+        "netns_by_directory": {
+          "/run/agentenv-offload/netns": [
+            "/run/agentenv-offload/netns/agentenv-ns-01a15f0d-4bf0-7931-8038-0263628cc6ad",
+            "/run/agentenv-offload/netns/agentenv-ns-01a15f14-7ea0-7e02-b938-d92af8f492e8"
+          ],
+          "/run/netns": []
+        },
+        "runtime_entries": [
+          "netns",
+          "ublk-daemon.sock"
+        ],
+        "owned_artifacts": [
+          {
+            "path": "/opt/agentenv-offload/state/persisted-sandboxes/artifacts/01a15f1f-df63-7791-8afb-79b888fb0000",
+            "exists": false,
+            "logical_bytes": 0,
+            "allocated_bytes": 0
+          },
+          {
+            "path": "/opt/agentenv-offload/state/firecracker-work/managed-snapshots/01a15f1f-df63-7791-8afb-79b888fb0000",
+            "exists": false,
+            "logical_bytes": 0,
+            "allocated_bytes": 0
+          }
+        ],
+        "errors": []
+      },
+      "new_ublk_devices": [],
+      "new_netns": [],
+      "owned_artifacts_remaining": [],
+      "status": "no_observed_residue"
+    },
+    "final_cleanup_state": "running"
+  },
+  "lifecycle_seconds": 90.87334297806956
+}

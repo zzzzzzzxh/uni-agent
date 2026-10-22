@@ -1,0 +1,18 @@
+test_absence_rejects_permission_io_root_errors_and_pid_reappearance (__main__.FixtureTests.test_absence_rejects_permission_io_root_errors_and_pid_reappearance) ... ok
+test_address_space_release_requires_independent_maps_and_stat_evidence (__main__.FixtureTests.test_address_space_release_requires_independent_maps_and_stat_evidence) ... ok
+test_discovery_requires_exact_allowlist_and_owned_path (__main__.FixtureTests.test_discovery_requires_exact_allowlist_and_owned_path) ... ok
+test_exit_at_final_stat_is_confirmed_but_reuse_remains_unknown (__main__.FixtureTests.test_exit_at_final_stat_is_confirmed_but_reuse_remains_unknown) ... ok
+test_inventory_exit_moves_to_evidence_without_synthetic_counters (__main__.FixtureTests.test_inventory_exit_moves_to_evidence_without_synthetic_counters) ... ok
+test_missing_metrics_are_null_and_node_disks_are_not_double_counted (__main__.FixtureTests.test_missing_metrics_are_null_and_node_disks_are_not_double_counted) ... ok
+test_missing_stat_with_present_directory_is_still_unknown (__main__.FixtureTests.test_missing_stat_with_present_directory_is_still_unknown) ... ok
+test_ownership_survives_reparenting_but_not_pid_reuse (__main__.FixtureTests.test_ownership_survives_reparenting_but_not_pid_reuse) ... ok
+test_parse_stat_and_registration_validation (__main__.FixtureTests.test_parse_stat_and_registration_validation) ... ok
+test_permission_denial_and_identity_race_do_not_leak_bad_metrics (__main__.FixtureTests.test_permission_denial_and_identity_race_do_not_leak_bad_metrics) ... ok
+test_permission_denial_cannot_be_converted_into_release (__main__.FixtureTests.test_permission_denial_cannot_be_converted_into_release) ... ok
+test_registry_error_preserves_identity_but_marks_stale_coverage (__main__.FixtureTests.test_registry_error_preserves_identity_but_marks_stale_coverage) ... ok
+test_controlled_child_is_measured_without_selecting_parent (__main__.RealProcessTests.test_controlled_child_is_measured_without_selecting_parent) ... ok
+
+----------------------------------------------------------------------
+Ran 13 tests in 0.080s
+
+OK

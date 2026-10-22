@@ -1,0 +1,172 @@
+{
+  "observed_at_utc": "2026-10-21T16:04:29.872784+00:00",
+  "service": {
+    "MainPID": "35896",
+    "User": "aenv",
+    "ActiveState": "active",
+    "SubState": "running"
+  },
+  "nodes": [
+    {
+      "id": "node-a",
+      "commit": "a27b2db",
+      "version": "0.2.3",
+      "sandboxCount": 0,
+      "sandboxStartingCount": 0,
+      "sandboxPausedCount": 0,
+      "createSuccesses": 11,
+      "createFails": 0,
+      "metrics": {
+        "allocatedCPU": 0,
+        "allocatedMemoryBytes": 0,
+        "pausedAllocatedCPU": 0,
+        "pausedAllocatedMemoryBytes": 0,
+        "memoryUsedBytes": 818946048,
+        "memoryTotalBytes": 33654878208
+      }
+    }
+  ],
+  "listed_business_sandboxes": [],
+  "firecracker": [
+    {
+      "pid": 37362,
+      "ppid": 35896,
+      "starttime_ticks": 608143,
+      "comm": "firecracker",
+      "netns_inode": 4026532302,
+      "api_socket": "/opt/agentenv-offload/state/firecracker-work/agentenv-fc-RZQfMQ/firecracker.socket",
+      "instance_info": {
+        "state": "Not started",
+        "vmm_version": "1.15.1-patch-v1",
+        "app_name": "Firecracker"
+      },
+      "memory": {
+        "Rss_bytes": 2158592,
+        "Pss_bytes": 2154496
+      },
+      "stdout_target": "/opt/agentenv-offload/state/firecracker-work/agentenv-fc-RZQfMQ/firecracker-stdout.log"
+    }
+  ],
+  "provider_processes": [
+    {
+      "pid": 35896,
+      "ppid": 1,
+      "starttime_ticks": 426963,
+      "comm": "server",
+      "netns_inode": 4026531840
+    },
+    {
+      "pid": 35918,
+      "ppid": 35896,
+      "starttime_ticks": 426967,
+      "comm": "uvm-ublk-daemon",
+      "netns_inode": 4026531840
+    }
+  ],
+  "ublk_devices": [
+    "ublkb0"
+  ],
+  "open_tools_references": {
+    "35896": [
+      {
+        "fd": 43,
+        "target": "/dev/ublkb0"
+      }
+    ],
+    "35918": [
+      {
+        "fd": 24,
+        "target": "/opt/agentenv-offload/state/deps/tools/0.1.1/sha256-0025158ff64f93188a0cac3d58f6bf641441d2cfffe9897cd390077427166e13.commit"
+      },
+      {
+        "fd": 25,
+        "target": "/dev/ublk-control"
+      },
+      {
+        "fd": 26,
+        "target": "/dev/ublkc0"
+      }
+    ]
+  },
+  "runtime_namespaces": [
+    {
+      "path": "/run/agentenv-offload/netns/agentenv-ns-01a15f14-7ea0-7e02-b938-d92af8f492e8",
+      "inode": 4026532302,
+      "processes": [
+        {
+          "pid": 37362,
+          "ppid": 35896,
+          "starttime_ticks": 608143,
+          "comm": "firecracker",
+          "netns_inode": 4026532302
+        }
+      ]
+    },
+    {
+      "path": "/run/agentenv-offload/netns/agentenv-ns-01a15f0d-4bf0-7931-8038-0263628cc6ad",
+      "inode": 4026532236,
+      "processes": []
+    }
+  ],
+  "default_netns": [],
+  "paused_artifact_inventory": [],
+  "download_proxy_tcp_check": "ConnectionRefusedError: [Errno 111] Connection refused",
+  "recent_filtered_log_evidence": [
+    "2026-10-21T15:51:45.239311Z  INFO create_sandbox: agentenv::orchestrator::service: creating sandbox timeout=Some(2160s) template_builder=false sandbox_id=01a15f29-4f57-7402-8baf-651f1e47496f",
+    "2026-10-21T15:51:48.133631Z  WARN agentenv::api::proxy: upstream proxy request failed sandbox_id=01a15f29-4f57-7402-8baf-651f1e47496f error=client error (Connect)",
+    "2026-10-21T15:51:48.235981Z  WARN agentenv::api::proxy: upstream proxy request failed sandbox_id=01a15f29-4f57-7402-8baf-651f1e47496f error=client error (Connect)",
+    "2026-10-21T15:51:48.338121Z  WARN agentenv::api::proxy: upstream proxy request failed sandbox_id=01a15f29-4f57-7402-8baf-651f1e47496f error=client error (Connect)",
+    "2026-10-21T15:51:48.440149Z  WARN agentenv::api::proxy: upstream proxy request failed sandbox_id=01a15f29-4f57-7402-8baf-651f1e47496f error=client error (Connect)",
+    "2026-10-21T15:51:48.542229Z  WARN agentenv::api::proxy: upstream proxy request failed sandbox_id=01a15f29-4f57-7402-8baf-651f1e47496f error=client error (Connect)",
+    "2026-10-21T15:51:48.644287Z  WARN agentenv::api::proxy: upstream proxy request failed sandbox_id=01a15f29-4f57-7402-8baf-651f1e47496f error=client error (Connect)",
+    "2026-10-21T15:51:48.746376Z  WARN agentenv::api::proxy: upstream proxy request failed sandbox_id=01a15f29-4f57-7402-8baf-651f1e47496f error=client error (Connect)",
+    "2026-10-21T15:51:48.848175Z  WARN agentenv::api::proxy: upstream proxy request failed sandbox_id=01a15f29-4f57-7402-8baf-651f1e47496f error=client error (Connect)",
+    "2026-10-21T15:51:48.950018Z  WARN agentenv::api::proxy: upstream proxy request failed sandbox_id=01a15f29-4f57-7402-8baf-651f1e47496f error=client error (Connect)",
+    "2026-10-21T15:51:49.051800Z  WARN agentenv::api::proxy: upstream proxy request failed sandbox_id=01a15f29-4f57-7402-8baf-651f1e47496f error=client error (Connect)",
+    "2026-10-21T15:51:49.153533Z  WARN agentenv::api::proxy: upstream proxy request failed sandbox_id=01a15f29-4f57-7402-8baf-651f1e47496f error=client error (Connect)",
+    "2026-10-21T15:51:49.255376Z  WARN agentenv::api::proxy: upstream proxy request failed sandbox_id=01a15f29-4f57-7402-8baf-651f1e47496f error=client error (Connect)",
+    "2026-10-21T15:51:49.357092Z  WARN agentenv::api::proxy: upstream proxy request failed sandbox_id=01a15f29-4f57-7402-8baf-651f1e47496f error=client error (Connect)",
+    "2026-10-21T15:51:49.459158Z  WARN agentenv::api::proxy: upstream proxy request failed sandbox_id=01a15f29-4f57-7402-8baf-651f1e47496f error=client error (Connect)",
+    "2026-10-21T15:52:50.571334Z  INFO delete_sandbox: agentenv::orchestrator::service: sandbox deleted sandbox_id=01a15f29-4f57-7402-8baf-651f1e47496f",
+    "2026-10-21T15:59:11.292701Z  WARN sandboxes_cold_post: agentenv::image::oci_image: regctl failed; retrying attempt=1 args=[\"manifest\", \"get\", \"--format\", \"raw-body\", \"docker.io/library/python@sha256:8fb0b110b022c70cbe09d3ff1fb313654f31f9c814abb0d48180af56d906a199\"] error=failed to get manifest docker.io/library/python@sha256:8fb0b110b022c70cbe09d3ff1fb313654f31f9c814abb0d48180af56d906a199: Get \"https://registry-1.docker.io/v2/library/python/manifests/sha256:8fb0b110b022c70cbe09d3ff1fb313654f31f9c814abb0d48180af56d906a199\": proxyconnect tcp: dial tcp 10.0.2.2:17899: connect: connection refused",
+    "2026-10-21T15:59:14.812214Z  WARN sandboxes_cold_post: agentenv::image::oci_image: regctl failed; retrying attempt=2 args=[\"manifest\", \"get\", \"--format\", \"raw-body\", \"docker.io/library/python@sha256:8fb0b110b022c70cbe09d3ff1fb313654f31f9c814abb0d48180af56d906a199\"] error=failed to get manifest docker.io/library/python@sha256:8fb0b110b022c70cbe09d3ff1fb313654f31f9c814abb0d48180af56d906a199: Get \"https://registry-1.docker.io/v2/library/python/manifests/sha256:8fb0b110b022c70cbe09d3ff1fb313654f31f9c814abb0d48180af56d906a199\": proxyconnect tcp: dial tcp 10.0.2.2:17899: connect: connection refused",
+    "2026-10-21T15:59:18.831960Z  WARN sandboxes_cold_post: agentenv::image::oci_image: regctl failed; retrying attempt=3 args=[\"manifest\", \"get\", \"--format\", \"raw-body\", \"docker.io/library/python@sha256:8fb0b110b022c70cbe09d3ff1fb313654f31f9c814abb0d48180af56d906a199\"] error=failed to get manifest docker.io/library/python@sha256:8fb0b110b022c70cbe09d3ff1fb313654f31f9c814abb0d48180af56d906a199: Get \"https://registry-1.docker.io/v2/library/python/manifests/sha256:8fb0b110b022c70cbe09d3ff1fb313654f31f9c814abb0d48180af56d906a199\": proxyconnect tcp: dial tcp 10.0.2.2:17899: connect: connection refused",
+    "2026-10-21T15:59:23.851309Z  WARN sandboxes_cold_post: agentenv::image::oci_image: regctl failed; retrying attempt=4 args=[\"manifest\", \"get\", \"--format\", \"raw-body\", \"docker.io/library/python@sha256:8fb0b110b022c70cbe09d3ff1fb313654f31f9c814abb0d48180af56d906a199\"] error=failed to get manifest docker.io/library/python@sha256:8fb0b110b022c70cbe09d3ff1fb313654f31f9c814abb0d48180af56d906a199: Get \"https://registry-1.docker.io/v2/library/python/manifests/sha256:8fb0b110b022c70cbe09d3ff1fb313654f31f9c814abb0d48180af56d906a199\": proxyconnect tcp: dial tcp 10.0.2.2:17899: connect: connection refused",
+    "2026-10-21T15:59:30.872180Z  WARN sandboxes_cold_post: agentenv::image::resolver: image resolver candidate manifest fetch failed; trying next candidate image=docker.io/library/python@sha256:8fb0b110b022c70cbe09d3ff1fb313654f31f9c814abb0d48180af56d906a199 error=regctl manifest get --format raw-body docker.io/library/python@sha256:8fb0b110b022c70cbe09d3ff1fb313654f31f9c814abb0d48180af56d906a199 failed after 5 attempts: failed to get manifest docker.io/library/python@sha256:8fb0b110b022c70cbe09d3ff1fb313654f31f9c814abb0d48180af56d906a199: Get \"https://registry-1.docker.io/v2/library/python/manifests/sha256:8fb0b110b022c70cbe09d3ff1fb313654f31f9c814abb0d48180af56d906a199\": proxyconnect tcp: dial tcp 10.0.2.2:17899: connect: connection refused",
+    "2026-10-21T15:59:30.872276Z  WARN sandboxes_cold_post: agentenv::api::impls::sandbox: failed to resolve sandbox rootfs image error=resolve image 'docker.io/library/python@sha256:8fb0b110b022c70cbe09d3ff1fb313654f31f9c814abb0d48180af56d906a199' to overlaybd: all registry candidates failed during manifest fetch: docker.io/library/python@sha256:8fb0b110b022c70cbe09d3ff1fb313654f31f9c814abb0d48180af56d906a199: regctl manifest get --format raw-body docker.io/library/python@sha256:8fb0b110b022c70cbe09d3ff1fb313654f31f9c814abb0d48180af56d906a199 failed after 5 attempts: failed to get manifest docker.io/library/python@sha256:8fb0b110b022c70cbe09d3ff1fb313654f31f9c814abb0d48180af56d906a199: Get \"https://registry-1.docker.io/v2/library/python/manifests/sha256:8fb0b110b022c70cbe09d3ff1fb313654f31f9c814abb0d48180af56d906a199\": proxyconnect tcp: dial tcp 10.0.2.2:17899: connect: connection refused image=docker.io/library/python@sha256:8fb0b110b022c70cbe09d3ff1fb313654f31f9c814abb0d48180af56d906a199"
+  ],
+  "config_sha256": "5fde917e5ef742136092c9acd78f9fead00079b96cd7c0980a695c3698ebdf71",
+  "provider_pid_registry": {
+    "processes": [
+      {
+        "pid": 35896,
+        "starttime_ticks": 426963,
+        "label": "provider",
+        "include_descendants": true
+      },
+      {
+        "pid": 35918,
+        "starttime_ticks": 426967,
+        "label": "storage",
+        "include_descendants": true
+      }
+    ]
+  },
+  "actions": "只读API、进程、namespace、设备、日志与TCP连通性检查；未重启、删除、创建或发送业务命令。",
+  "failed_validation_path": "/home/zxh/uni-agent-sandbox-offload/results/final-cached-validation-20261021T160504Z",
+  "failed_validation_results": [
+    {
+      "trial_id": "pair-000-offload-c2af047c",
+      "mode": "offload",
+      "success": false,
+      "error": "HTTP POST /sandboxes-cold returned 500",
+      "error_type": "ExperimentError",
+      "final_cleanup_state": "creating",
+      "cleanup": {
+        "confirmed": false,
+        "reason": "create outcome unknown",
+        "final_cleanup_state": "creating"
+      }
+    }
+  ]
+}

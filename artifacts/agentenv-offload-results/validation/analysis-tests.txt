@@ -1,0 +1,15 @@
+test_cli_outputs_are_valid_and_raw_sources_are_unchanged (__main__.DirectoryTests.test_cli_outputs_are_valid_and_raw_sources_are_unchanged) ... ok
+test_complete_pair_measures_pss_without_claiming_physical_node_savings (__main__.DirectoryTests.test_complete_pair_measures_pss_without_claiming_physical_node_savings) ... ok
+test_failures_and_abandoned_trials_stay_in_denominator (__main__.DirectoryTests.test_failures_and_abandoned_trials_stay_in_denominator) ... ok
+test_interrupted_plan_preserves_diagnostics_but_cannot_pass_acceptance (__main__.DirectoryTests.test_interrupted_plan_preserves_diagnostics_but_cannot_pass_acceptance) ... ok
+test_shorter_arm_does_not_get_extrapolated_to_common_window (__main__.DirectoryTests.test_shorter_arm_does_not_get_extrapolated_to_common_window) ... ok
+test_counter_reset_is_missing_not_negative_savings (__main__.NumericalTests.test_counter_reset_is_missing_not_negative_savings) ... ok
+test_io_turnover_differences_each_identity_without_counting_initial_bytes (__main__.NumericalTests.test_io_turnover_differences_each_identity_without_counting_initial_bytes) ... ok
+test_missing_values_gaps_and_short_windows_are_not_extrapolated (__main__.NumericalTests.test_missing_values_gaps_and_short_windows_are_not_extrapolated) ... ok
+test_trapezoids_and_interpolated_edges_are_hand_computable (__main__.NumericalTests.test_trapezoids_and_interpolated_edges_are_hand_computable) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 0.012s
+
+OK
+{"started_tasks": 2, "gates": {"planned_run_complete": "pass", "task_correctness_and_cleanup": "pass", "assigned_process_pss_saving": "pass", "task_p95_increase": "pass", "first_tool_extra_task_p95": "pass", "physical_node_saving_attribution": "unverified"}}

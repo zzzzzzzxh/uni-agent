@@ -1,0 +1,24 @@
+{
+  "archive": "raw-data.zip",
+  "archive_sha256": "f2a53a836a75b63b4b4da9b9a5540dacf4bbd9c2656e41195b90437c1bdfe663",
+  "members_sha256": {
+    "pair-000-offload-eed32204/metrics.jsonl": "153b2ae6415c316d6a460f3386d925c9a79a10de77349223bdeda3428b48306b",
+    "pair-000-offload-eed32204/sampler.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "pair-000-resident-f5f977b8/metrics.jsonl": "4799372f2d3ba3f73a516b3fc97b97ead7c394c68ad8d6b0d0e81c2fa4124ade",
+    "pair-000-resident-f5f977b8/sampler.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "pair-001-offload-5a18b0ab/metrics.jsonl": "b47977f433014da3ddbb7b12eb31a2040bf21cc2c722df4338137cffced0404e",
+    "pair-001-offload-5a18b0ab/sampler.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "pair-001-resident-3de977a7/metrics.jsonl": "eb3297ab029c6ae4aace4afd3ba6ccfed80db0b67e5a86a8211e7b183a4c9a35",
+    "pair-001-resident-3de977a7/sampler.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "pair-002-offload-d207307e/metrics.jsonl": "e1ac70ee594650c4fe15ad61f4d93f02e584e137c8f203b0c59f5dc2809b6fcd",
+    "pair-002-offload-d207307e/sampler.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "pair-002-resident-9aad4f01/metrics.jsonl": "bf3d94637de0e834c869845a19e7c3f869ad9a3d0aa2ec63c5432278831c461b",
+    "pair-002-resident-9aad4f01/sampler.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "source/analyze.py": "bb7601f69449d925f0b73e2ab7e6a25030d3a4272a3bcc955dbf1522b5a9072e",
+    "source/demo.py": "93fed18bb6762d40439901bffecc229d491528291b559bd3995e0ef8953c5562",
+    "source/guest_probe.py": "35cbbd846c174337250dbf85a5bcddcb1c1971f049074b1f2e94eae442030c78",
+    "source/host_sampler.py": "cef976aef872ffc94cbeb4f442286909e54583a4292587b2a8601f637f67dc52",
+    "source/run_case.sh": "fd78dd8413157dcd68317177f644e950491e6a7918d506cc9f530ea9b0a9df7b"
+  },
+  "note": "保留原始指标、日志和当轮源码字节；分析和绘图前解压到本轮目录。"
+}

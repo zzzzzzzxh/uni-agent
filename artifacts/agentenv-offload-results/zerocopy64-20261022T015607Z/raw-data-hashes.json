@@ -1,0 +1,14 @@
+{
+  "archive": "raw-data.zip",
+  "archive_sha256": "7ce8c1e5294f81ee4deb3e02f5f4f3f855a79ea927b4b152eb18d4a967527cb8",
+  "members_sha256": {
+    "pair-000-offload-0b3dc177/metrics.jsonl": "485e635cb90cbe2e7e6d6dbac3acd42dc19bba8a9a70714ab009a45a2f8db1e6",
+    "pair-000-offload-0b3dc177/sampler.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "source/analyze.py": "bb7601f69449d925f0b73e2ab7e6a25030d3a4272a3bcc955dbf1522b5a9072e",
+    "source/demo.py": "93fed18bb6762d40439901bffecc229d491528291b559bd3995e0ef8953c5562",
+    "source/guest_probe.py": "222b5b7377e77562ca21897a3fcb01aea648e99dfbf7d27c6ad3c8f5d8cfcfd1",
+    "source/host_sampler.py": "cef976aef872ffc94cbeb4f442286909e54583a4292587b2a8601f637f67dc52",
+    "source/run_case.sh": "fd78dd8413157dcd68317177f644e950491e6a7918d506cc9f530ea9b0a9df7b"
+  },
+  "note": "保留原始指标、日志和当轮源码字节；分析和绘图前解压到本轮目录。"
+}

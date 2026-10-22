@@ -1,0 +1,11 @@
+{
+  "started_trials": 1,
+  "by_mode": {
+    "offload": {
+      "started": 1,
+      "successful": 1,
+      "success_rate": 1.0,
+      "cleanup_confirmed": 1
+    }
+  }
+}

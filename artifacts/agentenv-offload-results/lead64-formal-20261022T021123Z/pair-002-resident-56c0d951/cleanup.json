@@ -1,0 +1,72 @@
+{
+  "confirmed": true,
+  "api_pid_confirmed": true,
+  "api_absent": true,
+  "owned_firecracker_gone": true,
+  "resource_audit": {
+    "before": {
+      "audit_schema_version": 2,
+      "ublk_devices": [
+        "ublkb0"
+      ],
+      "netns": [
+        "/run/agentenv-offload/netns/agentenv-ns-01a15f0d-4bf0-7931-8038-0263628cc6ad",
+        "/run/agentenv-offload/netns/agentenv-ns-01a15f14-7ea0-7e02-b938-d92af8f492e8"
+      ],
+      "netns_by_directory": {
+        "/run/agentenv-offload/netns": [
+          "/run/agentenv-offload/netns/agentenv-ns-01a15f0d-4bf0-7931-8038-0263628cc6ad",
+          "/run/agentenv-offload/netns/agentenv-ns-01a15f14-7ea0-7e02-b938-d92af8f492e8"
+        ],
+        "/run/netns": []
+      },
+      "runtime_entries": [
+        "netns",
+        "ublk-daemon.sock"
+      ],
+      "owned_artifacts": [],
+      "errors": []
+    },
+    "after": {
+      "audit_schema_version": 2,
+      "ublk_devices": [
+        "ublkb0"
+      ],
+      "netns": [
+        "/run/agentenv-offload/netns/agentenv-ns-01a15f0d-4bf0-7931-8038-0263628cc6ad",
+        "/run/agentenv-offload/netns/agentenv-ns-01a15f14-7ea0-7e02-b938-d92af8f492e8"
+      ],
+      "netns_by_directory": {
+        "/run/agentenv-offload/netns": [
+          "/run/agentenv-offload/netns/agentenv-ns-01a15f0d-4bf0-7931-8038-0263628cc6ad",
+          "/run/agentenv-offload/netns/agentenv-ns-01a15f14-7ea0-7e02-b938-d92af8f492e8"
+        ],
+        "/run/netns": []
+      },
+      "runtime_entries": [
+        "netns",
+        "ublk-daemon.sock"
+      ],
+      "owned_artifacts": [
+        {
+          "path": "/opt/agentenv-offload/state/persisted-sandboxes/artifacts/01a16160-bbfa-7d82-b760-1ced591cbed4",
+          "exists": false,
+          "logical_bytes": 0,
+          "allocated_bytes": 0
+        },
+        {
+          "path": "/opt/agentenv-offload/state/firecracker-work/managed-snapshots/01a16160-bbfa-7d82-b760-1ced591cbed4",
+          "exists": false,
+          "logical_bytes": 0,
+          "allocated_bytes": 0
+        }
+      ],
+      "errors": []
+    },
+    "new_ublk_devices": [],
+    "new_netns": [],
+    "owned_artifacts_remaining": [],
+    "status": "no_observed_residue"
+  },
+  "final_cleanup_state": "running"
+}

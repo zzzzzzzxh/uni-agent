@@ -1,0 +1,69 @@
+{
+  "observed_at_utc": "2026-10-21T16:12:34.898006+00:00",
+  "destination": "/home/zxh/uni-agent-sandbox-offload/deployment-evidence",
+  "file_modes": "0600; directory0700",
+  "files": {
+    "node-verification.json": {
+      "sha256": "307c4bda65f71004f3a3571285ff05a59d2d2d4a9a1987ed2179893e48cb4ffd",
+      "bytes": 132
+    },
+    "binary-sha256.txt": {
+      "sha256": "6e3f4568f1e271dd16285b2f0a15751e0e333cceecca52db7b9e2d4cabb40e15",
+      "bytes": 271
+    },
+    "pool-variant-bound1.json": {
+      "sha256": "266789919d89f4657435b769d17a305f6f8ef340c1fe109e0b3fa37dcb5bc065",
+      "bytes": 6563
+    },
+    "warmup-reconciliation.json": {
+      "sha256": "ba7cc1bb24535bb6e78a7ef44dfade99fd7e1b981ff7bf6d54e93d9a498befaf",
+      "bytes": 39073
+    },
+    "reconciliation.json": {
+      "sha256": "2eca43b1d648d496eec654146e4cfb9a35ff0073d14ca3cd6c2b2aec7c2c1b39",
+      "bytes": 11035
+    },
+    "provider-pids.json": {
+      "sha256": "1914bb49bb43223de80754c4503b4a9e36cd8ea7b2eeb777da678f4c9e254928",
+      "bytes": 277
+    },
+    "config.toml": {
+      "sha256": "5fde917e5ef742136092c9acd78f9fead00079b96cd7c0980a695c3698ebdf71",
+      "bytes": 16544
+    },
+    "versions-source.json": {
+      "sha256": "0648d0f75896c2b82f8f963701a98866f83055f5d39238638a599294ea370ab9",
+      "bytes": 452
+    },
+    "image-manifest.json": {
+      "sha256": "a5ed8bfa02b31f09b84cb34bd64eb13dace9e95ad28a3034f4dd0fcc7e1be262",
+      "bytes": 2222
+    },
+    "final-readonly-audit.json": {
+      "sha256": "d3142cce62d521d9261c3f6e01da81acc1b6021135f55fc6f8274de976b448cd",
+      "bytes": 10928
+    }
+  },
+  "source_actual_api_key_byte_scan": {
+    "hit_paths": [],
+    "total_hits": 0
+  },
+  "copied_actual_api_key_byte_scan": {
+    "hit_paths": [],
+    "total_hits": 0
+  },
+  "config_credential_fields": [],
+  "missing_optional": [
+    "balloon-mode.json",
+    "balloon-mode.txt",
+    "image-sha256.txt",
+    "image-sha.json"
+  ],
+  "excluded": [
+    "node-access",
+    "secrets",
+    "root credentials",
+    "download.env"
+  ],
+  "log_sanitization": "只选取日志中错误/生命周期证据；包含Authorization/access-token/API-key/secret字段的整行剔除，URL查询字符串替换为<redacted>。500证据仅含公开镜像digest、registry URL和拒绝连接的无凭据代理地址。"
+}

@@ -1,0 +1,595 @@
+{
+  "schema_version": 1,
+  "agentenv_sha": null,
+  "required_agentenv_sha": "a27b2db909b035f58696ba8798ea0e285c7bfa17",
+  "workload": "external simulated inference wait",
+  "parameters": {
+    "api_url": "http://127.0.0.1:18800",
+    "node_ssh": "agentenv-node",
+    "ssh_config": "/home/zxh/uni-agent-sandbox-offload/node-access/ssh_config",
+    "node_root": "/opt/agentenv-offload/runs",
+    "aenv_bin": "/usr/local/bin/aenv",
+    "serial_dir": "/opt/agentenv-offload/state/serial",
+    "state_dir": "/opt/agentenv-offload/state",
+    "runtime_dir": "/run/agentenv-offload",
+    "provider_pid": [],
+    "provider_pid_file": "/opt/agentenv-offload/provider-pids.json",
+    "guest_image": "docker.io/library/python@sha256:8fb0b110b022c70cbe09d3ff1fb313654f31f9c814abb0d48180af56d906a199",
+    "output": "/home/zxh/uni-agent-sandbox-offload/results/fullprefetch64-20261022T020447Z",
+    "mode": "offload",
+    "pause_before_cleanup": false,
+    "wait_seconds": 2.0,
+    "resume_prefetch": true,
+    "memory_mib": 64,
+    "sandbox_memory_mib": 1024,
+    "cycles": 2,
+    "pairs": 1,
+    "entropy": "low",
+    "dirty_ratio": 0.0,
+    "seed": 1,
+    "cpus": 1,
+    "operation_timeout": 300.0,
+    "sample_interval": 0.1,
+    "io_tail_seconds": 2.0,
+    "observation_seconds": 30.0
+  },
+  "source_sha256": {
+    "demo.py": "927011dac6ffa61db1c9c7cc7377281c7da9dda0af7328e4bf36dc1985111d56",
+    "guest_probe.py": "222b5b7377e77562ca21897a3fcb01aea648e99dfbf7d27c6ad3c8f5d8cfcfd1",
+    "host_sampler.py": "4b4f967e16bd1dd18a9c092c7382659f8aa94f47f227bbfed90603681e6299e3",
+    "analyze.py": "bb7601f69449d925f0b73e2ab7e6a25030d3a4272a3bcc955dbf1522b5a9072e"
+  },
+  "started_tasks": 1,
+  "planned_tasks": 1,
+  "unknown_mode_tasks": 0,
+  "unstarted_tasks": 0,
+  "input_errors": [],
+  "by_mode": {
+    "resident": {
+      "started_tasks": 0,
+      "successful_tasks": 0,
+      "failed_or_incomplete_tasks": 0,
+      "success_rate": null,
+      "cleanup_confirmed_tasks": 0,
+      "cleanup_rate": null,
+      "task_seconds_all_terminal_observations": {
+        "n": 0,
+        "p50": null,
+        "p95": null,
+        "max": null
+      },
+      "task_seconds_successful": {
+        "n": 0,
+        "p50": null,
+        "p95": null,
+        "max": null
+      },
+      "first_tool_seconds_task_p95": {
+        "n": 0,
+        "p50": null,
+        "p95": null,
+        "max": null
+      },
+      "restore_oracle_seconds_task_p95": {
+        "n": 0,
+        "p50": null,
+        "p95": null,
+        "max": null
+      }
+    },
+    "offload": {
+      "started_tasks": 1,
+      "successful_tasks": 1,
+      "failed_or_incomplete_tasks": 0,
+      "success_rate": 1.0,
+      "cleanup_confirmed_tasks": 1,
+      "cleanup_rate": 1.0,
+      "task_seconds_all_terminal_observations": {
+        "n": 1,
+        "p50": 15.54328431095928,
+        "p95": 15.54328431095928,
+        "max": 15.54328431095928
+      },
+      "task_seconds_successful": {
+        "n": 1,
+        "p50": 15.54328431095928,
+        "p95": 15.54328431095928,
+        "max": 15.54328431095928
+      },
+      "first_tool_seconds_task_p95": {
+        "n": 1,
+        "p50": 2.215505736414343,
+        "p95": 2.215505736414343,
+        "max": 2.215505736414343
+      },
+      "restore_oracle_seconds_task_p95": {
+        "n": 1,
+        "p50": 2.0339430622640067,
+        "p95": 2.0339430622640067,
+        "max": 2.0339430622640067
+      }
+    }
+  },
+  "pairs": [
+    {
+      "pair_index": 0,
+      "status": "unverified",
+      "reason": "missing_or_duplicate_mode"
+    }
+  ],
+  "planned_run": {
+    "status": "pass",
+    "planned_tasks": 1,
+    "reason": null,
+    "incomplete_trial_ids": [],
+    "missing_trials": [],
+    "unexpected_or_duplicate_trials": []
+  },
+  "acceptance_status": "unverified",
+  "observed_pss_costs": {
+    "measured_tasks": 1,
+    "unmeasured_tasks": 0,
+    "all_started_measured_gib_seconds": 2.2201023840935545,
+    "failed_tasks_measured_gib_seconds": 0,
+    "scope": "observed_task_windows_including_failures; not_a_fair_pairwise_saving_estimate"
+  },
+  "trial_measurements": {
+    "pair-000-offload-df2efdff": {
+      "start_seconds": 0.0,
+      "end_seconds": 17.632689414080232,
+      "clock": {
+        "status": "calibrated",
+        "uncertainty_seconds": 0.02316944394260645,
+        "origin_client_monotonic_seconds": 1206196.180346495
+      },
+      "time_coverage_with_uncertainty": true,
+      "metric_file_errors": [],
+      "event_file_errors": [],
+      "curves": {
+        "assigned_process_pss": {
+          "window_seconds": 17.632689414080232,
+          "integral_byte_seconds": 2383816783.363362,
+          "integral_gib_seconds": 2.2201023840935545,
+          "peak_bytes": 267041792.0,
+          "minimum_bytes": 82000896.0,
+          "status": "observed",
+          "reason": null
+        },
+        "sandbox_process_pss": {
+          "window_seconds": 17.632689414080232,
+          "integral_byte_seconds": 747400038.5744638,
+          "integral_gib_seconds": 0.6960705281928776,
+          "peak_bytes": 183853056.0,
+          "minimum_bytes": 0.0,
+          "status": "observed",
+          "reason": null
+        },
+        "node_anon": {
+          "window_seconds": 17.632689414080232,
+          "integral_byte_seconds": 2488929834.0774474,
+          "integral_gib_seconds": 2.317996541110284,
+          "peak_bytes": 291512320.0,
+          "minimum_bytes": 107712512.0,
+          "status": "observed",
+          "reason": null
+        },
+        "node_cache": {
+          "window_seconds": 17.632689414080232,
+          "integral_byte_seconds": 125933375656.0433,
+          "integral_gib_seconds": 117.28459564600448,
+          "peak_bytes": 7249850368.0,
+          "minimum_bytes": 7051747328.0,
+          "status": "observed",
+          "reason": null
+        },
+        "node_available": {
+          "window_seconds": 17.632689414080232,
+          "integral_byte_seconds": 578153938123.9835,
+          "integral_gib_seconds": 538.4478141777064,
+          "peak_bytes": 32836894720.0,
+          "minimum_bytes": 32631271424.0,
+          "status": "observed",
+          "reason": null
+        }
+      },
+      "comparable": true,
+      "node_observations_complete": true,
+      "io": {
+        "process_identities": [
+          {
+            "pid": 35896,
+            "starttime_ticks": 426963,
+            "label": "provider",
+            "first_observed_seconds": 0.06615566904656589,
+            "last_observed_seconds": 17.56615221197717,
+            "samples": 176,
+            "observed_read_bytes": 152861696,
+            "first_counter_read_bytes": 2874626048,
+            "read_bytes_status": "observed_lower_bound",
+            "observed_write_bytes": 196382720,
+            "first_counter_write_bytes": 1629081600,
+            "write_bytes_status": "observed_lower_bound",
+            "initial_and_terminal_unobserved_io_not_included": true
+          },
+          {
+            "pid": 35918,
+            "starttime_ticks": 426967,
+            "label": "storage",
+            "first_observed_seconds": 0.06615566904656589,
+            "last_observed_seconds": 17.56615221197717,
+            "samples": 176,
+            "observed_read_bytes": 61440,
+            "first_counter_read_bytes": 700416,
+            "read_bytes_status": "observed_lower_bound",
+            "observed_write_bytes": 3371008,
+            "first_counter_write_bytes": 34611200,
+            "write_bytes_status": "observed_lower_bound",
+            "initial_and_terminal_unobserved_io_not_included": true
+          },
+          {
+            "pid": 40483,
+            "starttime_ticks": 4219888,
+            "label": "provider",
+            "first_observed_seconds": 0.06615566904656589,
+            "last_observed_seconds": 11.266153178876266,
+            "samples": 113,
+            "observed_read_bytes": 65703936,
+            "first_counter_read_bytes": 0,
+            "read_bytes_status": "observed_lower_bound",
+            "observed_write_bytes": 45056,
+            "first_counter_write_bytes": 4096,
+            "write_bytes_status": "observed_lower_bound",
+            "initial_and_terminal_unobserved_io_not_included": true
+          },
+          {
+            "pid": 40522,
+            "starttime_ticks": 4253081,
+            "label": "provider",
+            "first_observed_seconds": 0.06615566904656589,
+            "last_observed_seconds": 2.0661524990573525,
+            "samples": 21,
+            "observed_read_bytes": 0,
+            "first_counter_read_bytes": 0,
+            "read_bytes_status": "observed_lower_bound",
+            "observed_write_bytes": 0,
+            "first_counter_write_bytes": 0,
+            "write_bytes_status": "observed_lower_bound",
+            "initial_and_terminal_unobserved_io_not_included": true
+          },
+          {
+            "pid": 40544,
+            "starttime_ticks": 4253303,
+            "label": "provider",
+            "first_observed_seconds": 2.2661506480071694,
+            "last_observed_seconds": 7.266151966061443,
+            "samples": 51,
+            "observed_read_bytes": 22166528,
+            "first_counter_read_bytes": 0,
+            "read_bytes_status": "observed_lower_bound",
+            "observed_write_bytes": 53248,
+            "first_counter_write_bytes": 12288,
+            "write_bytes_status": "observed_lower_bound",
+            "initial_and_terminal_unobserved_io_not_included": true
+          },
+          {
+            "pid": 40573,
+            "starttime_ticks": 4253972,
+            "label": "provider",
+            "first_observed_seconds": 8.966156102949753,
+            "last_observed_seconds": 15.166155597893521,
+            "samples": 63,
+            "observed_read_bytes": 64991232,
+            "first_counter_read_bytes": 0,
+            "read_bytes_status": "observed_lower_bound",
+            "observed_write_bytes": 3186688,
+            "first_counter_write_bytes": 4096,
+            "write_bytes_status": "observed_lower_bound",
+            "initial_and_terminal_unobserved_io_not_included": true
+          },
+          {
+            "pid": 40585,
+            "starttime_ticks": 4254005,
+            "label": "restore_helper",
+            "first_observed_seconds": 9.366157836979255,
+            "last_observed_seconds": 9.66615843004547,
+            "samples": 4,
+            "observed_read_bytes": 892878848,
+            "first_counter_read_bytes": 110211072,
+            "read_bytes_status": "observed_lower_bound",
+            "observed_write_bytes": 0,
+            "first_counter_write_bytes": 8192,
+            "write_bytes_status": "observed_lower_bound",
+            "initial_and_terminal_unobserved_io_not_included": true
+          },
+          {
+            "pid": 40607,
+            "starttime_ticks": 4254394,
+            "label": "provider",
+            "first_observed_seconds": 13.166153540834785,
+            "last_observed_seconds": 17.56615221197717,
+            "samples": 45,
+            "observed_read_bytes": 0,
+            "first_counter_read_bytes": 0,
+            "read_bytes_status": "observed_lower_bound",
+            "observed_write_bytes": 0,
+            "first_counter_write_bytes": 4096,
+            "write_bytes_status": "observed_lower_bound",
+            "initial_and_terminal_unobserved_io_not_included": true
+          },
+          {
+            "pid": 40619,
+            "starttime_ticks": 4254427,
+            "label": "restore_helper",
+            "first_observed_seconds": 13.566163019044325,
+            "last_observed_seconds": 13.766155565856025,
+            "samples": 3,
+            "observed_read_bytes": 884817920,
+            "first_counter_read_bytes": 70234112,
+            "read_bytes_status": "observed_lower_bound",
+            "observed_write_bytes": 0,
+            "first_counter_write_bytes": 8192,
+            "write_bytes_status": "observed_lower_bound",
+            "initial_and_terminal_unobserved_io_not_included": true
+          }
+        ],
+        "process_totals": {
+          "observed_read_bytes_lower_bound": 2083481600,
+          "read_bytes_incomplete_identities": 0,
+          "observed_write_bytes_lower_bound": 203038720,
+          "write_bytes_incomplete_identities": 0
+        },
+        "disk_devices": [
+          {
+            "device": "loop0",
+            "major_minor": "7:0",
+            "slaves": [],
+            "first_observed_seconds": 0.06615566904656589,
+            "last_observed_seconds": 17.56615221197717,
+            "samples": 176,
+            "observed_read_bytes": 0,
+            "first_counter_read_bytes": 14336,
+            "read_bytes_status": "observed_lower_bound",
+            "observed_write_bytes": 0,
+            "first_counter_write_bytes": 0,
+            "write_bytes_status": "observed_lower_bound",
+            "initial_and_terminal_unobserved_io_not_included": true
+          },
+          {
+            "device": "loop1",
+            "major_minor": "7:1",
+            "slaves": [],
+            "first_observed_seconds": 0.06615566904656589,
+            "last_observed_seconds": 17.56615221197717,
+            "samples": 176,
+            "observed_read_bytes": 0,
+            "first_counter_read_bytes": 0,
+            "read_bytes_status": "observed_lower_bound",
+            "observed_write_bytes": 0,
+            "first_counter_write_bytes": 0,
+            "write_bytes_status": "observed_lower_bound",
+            "initial_and_terminal_unobserved_io_not_included": true
+          },
+          {
+            "device": "loop2",
+            "major_minor": "7:2",
+            "slaves": [],
+            "first_observed_seconds": 0.06615566904656589,
+            "last_observed_seconds": 17.56615221197717,
+            "samples": 176,
+            "observed_read_bytes": 0,
+            "first_counter_read_bytes": 0,
+            "read_bytes_status": "observed_lower_bound",
+            "observed_write_bytes": 0,
+            "first_counter_write_bytes": 0,
+            "write_bytes_status": "observed_lower_bound",
+            "initial_and_terminal_unobserved_io_not_included": true
+          },
+          {
+            "device": "loop3",
+            "major_minor": "7:3",
+            "slaves": [],
+            "first_observed_seconds": 0.06615566904656589,
+            "last_observed_seconds": 17.56615221197717,
+            "samples": 176,
+            "observed_read_bytes": 0,
+            "first_counter_read_bytes": 0,
+            "read_bytes_status": "observed_lower_bound",
+            "observed_write_bytes": 0,
+            "first_counter_write_bytes": 0,
+            "write_bytes_status": "observed_lower_bound",
+            "initial_and_terminal_unobserved_io_not_included": true
+          },
+          {
+            "device": "loop4",
+            "major_minor": "7:4",
+            "slaves": [],
+            "first_observed_seconds": 0.06615566904656589,
+            "last_observed_seconds": 17.56615221197717,
+            "samples": 176,
+            "observed_read_bytes": 0,
+            "first_counter_read_bytes": 0,
+            "read_bytes_status": "observed_lower_bound",
+            "observed_write_bytes": 0,
+            "first_counter_write_bytes": 0,
+            "write_bytes_status": "observed_lower_bound",
+            "initial_and_terminal_unobserved_io_not_included": true
+          },
+          {
+            "device": "loop5",
+            "major_minor": "7:5",
+            "slaves": [],
+            "first_observed_seconds": 0.06615566904656589,
+            "last_observed_seconds": 17.56615221197717,
+            "samples": 176,
+            "observed_read_bytes": 0,
+            "first_counter_read_bytes": 0,
+            "read_bytes_status": "observed_lower_bound",
+            "observed_write_bytes": 0,
+            "first_counter_write_bytes": 0,
+            "write_bytes_status": "observed_lower_bound",
+            "initial_and_terminal_unobserved_io_not_included": true
+          },
+          {
+            "device": "loop6",
+            "major_minor": "7:6",
+            "slaves": [],
+            "first_observed_seconds": 0.06615566904656589,
+            "last_observed_seconds": 17.56615221197717,
+            "samples": 176,
+            "observed_read_bytes": 0,
+            "first_counter_read_bytes": 0,
+            "read_bytes_status": "observed_lower_bound",
+            "observed_write_bytes": 0,
+            "first_counter_write_bytes": 0,
+            "write_bytes_status": "observed_lower_bound",
+            "initial_and_terminal_unobserved_io_not_included": true
+          },
+          {
+            "device": "loop7",
+            "major_minor": "7:7",
+            "slaves": [],
+            "first_observed_seconds": 0.06615566904656589,
+            "last_observed_seconds": 17.56615221197717,
+            "samples": 176,
+            "observed_read_bytes": 0,
+            "first_counter_read_bytes": 0,
+            "read_bytes_status": "observed_lower_bound",
+            "observed_write_bytes": 0,
+            "first_counter_write_bytes": 0,
+            "write_bytes_status": "observed_lower_bound",
+            "initial_and_terminal_unobserved_io_not_included": true
+          },
+          {
+            "device": "vda",
+            "major_minor": "253:0",
+            "slaves": [],
+            "first_observed_seconds": 0.06615566904656589,
+            "last_observed_seconds": 17.56615221197717,
+            "samples": 176,
+            "observed_read_bytes": 0,
+            "first_counter_read_bytes": 567611392,
+            "read_bytes_status": "observed_lower_bound",
+            "observed_write_bytes": 1937408,
+            "first_counter_write_bytes": 12818720768,
+            "write_bytes_status": "observed_lower_bound",
+            "initial_and_terminal_unobserved_io_not_included": true
+          },
+          {
+            "device": "vdb",
+            "major_minor": "253:16",
+            "slaves": [],
+            "first_observed_seconds": 0.06615566904656589,
+            "last_observed_seconds": 17.56615221197717,
+            "samples": 176,
+            "observed_read_bytes": 0,
+            "first_counter_read_bytes": 359936,
+            "read_bytes_status": "observed_lower_bound",
+            "observed_write_bytes": 0,
+            "first_counter_write_bytes": 0,
+            "write_bytes_status": "observed_lower_bound",
+            "initial_and_terminal_unobserved_io_not_included": true
+          },
+          {
+            "device": "sr0",
+            "major_minor": "11:0",
+            "slaves": [],
+            "first_observed_seconds": 0.06615566904656589,
+            "last_observed_seconds": 17.56615221197717,
+            "samples": 176,
+            "observed_read_bytes": 0,
+            "first_counter_read_bytes": 14336,
+            "read_bytes_status": "observed_lower_bound",
+            "observed_write_bytes": 0,
+            "first_counter_write_bytes": 0,
+            "write_bytes_status": "observed_lower_bound",
+            "initial_and_terminal_unobserved_io_not_included": true
+          },
+          {
+            "device": "ublkb0",
+            "major_minor": "259:1",
+            "slaves": [],
+            "first_observed_seconds": 0.06615566904656589,
+            "last_observed_seconds": 17.56615221197717,
+            "samples": 176,
+            "observed_read_bytes": 0,
+            "first_counter_read_bytes": 12722176,
+            "read_bytes_status": "observed_lower_bound",
+            "observed_write_bytes": 0,
+            "first_counter_write_bytes": 0,
+            "write_bytes_status": "observed_lower_bound",
+            "initial_and_terminal_unobserved_io_not_included": true
+          },
+          {
+            "device": "ublkb1",
+            "major_minor": "259:2",
+            "slaves": [],
+            "first_observed_seconds": 2.2661506480071694,
+            "last_observed_seconds": 15.166155597893521,
+            "samples": 95,
+            "observed_read_bytes": null,
+            "first_counter_read_bytes": 356352,
+            "read_bytes_status": "counter_reset",
+            "observed_write_bytes": null,
+            "first_counter_write_bytes": 0,
+            "write_bytes_status": "counter_reset",
+            "initial_and_terminal_unobserved_io_not_included": true
+          },
+          {
+            "device": "ublkb2",
+            "major_minor": "259:3",
+            "slaves": [],
+            "first_observed_seconds": 9.066159097012132,
+            "last_observed_seconds": 15.266154087847099,
+            "samples": 45,
+            "observed_read_bytes": null,
+            "first_counter_read_bytes": 16707584,
+            "read_bytes_status": "counter_reset",
+            "observed_write_bytes": 0,
+            "first_counter_write_bytes": 0,
+            "write_bytes_status": "observed_lower_bound",
+            "initial_and_terminal_unobserved_io_not_included": true
+          }
+        ],
+        "scope": "sampled_interval_only; process_initial_and_terminal_gaps; node_devices_not_additive"
+      },
+      "unpaired_diagnostic_only": true
+    }
+  },
+  "trial_outcomes": [
+    {
+      "trial_id": "pair-000-offload-df2efdff",
+      "mode": "offload",
+      "success": true,
+      "cleanup_confirmed": true,
+      "incomplete": false,
+      "error_type": null,
+      "event_file_errors": []
+    }
+  ],
+  "paired_summary": {
+    "independent_pairs": 1,
+    "memory_comparable_pairs": 0,
+    "assigned_process_pss_saving_fraction": null,
+    "task_p95_relative_increase": null,
+    "first_tool_extra_seconds_task_p95": null
+  },
+  "thresholds": {
+    "memory_saving_min": 0.2,
+    "task_p95_increase_max": 0.05,
+    "first_tool_extra_max_seconds": 1.0,
+    "max_sample_gap_seconds": 1.0
+  },
+  "gates": {
+    "planned_run_complete": "pass",
+    "task_correctness_and_cleanup": "pass",
+    "assigned_process_pss_saving": "unverified",
+    "task_p95_increase": "unverified",
+    "first_tool_extra_task_p95": "unverified",
+    "physical_node_saving_attribution": "unverified"
+  },
+  "inference_scope": "assigned_process_PSS_only; whole_node_counters_not_causal_attribution",
+  "sandbox_process_pss_scope": "observed_lower_bound_of_explicit_sandbox_label_windows; pre_registration_VM_is_in_provider_descendants_and_assigned_total; not_complete_VM_integral_or_billing; acceptance_uses_assigned_total",
+  "physical_node_benefit": "unverified",
+  "statistical_unit": "independent_task_pair; cycles_are_correlated_within_task",
+  "percentile_method": "linear_interpolation_at_(n-1)*q; exploratory_small_sample"
+}

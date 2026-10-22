@@ -1,0 +1,10 @@
+test_concurrent_duplicate_command_has_one_effect_and_conflicts_are_rejected (__main__.ProbeProcessTests.test_concurrent_duplicate_command_has_one_effect_and_conflicts_are_rejected) ... ok
+test_invalid_tool_has_no_effect (__main__.ProbeProcessTests.test_invalid_tool_has_no_effect) ... ok
+test_observation_is_read_only_and_nonce_is_not_written (__main__.ProbeProcessTests.test_observation_is_read_only_and_nonce_is_not_written) ... ok
+test_restart_is_detectable_and_shutdown_affects_only_one_probe (__main__.ProbeProcessTests.test_restart_is_detectable_and_shutdown_affects_only_one_probe) ... ok
+test_tool_changes_file_and_fd_but_observation_does_not (__main__.ProbeProcessTests.test_tool_changes_file_and_fd_but_observation_does_not) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 1.570s
+
+OK

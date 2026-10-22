@@ -1,0 +1,223 @@
+{
+  "observed_at_utc": "2026-10-21T16:12:22.601037+00:00",
+  "independent_validation": {
+    "result_path": "/home/zxh/uni-agent-sandbox-offload/results/final-paused-delete-20261021T161240Z/pair-000-offload-1507c574/result.json",
+    "result_sha256": "55a17619cc4095403935309ef812f31afaf1b1681bb0227cd51645c25293fe42",
+    "events_sha256": "22687201904a65fa5bfeccb1871dc819881b599c273f3922efb5ced789c67a64",
+    "latest_run_path": "/home/zxh/uni-agent-sandbox-offload/results/final-paused-delete-20261021T161240Z",
+    "trial_id": "pair-000-offload-1507c574",
+    "sandbox_id": "01a15f37-13dc-79c3-bcea-c73a1be1ccc0",
+    "success": true,
+    "validation_only": true,
+    "final_cleanup_state": "paused",
+    "delete_requested_event": {
+      "event": "delete_requested",
+      "trial_id": "pair-000-offload-1507c574",
+      "mode": "offload",
+      "sandbox_id": "01a15f37-13dc-79c3-bcea-c73a1be1ccc0",
+      "monotonic_seconds": 1170679.192928105,
+      "wall_time_ns": 1792599170614866829,
+      "from_state": "paused"
+    },
+    "cleanup": {
+      "confirmed": true,
+      "api_pid_confirmed": true,
+      "api_absent": true,
+      "owned_firecracker_gone": true,
+      "resource_audit": {
+        "before": {
+          "audit_schema_version": 2,
+          "ublk_devices": [
+            "ublkb0"
+          ],
+          "netns": [
+            "/run/agentenv-offload/netns/agentenv-ns-01a15f0d-4bf0-7931-8038-0263628cc6ad",
+            "/run/agentenv-offload/netns/agentenv-ns-01a15f14-7ea0-7e02-b938-d92af8f492e8"
+          ],
+          "netns_by_directory": {
+            "/run/agentenv-offload/netns": [
+              "/run/agentenv-offload/netns/agentenv-ns-01a15f0d-4bf0-7931-8038-0263628cc6ad",
+              "/run/agentenv-offload/netns/agentenv-ns-01a15f14-7ea0-7e02-b938-d92af8f492e8"
+            ],
+            "/run/netns": []
+          },
+          "runtime_entries": [
+            "netns",
+            "ublk-daemon.sock"
+          ],
+          "owned_artifacts": [],
+          "errors": []
+        },
+        "after": {
+          "audit_schema_version": 2,
+          "ublk_devices": [
+            "ublkb0"
+          ],
+          "netns": [
+            "/run/agentenv-offload/netns/agentenv-ns-01a15f0d-4bf0-7931-8038-0263628cc6ad",
+            "/run/agentenv-offload/netns/agentenv-ns-01a15f14-7ea0-7e02-b938-d92af8f492e8"
+          ],
+          "netns_by_directory": {
+            "/run/agentenv-offload/netns": [
+              "/run/agentenv-offload/netns/agentenv-ns-01a15f0d-4bf0-7931-8038-0263628cc6ad",
+              "/run/agentenv-offload/netns/agentenv-ns-01a15f14-7ea0-7e02-b938-d92af8f492e8"
+            ],
+            "/run/netns": []
+          },
+          "runtime_entries": [
+            "netns",
+            "ublk-daemon.sock"
+          ],
+          "owned_artifacts": [
+            {
+              "path": "/opt/agentenv-offload/state/persisted-sandboxes/artifacts/01a15f37-13dc-79c3-bcea-c73a1be1ccc0",
+              "exists": false,
+              "logical_bytes": 0,
+              "allocated_bytes": 0
+            },
+            {
+              "path": "/opt/agentenv-offload/state/firecracker-work/managed-snapshots/01a15f37-13dc-79c3-bcea-c73a1be1ccc0",
+              "exists": false,
+              "logical_bytes": 0,
+              "allocated_bytes": 0
+            }
+          ],
+          "errors": []
+        },
+        "new_ublk_devices": [],
+        "new_netns": [],
+        "owned_artifacts_remaining": [],
+        "status": "no_observed_residue"
+      },
+      "final_cleanup_state": "paused"
+    }
+  },
+  "current_nodes": [
+    {
+      "id": "node-a",
+      "commit": "a27b2db",
+      "sandboxCount": 0,
+      "sandboxStartingCount": 0,
+      "sandboxPausedCount": 0,
+      "createSuccesses": 12,
+      "createFails": 0
+    }
+  ],
+  "current_business_sandboxes": [],
+  "warm_firecracker": [
+    {
+      "pid": 37624,
+      "ppid": 35896,
+      "starttime_ticks": 701351,
+      "comm": "firecracker",
+      "netns_inode": 4026532236,
+      "api_socket": "/opt/agentenv-offload/state/firecracker-work/agentenv-fc-iAMuPX/firecracker.socket",
+      "instance_info": {
+        "state": "Not started",
+        "vmm_version": "1.15.1-patch-v1",
+        "app_name": "Firecracker"
+      },
+      "memory": {
+        "Rss_bytes": 1888256,
+        "Pss_bytes": 1884160
+      }
+    }
+  ],
+  "runtime_namespaces": [
+    {
+      "path": "/run/agentenv-offload/netns/agentenv-ns-01a15f14-7ea0-7e02-b938-d92af8f492e8",
+      "inode": 4026532302,
+      "processes": [],
+      "classification": "idle_network_slot_cache"
+    },
+    {
+      "path": "/run/agentenv-offload/netns/agentenv-ns-01a15f0d-4bf0-7931-8038-0263628cc6ad",
+      "inode": 4026532236,
+      "processes": [
+        {
+          "pid": 37624,
+          "ppid": 35896,
+          "starttime_ticks": 701351,
+          "comm": "firecracker",
+          "netns_inode": 4026532236
+        }
+      ],
+      "classification": "warm_firecracker_slot"
+    }
+  ],
+  "ublk_devices": [
+    "ublkb0"
+  ],
+  "open_tools_references": {
+    "35896": [
+      {
+        "fd": 43,
+        "target": "/dev/ublkb0"
+      }
+    ],
+    "35918": [
+      {
+        "fd": 24,
+        "target": "/opt/agentenv-offload/state/deps/tools/0.1.1/sha256-0025158ff64f93188a0cac3d58f6bf641441d2cfffe9897cd390077427166e13.commit"
+      },
+      {
+        "fd": 25,
+        "target": "/dev/ublk-control"
+      },
+      {
+        "fd": 26,
+        "target": "/dev/ublkc0"
+      }
+    ]
+  },
+  "provider_processes": [
+    {
+      "pid": 35896,
+      "ppid": 1,
+      "starttime_ticks": 426963,
+      "comm": "server",
+      "netns_inode": 4026531840
+    },
+    {
+      "pid": 35918,
+      "ppid": 35896,
+      "starttime_ticks": 426967,
+      "comm": "uvm-ublk-daemon",
+      "netns_inode": 4026531840
+    }
+  ],
+  "service": {
+    "MainPID": "35896",
+    "ActiveState": "active",
+    "SubState": "running"
+  },
+  "service_not_restarted": true,
+  "service_identity_comparison": {
+    "previous": {
+      "server": [
+        35896,
+        426963
+      ],
+      "uvm-ublk-daemon": [
+        35918,
+        426967
+      ]
+    },
+    "current": {
+      "server": [
+        35896,
+        426963
+      ],
+      "uvm-ublk-daemon": [
+        35918,
+        426967
+      ]
+    }
+  },
+  "sandbox_http_status_after_delete": 404,
+  "owned_paused_artifact_exists": false,
+  "config_sha256": "5fde917e5ef742136092c9acd78f9fead00079b96cd7c0980a695c3698ebdf71",
+  "source_revision": "a27b2db909b035f58696ba8798ea0e285c7bfa17",
+  "actions": "只读核验独立paused-delete结果与节点状态；未重启、删除、修改服务或发送业务命令。",
+  "conclusion": "独立验证success=true，DELETE明确从paused发出，v2资源审计通过；当前0业务/starting/paused，仅保留1个Not started预生FC、共享tools b0与2个已归属网络槽。"
+}

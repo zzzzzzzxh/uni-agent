@@ -1,0 +1,6 @@
+scripts/agentenv_offload/*.sh text eol=lf
+scripts/agentenv_offload/*.py text eol=lf
+artifacts/agentenv-offload-results/** -text whitespace=cr-at-eol
+# 图表为绘图库原始 SVG 输出，路径中的行末空格保留。
+artifacts/agentenv-offload-results/**/*.svg -whitespace
+artifacts/agentenv-offload-results/** linguist-generated=true

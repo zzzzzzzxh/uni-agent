@@ -1,0 +1,14 @@
+{
+  "archive": "raw-data.zip",
+  "archive_sha256": "01f0bd63d6f5349d6ec8d1c1629ff17d242cb3f7028713daef4ec2866e152720",
+  "members_sha256": {
+    "pair-000-offload-5fd54d1f/metrics.jsonl": "1d86962d2aa2594631f40a8fcb01e1e51d34643ddf8f688de29bef69bee0e608",
+    "pair-000-offload-5fd54d1f/sampler.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "source/analyze.py": "bb7601f69449d925f0b73e2ab7e6a25030d3a4272a3bcc955dbf1522b5a9072e",
+    "source/demo.py": "2e679c5a1e0d17991fdb3cb1dbed96432006d8c5555c6bce6400c8d3c9bfe5fc",
+    "source/guest_probe.py": "222b5b7377e77562ca21897a3fcb01aea648e99dfbf7d27c6ad3c8f5d8cfcfd1",
+    "source/host_sampler.py": "4b4f967e16bd1dd18a9c092c7382659f8aa94f47f227bbfed90603681e6299e3",
+    "source/run_case.sh": "fd78dd8413157dcd68317177f644e950491e6a7918d506cc9f530ea9b0a9df7b"
+  },
+  "note": "保留原始指标、日志和当轮源码字节；分析和绘图前解压到本轮目录。"
+}

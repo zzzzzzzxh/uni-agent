@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "required_agentenv_sha": "a27b2db909b035f58696ba8798ea0e285c7bfa17",
+  "created_ns": 1792634842728167570,
+  "parameters": {
+    "api_url": "http://127.0.0.1:18800",
+    "node_ssh": "agentenv-node",
+    "ssh_config": "/home/zxh/uni-agent-sandbox-offload/node-access/ssh_config",
+    "node_root": "/opt/agentenv-offload/runs",
+    "aenv_bin": "/usr/local/bin/aenv",
+    "serial_dir": "/opt/agentenv-offload/state/serial",
+    "state_dir": "/opt/agentenv-offload/state",
+    "runtime_dir": "/run/agentenv-offload",
+    "provider_pid": [],
+    "provider_pid_file": "/opt/agentenv-offload/provider-pids.json",
+    "guest_image": "docker.io/library/python@sha256:8fb0b110b022c70cbe09d3ff1fb313654f31f9c814abb0d48180af56d906a199",
+    "output": "/home/zxh/uni-agent-sandbox-offload/results/lead64-pilot-20261022T020722Z",
+    "mode": "both",
+    "pause_before_cleanup": false,
+    "wait_seconds": 30.0,
+    "resume_lead_seconds": 1.5,
+    "memory_mib": 64,
+    "sandbox_memory_mib": 1024,
+    "cycles": 2,
+    "pairs": 1,
+    "entropy": "low",
+    "dirty_ratio": 0.0,
+    "seed": 1,
+    "cpus": 1,
+    "operation_timeout": 300.0,
+    "sample_interval": 0.1,
+    "io_tail_seconds": 2.0,
+    "observation_seconds": 90.0
+  },
+  "source_sha256": {
+    "demo.py": "dc03722474f098d3a1c46c88872f4dc8217d9e066db8ccaec6f5c318efa39ab6",
+    "guest_probe.py": "222b5b7377e77562ca21897a3fcb01aea648e99dfbf7d27c6ad3c8f5d8cfcfd1",
+    "host_sampler.py": "4b4f967e16bd1dd18a9c092c7382659f8aa94f47f227bbfed90603681e6299e3",
+    "analyze.py": "bb7601f69449d925f0b73e2ab7e6a25030d3a4272a3bcc955dbf1522b5a9072e"
+  },
+  "source_archive": "source",
+  "validation_only": false,
+  "control_path": {
+    "version": 3,
+    "fixed_wait_forecast": true,
+    "resume_lead_seconds": 1.5,
+    "tool_deadline_unchanged": true,
+    "resume_requires_http_status": 201,
+    "resume_discovery_registration_ssh_calls": 1,
+    "idle_end_synchronous_ssh": false,
+    "full_memory_oracle": true
+  },
+  "credential_source": "private TOML file",
+  "workload": "external simulated inference wait",
+  "tool_workload": "HTTP probe file/counter mutation; aenv CLI used for guest bootstrap",
+  "deployment_revision_validation": "requires deployment manifest; not inferred from API health",
+  "limitations": [
+    "single node",
+    "no cross-node recovery",
+    "no workload success-rate SLA claim"
+  ]
+}

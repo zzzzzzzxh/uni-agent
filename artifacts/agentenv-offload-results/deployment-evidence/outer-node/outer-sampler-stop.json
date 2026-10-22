@@ -1,0 +1,25 @@
+{
+  "pid": 243036,
+  "starttime_ticks": 116474332,
+  "checked_command": [
+    "/home/zxh/miniconda3/envs/uni-agent/bin/python",
+    "/home/zxh/agentenv-offload-deployment/host_sampler.py",
+    "--output",
+    "/home/zxh/agentenv-offload-deployment/outer-host-metrics.jsonl",
+    "--pid-file",
+    "/home/zxh/agentenv-offload-deployment/outer-pids.json",
+    "--interval",
+    "0.5",
+    "--duration",
+    "14400"
+  ],
+  "signal": "SIGTERM",
+  "stopped_wall_time_ns": 1792598878915526239,
+  "scope": "only owned outer sampler; QEMU left running",
+  "raw_sha256": "188f19d56fb0042fecd516207c4c2df7d17e6d1e037cff713f742df94bc4eef6",
+  "jsonl_records": 12007,
+  "all_lines_valid_json": true,
+  "sampler_stopped": true,
+  "qemu_pid": 240020,
+  "qemu_running": true
+}

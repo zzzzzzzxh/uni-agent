@@ -1,0 +1,17 @@
+{
+  "started_trials": 6,
+  "by_mode": {
+    "resident": {
+      "started": 3,
+      "successful": 3,
+      "success_rate": 1.0,
+      "cleanup_confirmed": 3
+    },
+    "offload": {
+      "started": 3,
+      "successful": 3,
+      "success_rate": 1.0,
+      "cleanup_confirmed": 3
+    }
+  }
+}

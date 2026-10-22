@@ -1,0 +1,10 @@
+{
+  "source_head": "a27b2db909b035f58696ba8798ea0e285c7bfa17",
+  "source_worktree_clean": true,
+  "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+  "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+  "original_toolchain_channel": "stable; actual compiler 1.99.1",
+  "current_reproduction_default": "AENV_RUST_TOOLCHAIN=1.99.1 in local reviewed provision script; not rerun on this live node",
+  "kernel": "6.8.0-147-generic",
+  "architecture": "x86_64"
+}

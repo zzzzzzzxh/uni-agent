@@ -1,0 +1,564 @@
+{
+  "schema_version": 1,
+  "agentenv_sha": null,
+  "required_agentenv_sha": "a27b2db909b035f58696ba8798ea0e285c7bfa17",
+  "workload": "external simulated inference wait",
+  "parameters": {
+    "api_url": "http://127.0.0.1:18800",
+    "node_ssh": "agentenv-node",
+    "ssh_config": "/home/zxh/uni-agent-sandbox-offload/node-access/ssh_config",
+    "node_root": "/opt/agentenv-offload/runs",
+    "aenv_bin": "/usr/local/bin/aenv",
+    "serial_dir": "/opt/agentenv-offload/state/serial",
+    "state_dir": "/opt/agentenv-offload/state",
+    "runtime_dir": "/run/agentenv-offload",
+    "provider_pid": [],
+    "provider_pid_file": "/opt/agentenv-offload/provider-pids.json",
+    "guest_image": "docker.io/library/python@sha256:8fb0b110b022c70cbe09d3ff1fb313654f31f9c814abb0d48180af56d906a199",
+    "output": "/home/zxh/uni-agent-sandbox-offload/results/zerocopy64-20261022T015607Z",
+    "mode": "offload",
+    "pause_before_cleanup": false,
+    "wait_seconds": 2.0,
+    "memory_mib": 64,
+    "sandbox_memory_mib": 1024,
+    "cycles": 2,
+    "pairs": 1,
+    "entropy": "low",
+    "dirty_ratio": 0.0,
+    "seed": 1,
+    "cpus": 1,
+    "operation_timeout": 300.0,
+    "sample_interval": 0.1,
+    "io_tail_seconds": 2.0,
+    "observation_seconds": 25.0
+  },
+  "source_sha256": {
+    "demo.py": "93fed18bb6762d40439901bffecc229d491528291b559bd3995e0ef8953c5562",
+    "guest_probe.py": "222b5b7377e77562ca21897a3fcb01aea648e99dfbf7d27c6ad3c8f5d8cfcfd1",
+    "host_sampler.py": "cef976aef872ffc94cbeb4f442286909e54583a4292587b2a8601f637f67dc52",
+    "analyze.py": "bb7601f69449d925f0b73e2ab7e6a25030d3a4272a3bcc955dbf1522b5a9072e"
+  },
+  "started_tasks": 1,
+  "planned_tasks": 1,
+  "unknown_mode_tasks": 0,
+  "unstarted_tasks": 0,
+  "input_errors": [],
+  "by_mode": {
+    "resident": {
+      "started_tasks": 0,
+      "successful_tasks": 0,
+      "failed_or_incomplete_tasks": 0,
+      "success_rate": null,
+      "cleanup_confirmed_tasks": 0,
+      "cleanup_rate": null,
+      "task_seconds_all_terminal_observations": {
+        "n": 0,
+        "p50": null,
+        "p95": null,
+        "max": null
+      },
+      "task_seconds_successful": {
+        "n": 0,
+        "p50": null,
+        "p95": null,
+        "max": null
+      },
+      "first_tool_seconds_task_p95": {
+        "n": 0,
+        "p50": null,
+        "p95": null,
+        "max": null
+      },
+      "restore_oracle_seconds_task_p95": {
+        "n": 0,
+        "p50": null,
+        "p95": null,
+        "max": null
+      }
+    },
+    "offload": {
+      "started_tasks": 1,
+      "successful_tasks": 1,
+      "failed_or_incomplete_tasks": 0,
+      "success_rate": 1.0,
+      "cleanup_confirmed_tasks": 1,
+      "cleanup_rate": 1.0,
+      "task_seconds_all_terminal_observations": {
+        "n": 1,
+        "p50": 15.049574187025428,
+        "p95": 15.049574187025428,
+        "max": 15.049574187025428
+      },
+      "task_seconds_successful": {
+        "n": 1,
+        "p50": 15.049574187025428,
+        "p95": 15.049574187025428,
+        "max": 15.049574187025428
+      },
+      "first_tool_seconds_task_p95": {
+        "n": 1,
+        "p50": 2.129636661277618,
+        "p95": 2.129636661277618,
+        "max": 2.129636661277618
+      },
+      "restore_oracle_seconds_task_p95": {
+        "n": 1,
+        "p50": 1.9513888376182877,
+        "p95": 1.9513888376182877,
+        "max": 1.9513888376182877
+      }
+    }
+  },
+  "pairs": [
+    {
+      "pair_index": 0,
+      "status": "unverified",
+      "reason": "missing_or_duplicate_mode"
+    }
+  ],
+  "planned_run": {
+    "status": "pass",
+    "planned_tasks": 1,
+    "reason": null,
+    "incomplete_trial_ids": [],
+    "missing_trials": [],
+    "unexpected_or_duplicate_trials": []
+  },
+  "acceptance_status": "unverified",
+  "observed_pss_costs": {
+    "measured_tasks": 1,
+    "unmeasured_tasks": 0,
+    "all_started_measured_gib_seconds": 2.0789340376713246,
+    "failed_tasks_measured_gib_seconds": 0,
+    "scope": "observed_task_windows_including_failures; not_a_fair_pairwise_saving_estimate"
+  },
+  "trial_measurements": {
+    "pair-000-offload-0b3dc177": {
+      "start_seconds": 0.0,
+      "end_seconds": 17.0842493949458,
+      "clock": {
+        "status": "calibrated",
+        "uncertainty_seconds": 0.023040352971293032,
+        "origin_client_monotonic_seconds": 1205676.143541292
+      },
+      "time_coverage_with_uncertainty": true,
+      "metric_file_errors": [],
+      "event_file_errors": [],
+      "curves": {
+        "assigned_process_pss": {
+          "window_seconds": 17.0842493949458,
+          "integral_byte_seconds": 2232238425.5848927,
+          "integral_gib_seconds": 2.0789340376713246,
+          "peak_bytes": 264182784.0,
+          "minimum_bytes": 77680640.0,
+          "status": "observed",
+          "reason": null
+        },
+        "sandbox_process_pss": {
+          "window_seconds": 17.0842493949458,
+          "integral_byte_seconds": 698761334.0767422,
+          "integral_gib_seconds": 0.650772204694098,
+          "peak_bytes": 184041472.0,
+          "minimum_bytes": 0.0,
+          "status": "observed",
+          "reason": null
+        },
+        "node_anon": {
+          "window_seconds": 17.0842493949458,
+          "integral_byte_seconds": 2393512259.1442327,
+          "integral_gib_seconds": 2.2291319995599173,
+          "peak_bytes": 294031360.0,
+          "minimum_bytes": 103997440.0,
+          "status": "observed",
+          "reason": null
+        },
+        "node_cache": {
+          "window_seconds": 17.0842493949458,
+          "integral_byte_seconds": 121940667574.8325,
+          "integral_gib_seconds": 113.5660964761232,
+          "peak_bytes": 7247441920.0,
+          "minimum_bytes": 7046029312.0,
+          "status": "observed",
+          "reason": null
+        },
+        "node_available": {
+          "window_seconds": 17.0842493949458,
+          "integral_byte_seconds": 560305785924.6274,
+          "integral_gib_seconds": 521.8254271192732,
+          "peak_bytes": 32857071616.0,
+          "minimum_bytes": 32636391424.0,
+          "status": "observed",
+          "reason": null
+        }
+      },
+      "comparable": true,
+      "node_observations_complete": true,
+      "io": {
+        "process_identities": [
+          {
+            "pid": 35896,
+            "starttime_ticks": 426963,
+            "label": "provider",
+            "first_observed_seconds": 0.06469609378837049,
+            "last_observed_seconds": 17.064693993888795,
+            "samples": 171,
+            "observed_read_bytes": 339037184,
+            "first_counter_read_bytes": 2196948992,
+            "read_bytes_status": "observed_lower_bound",
+            "observed_write_bytes": 199786496,
+            "first_counter_write_bytes": 1228558336,
+            "write_bytes_status": "observed_lower_bound",
+            "initial_and_terminal_unobserved_io_not_included": true
+          },
+          {
+            "pid": 35918,
+            "starttime_ticks": 426967,
+            "label": "storage",
+            "first_observed_seconds": 0.06469609378837049,
+            "last_observed_seconds": 17.064693993888795,
+            "samples": 171,
+            "observed_read_bytes": 61440,
+            "first_counter_read_bytes": 577536,
+            "read_bytes_status": "observed_lower_bound",
+            "observed_write_bytes": 3371008,
+            "first_counter_write_bytes": 27865088,
+            "write_bytes_status": "observed_lower_bound",
+            "initial_and_terminal_unobserved_io_not_included": true
+          },
+          {
+            "pid": 40224,
+            "starttime_ticks": 4187683,
+            "label": "provider",
+            "first_observed_seconds": 0.06469609378837049,
+            "last_observed_seconds": 10.86469133081846,
+            "samples": 109,
+            "observed_read_bytes": 157229056,
+            "first_counter_read_bytes": 0,
+            "read_bytes_status": "observed_lower_bound",
+            "observed_write_bytes": 45056,
+            "first_counter_write_bytes": 4096,
+            "write_bytes_status": "observed_lower_bound",
+            "initial_and_terminal_unobserved_io_not_included": true
+          },
+          {
+            "pid": 40322,
+            "starttime_ticks": 4201079,
+            "label": "provider",
+            "first_observed_seconds": 0.06469609378837049,
+            "last_observed_seconds": 1.8646886858623475,
+            "samples": 19,
+            "observed_read_bytes": 0,
+            "first_counter_read_bytes": 0,
+            "read_bytes_status": "observed_lower_bound",
+            "observed_write_bytes": 0,
+            "first_counter_write_bytes": 0,
+            "write_bytes_status": "observed_lower_bound",
+            "initial_and_terminal_unobserved_io_not_included": true
+          },
+          {
+            "pid": 40342,
+            "starttime_ticks": 4201274,
+            "label": "provider",
+            "first_observed_seconds": 2.0647061937488616,
+            "last_observed_seconds": 6.964694148860872,
+            "samples": 50,
+            "observed_read_bytes": 21556224,
+            "first_counter_read_bytes": 0,
+            "read_bytes_status": "observed_lower_bound",
+            "observed_write_bytes": 49152,
+            "first_counter_write_bytes": 16384,
+            "write_bytes_status": "observed_lower_bound",
+            "initial_and_terminal_unobserved_io_not_included": true
+          },
+          {
+            "pid": 40369,
+            "starttime_ticks": 4201935,
+            "label": "provider",
+            "first_observed_seconds": 8.664689073804766,
+            "last_observed_seconds": 14.664701399859041,
+            "samples": 61,
+            "observed_read_bytes": 160202752,
+            "first_counter_read_bytes": 0,
+            "read_bytes_status": "observed_lower_bound",
+            "observed_write_bytes": 3186688,
+            "first_counter_write_bytes": 4096,
+            "write_bytes_status": "observed_lower_bound",
+            "initial_and_terminal_unobserved_io_not_included": true
+          },
+          {
+            "pid": 40386,
+            "starttime_ticks": 4202351,
+            "label": "provider",
+            "first_observed_seconds": 12.764687760965899,
+            "last_observed_seconds": 17.064693993888795,
+            "samples": 44,
+            "observed_read_bytes": 0,
+            "first_counter_read_bytes": 0,
+            "read_bytes_status": "observed_lower_bound",
+            "observed_write_bytes": 0,
+            "first_counter_write_bytes": 4096,
+            "write_bytes_status": "observed_lower_bound",
+            "initial_and_terminal_unobserved_io_not_included": true
+          }
+        ],
+        "process_totals": {
+          "observed_read_bytes_lower_bound": 678086656,
+          "read_bytes_incomplete_identities": 0,
+          "observed_write_bytes_lower_bound": 206438400,
+          "write_bytes_incomplete_identities": 0
+        },
+        "disk_devices": [
+          {
+            "device": "loop0",
+            "major_minor": "7:0",
+            "slaves": [],
+            "first_observed_seconds": 0.06469609378837049,
+            "last_observed_seconds": 17.064693993888795,
+            "samples": 171,
+            "observed_read_bytes": 0,
+            "first_counter_read_bytes": 14336,
+            "read_bytes_status": "observed_lower_bound",
+            "observed_write_bytes": 0,
+            "first_counter_write_bytes": 0,
+            "write_bytes_status": "observed_lower_bound",
+            "initial_and_terminal_unobserved_io_not_included": true
+          },
+          {
+            "device": "loop1",
+            "major_minor": "7:1",
+            "slaves": [],
+            "first_observed_seconds": 0.06469609378837049,
+            "last_observed_seconds": 17.064693993888795,
+            "samples": 171,
+            "observed_read_bytes": 0,
+            "first_counter_read_bytes": 0,
+            "read_bytes_status": "observed_lower_bound",
+            "observed_write_bytes": 0,
+            "first_counter_write_bytes": 0,
+            "write_bytes_status": "observed_lower_bound",
+            "initial_and_terminal_unobserved_io_not_included": true
+          },
+          {
+            "device": "loop2",
+            "major_minor": "7:2",
+            "slaves": [],
+            "first_observed_seconds": 0.06469609378837049,
+            "last_observed_seconds": 17.064693993888795,
+            "samples": 171,
+            "observed_read_bytes": 0,
+            "first_counter_read_bytes": 0,
+            "read_bytes_status": "observed_lower_bound",
+            "observed_write_bytes": 0,
+            "first_counter_write_bytes": 0,
+            "write_bytes_status": "observed_lower_bound",
+            "initial_and_terminal_unobserved_io_not_included": true
+          },
+          {
+            "device": "loop3",
+            "major_minor": "7:3",
+            "slaves": [],
+            "first_observed_seconds": 0.06469609378837049,
+            "last_observed_seconds": 17.064693993888795,
+            "samples": 171,
+            "observed_read_bytes": 0,
+            "first_counter_read_bytes": 0,
+            "read_bytes_status": "observed_lower_bound",
+            "observed_write_bytes": 0,
+            "first_counter_write_bytes": 0,
+            "write_bytes_status": "observed_lower_bound",
+            "initial_and_terminal_unobserved_io_not_included": true
+          },
+          {
+            "device": "loop4",
+            "major_minor": "7:4",
+            "slaves": [],
+            "first_observed_seconds": 0.06469609378837049,
+            "last_observed_seconds": 17.064693993888795,
+            "samples": 171,
+            "observed_read_bytes": 0,
+            "first_counter_read_bytes": 0,
+            "read_bytes_status": "observed_lower_bound",
+            "observed_write_bytes": 0,
+            "first_counter_write_bytes": 0,
+            "write_bytes_status": "observed_lower_bound",
+            "initial_and_terminal_unobserved_io_not_included": true
+          },
+          {
+            "device": "loop5",
+            "major_minor": "7:5",
+            "slaves": [],
+            "first_observed_seconds": 0.06469609378837049,
+            "last_observed_seconds": 17.064693993888795,
+            "samples": 171,
+            "observed_read_bytes": 0,
+            "first_counter_read_bytes": 0,
+            "read_bytes_status": "observed_lower_bound",
+            "observed_write_bytes": 0,
+            "first_counter_write_bytes": 0,
+            "write_bytes_status": "observed_lower_bound",
+            "initial_and_terminal_unobserved_io_not_included": true
+          },
+          {
+            "device": "loop6",
+            "major_minor": "7:6",
+            "slaves": [],
+            "first_observed_seconds": 0.06469609378837049,
+            "last_observed_seconds": 17.064693993888795,
+            "samples": 171,
+            "observed_read_bytes": 0,
+            "first_counter_read_bytes": 0,
+            "read_bytes_status": "observed_lower_bound",
+            "observed_write_bytes": 0,
+            "first_counter_write_bytes": 0,
+            "write_bytes_status": "observed_lower_bound",
+            "initial_and_terminal_unobserved_io_not_included": true
+          },
+          {
+            "device": "loop7",
+            "major_minor": "7:7",
+            "slaves": [],
+            "first_observed_seconds": 0.06469609378837049,
+            "last_observed_seconds": 17.064693993888795,
+            "samples": 171,
+            "observed_read_bytes": 0,
+            "first_counter_read_bytes": 0,
+            "read_bytes_status": "observed_lower_bound",
+            "observed_write_bytes": 0,
+            "first_counter_write_bytes": 0,
+            "write_bytes_status": "observed_lower_bound",
+            "initial_and_terminal_unobserved_io_not_included": true
+          },
+          {
+            "device": "vda",
+            "major_minor": "253:0",
+            "slaves": [],
+            "first_observed_seconds": 0.06469609378837049,
+            "last_observed_seconds": 17.064693993888795,
+            "samples": 171,
+            "observed_read_bytes": 0,
+            "first_counter_read_bytes": 567611392,
+            "read_bytes_status": "observed_lower_bound",
+            "observed_write_bytes": 2240512,
+            "first_counter_write_bytes": 12808325120,
+            "write_bytes_status": "observed_lower_bound",
+            "initial_and_terminal_unobserved_io_not_included": true
+          },
+          {
+            "device": "vdb",
+            "major_minor": "253:16",
+            "slaves": [],
+            "first_observed_seconds": 0.06469609378837049,
+            "last_observed_seconds": 17.064693993888795,
+            "samples": 171,
+            "observed_read_bytes": 0,
+            "first_counter_read_bytes": 359936,
+            "read_bytes_status": "observed_lower_bound",
+            "observed_write_bytes": 0,
+            "first_counter_write_bytes": 0,
+            "write_bytes_status": "observed_lower_bound",
+            "initial_and_terminal_unobserved_io_not_included": true
+          },
+          {
+            "device": "sr0",
+            "major_minor": "11:0",
+            "slaves": [],
+            "first_observed_seconds": 0.06469609378837049,
+            "last_observed_seconds": 17.064693993888795,
+            "samples": 171,
+            "observed_read_bytes": 0,
+            "first_counter_read_bytes": 14336,
+            "read_bytes_status": "observed_lower_bound",
+            "observed_write_bytes": 0,
+            "first_counter_write_bytes": 0,
+            "write_bytes_status": "observed_lower_bound",
+            "initial_and_terminal_unobserved_io_not_included": true
+          },
+          {
+            "device": "ublkb0",
+            "major_minor": "259:1",
+            "slaves": [],
+            "first_observed_seconds": 0.06469609378837049,
+            "last_observed_seconds": 17.064693993888795,
+            "samples": 171,
+            "observed_read_bytes": 0,
+            "first_counter_read_bytes": 12722176,
+            "read_bytes_status": "observed_lower_bound",
+            "observed_write_bytes": 0,
+            "first_counter_write_bytes": 0,
+            "write_bytes_status": "observed_lower_bound",
+            "initial_and_terminal_unobserved_io_not_included": true
+          },
+          {
+            "device": "ublkb1",
+            "major_minor": "259:2",
+            "slaves": [],
+            "first_observed_seconds": 1.9646888019051403,
+            "last_observed_seconds": 14.664701399859041,
+            "samples": 93,
+            "observed_read_bytes": null,
+            "first_counter_read_bytes": 356352,
+            "read_bytes_status": "counter_reset",
+            "observed_write_bytes": null,
+            "first_counter_write_bytes": 0,
+            "write_bytes_status": "counter_reset",
+            "initial_and_terminal_unobserved_io_not_included": true
+          },
+          {
+            "device": "ublkb2",
+            "major_minor": "259:3",
+            "slaves": [],
+            "first_observed_seconds": 8.764709851937369,
+            "last_observed_seconds": 14.764691058779135,
+            "samples": 42,
+            "observed_read_bytes": null,
+            "first_counter_read_bytes": 25628672,
+            "read_bytes_status": "counter_reset",
+            "observed_write_bytes": 0,
+            "first_counter_write_bytes": 0,
+            "write_bytes_status": "observed_lower_bound",
+            "initial_and_terminal_unobserved_io_not_included": true
+          }
+        ],
+        "scope": "sampled_interval_only; process_initial_and_terminal_gaps; node_devices_not_additive"
+      },
+      "unpaired_diagnostic_only": true
+    }
+  },
+  "trial_outcomes": [
+    {
+      "trial_id": "pair-000-offload-0b3dc177",
+      "mode": "offload",
+      "success": true,
+      "cleanup_confirmed": true,
+      "incomplete": false,
+      "error_type": null,
+      "event_file_errors": []
+    }
+  ],
+  "paired_summary": {
+    "independent_pairs": 1,
+    "memory_comparable_pairs": 0,
+    "assigned_process_pss_saving_fraction": null,
+    "task_p95_relative_increase": null,
+    "first_tool_extra_seconds_task_p95": null
+  },
+  "thresholds": {
+    "memory_saving_min": 0.2,
+    "task_p95_increase_max": 0.05,
+    "first_tool_extra_max_seconds": 1.0,
+    "max_sample_gap_seconds": 1.0
+  },
+  "gates": {
+    "planned_run_complete": "pass",
+    "task_correctness_and_cleanup": "pass",
+    "assigned_process_pss_saving": "unverified",
+    "task_p95_increase": "unverified",
+    "first_tool_extra_task_p95": "unverified",
+    "physical_node_saving_attribution": "unverified"
+  },
+  "inference_scope": "assigned_process_PSS_only; whole_node_counters_not_causal_attribution",
+  "sandbox_process_pss_scope": "observed_lower_bound_of_explicit_sandbox_label_windows; pre_registration_VM_is_in_provider_descendants_and_assigned_total; not_complete_VM_integral_or_billing; acceptance_uses_assigned_total",
+  "physical_node_benefit": "unverified",
+  "statistical_unit": "independent_task_pair; cycles_are_correlated_within_task",
+  "percentile_method": "linear_interpolation_at_(n-1)*q; exploratory_small_sample"
+}
