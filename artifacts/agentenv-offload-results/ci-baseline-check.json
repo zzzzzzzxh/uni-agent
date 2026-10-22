@@ -1,0 +1,13 @@
+{
+  "note": "全仓检查在未改动的 main 文件报错；未修改这些生产文件或绕过检查。",
+  "base_revision": "e20b40cf622e79933d6fe5dd2eb6a979069deab6",
+  "unchanged_file": "examples/swe_agent_blackbox/agent_runner.py",
+  "errors_on_base_blob": 4,
+  "codes": [
+    "E501",
+    "I001"
+  ],
+  "scoped_ruff_lint_and_format": "passed",
+  "mypy_ci": "passed",
+  "compileall_ci": "passed"
+}

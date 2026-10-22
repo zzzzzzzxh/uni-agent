@@ -22,10 +22,27 @@ PROBE = Path(__file__).resolve().parents[1] / "scripts" / "agentenv_offload" / "
 class RunningProbe:
     def __init__(self, root: Path, *, entropy: str = "low", dirty_ratio: str = "0") -> None:
         self.process = subprocess.Popen(
-            [sys.executable, str(PROBE), "--memory-mib", "2", "--port", "0",
-             "--host", "127.0.0.1", "--workdir", str(root), "--seed", "19",
-             "--entropy", entropy, "--dirty-ratio", dirty_ratio],
-            stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
+            [
+                sys.executable,
+                str(PROBE),
+                "--memory-mib",
+                "2",
+                "--port",
+                "0",
+                "--host",
+                "127.0.0.1",
+                "--workdir",
+                str(root),
+                "--seed",
+                "19",
+                "--entropy",
+                entropy,
+                "--dirty-ratio",
+                dirty_ratio,
+            ],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
             creationflags=subprocess.CREATE_NO_WINDOW if os.name == "nt" else 0,
         )
         lines: queue.Queue[str] = queue.Queue()

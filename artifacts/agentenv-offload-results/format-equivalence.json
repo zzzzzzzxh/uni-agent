@@ -1,0 +1,55 @@
+{
+  "note": "仅按仓库格式规范排版；全部语法树一致，实验源码与旧摘要仍在原归档中保留。",
+  "files": {
+    "scripts\\agentenv_offload\\analyze.py": {
+      "measured_or_tested_sha256": "bb7601f69449d925f0b73e2ab7e6a25030d3a4272a3bcc955dbf1522b5a9072e",
+      "formatted_sha256": "15197094e24db579db2e8e46e64f5dd25a2c1a677826bb73c967feb1f6b7eca4",
+      "ast_identical": true
+    },
+    "scripts\\agentenv_offload\\demo.py": {
+      "measured_or_tested_sha256": "2e679c5a1e0d17991fdb3cb1dbed96432006d8c5555c6bce6400c8d3c9bfe5fc",
+      "formatted_sha256": "69fed671f54b7e2b5e145508786dedfb7e5767fe49fcfda601a907db0c4ef373",
+      "ast_identical": true
+    },
+    "scripts\\agentenv_offload\\guest_probe.py": {
+      "measured_or_tested_sha256": "222b5b7377e77562ca21897a3fcb01aea648e99dfbf7d27c6ad3c8f5d8cfcfd1",
+      "formatted_sha256": "be61ace71f86866fed80532cd00fbe1eb71d04c10fb3c8915cab2b06162b3efa",
+      "ast_identical": true
+    },
+    "scripts\\agentenv_offload\\host_sampler.py": {
+      "measured_or_tested_sha256": "4b4f967e16bd1dd18a9c092c7382659f8aa94f47f227bbfed90603681e6299e3",
+      "formatted_sha256": "e5a0ccd4b579c97b52b4a630fa9f41c41674f32ed5dc226d4601957d13bd2638",
+      "ast_identical": true
+    },
+    "scripts\\agentenv_offload\\plot_results.py": {
+      "measured_or_tested_sha256": "eaa0a348504eee1f3ef7d5a4c84d8758ef9d754d9fdfe1c6c3087b50048dcd2a",
+      "formatted_sha256": "55ffdbf9537fb1ce5e87671fc21937ac9f000c4e757616458231282b76dbbb93",
+      "ast_identical": true
+    },
+    "tests\\test_agentenv_offload_analysis.py": {
+      "measured_or_tested_sha256": "5951f07158def71a8edbd9749f890f3e43ac2594e2d1a86a10ec573db595dfba",
+      "formatted_sha256": "5887eef547a82b8556831dfd64efeaa1e92051319f7fa722438504f9e19d35b9",
+      "ast_identical": true
+    },
+    "tests\\test_agentenv_offload_demo.py": {
+      "measured_or_tested_sha256": "82b1c823966c7ff85602098948668a7c5e07adbc2f146c5ed6b124c054da0b00",
+      "formatted_sha256": "ffbfcd427bdf6f8624bedcf34b93df37cef49bbc27fef4d21b3ec3bc1e2e35d7",
+      "ast_identical": true
+    },
+    "tests\\test_agentenv_offload_plot.py": {
+      "measured_or_tested_sha256": "b0f50884351a7029383fb7875a73001edfa603df248b8868d3653f8faecc8ac3",
+      "formatted_sha256": "fdaa33d501c2a3a472b79fe5479fba07ffe322ba414c34573679f245b48ecdd1",
+      "ast_identical": true
+    },
+    "tests\\test_agentenv_offload_probe.py": {
+      "measured_or_tested_sha256": "3d8fb2e6e2a0a236365d1e8355a1c82dca98f3fafddc71f19414b8b64fdf34a7",
+      "formatted_sha256": "6b33701c123c6ae36ed95b12991b27189dca53e792fc7379160879389209adec",
+      "ast_identical": true
+    },
+    "tests\\test_agentenv_offload_sampler.py": {
+      "measured_or_tested_sha256": "f16849e8f2cbca01abcbc18d3b12fe15839d92e1be5634098766b8c61f3c444a",
+      "formatted_sha256": "ba8d9bd299908b6a35efbb00ee40682289b1ef48b7fb3b0c020717b0c59e6e8b",
+      "ast_identical": true
+    }
+  }
+}

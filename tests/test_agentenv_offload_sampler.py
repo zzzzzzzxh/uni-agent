@@ -33,12 +33,12 @@ class FixtureTests(unittest.TestCase):
         self.proc.mkdir()
         self.sys.mkdir()
         (self.proc / "meminfo").write_text(
-            "MemTotal: 1000 kB\nMemAvailable: 700 kB\nCached: 200 kB\nAnonPages: 100 kB\n")
+            "MemTotal: 1000 kB\nMemAvailable: 700 kB\nCached: 200 kB\nAnonPages: 100 kB\n"
+        )
         (self.proc / "stat").write_text("cpu 10 0 5 80 3 1 1 0 0 0\n")
         (self.proc / "diskstats").write_text(
-            "8 0 sda 1 0 8 2 3 0 16 4 0 6 7\n"
-            "8 1 sda1 1 0 8 2 3 0 16 4 0 6 7\n"
-            "253 0 dm-0 1 0 8 2 3 0 16 4 0 6 7\n")
+            "8 0 sda 1 0 8 2 3 0 16 4 0 6 7\n8 1 sda1 1 0 8 2 3 0 16 4 0 6 7\n253 0 dm-0 1 0 8 2 3 0 16 4 0 6 7\n"
+        )
         for name in ("sda", "sda1", "dm-0"):
             (self.sys / "class" / "block" / name / "slaves").mkdir(parents=True)
         (self.sys / "class" / "block" / "sda1" / "partition").write_text("1")
@@ -54,13 +54,12 @@ class FixtureTests(unittest.TestCase):
         directory.mkdir(exist_ok=True)
         (directory / "stat").write_text(stat_line(pid, parent, start))
         (directory / "smaps_rollup").write_text(
-            "Rss: 16 kB\nPss: 12 kB\nAnonymous: 8 kB\nPss_Anon: 8 kB\n"
-            "Pss_File: 3 kB\nPss_Shmem: 1 kB\nSwap: 0 kB\n")
+            "Rss: 16 kB\nPss: 12 kB\nAnonymous: 8 kB\nPss_Anon: 8 kB\nPss_File: 3 kB\nPss_Shmem: 1 kB\nSwap: 0 kB\n"
+        )
         (directory / "io").write_text("rchar: 100\nwchar: 200\nread_bytes: 4096\nwrite_bytes: 8192\n")
 
     def make_sampler(self):
-        return sampler.Sampler(self.pid_file, proc=self.proc, sys_root=self.sys,
-                               clock_ticks=100, page_bytes=4096)
+        return sampler.Sampler(self.pid_file, proc=self.proc, sys_root=self.sys, clock_ticks=100, page_bytes=4096)
 
     def test_ownership_survives_reparenting_but_not_pid_reuse(self):
         self.process(101, start=100)
@@ -126,8 +125,9 @@ class FixtureTests(unittest.TestCase):
         self.assertEqual(result["errors"]["smaps_rollup"], "permission_denied")
         old = sampler.parse_proc_stat(stat_line(101, start=100))
         replacement = sampler.parse_proc_stat(stat_line(101, start=200))
-        with mock.patch.object(sampler, "read_proc_stat_details",
-                               side_effect=[(old, None, None), (replacement, None, None)]):
+        with mock.patch.object(
+            sampler, "read_proc_stat_details", side_effect=[(old, None, None), (replacement, None, None)]
+        ):
             result = sampler.sample_process(self.proc, (101, 100), {"label": "provider"}, 100, 4096)
         self.assertEqual(result["status"], "identity_changed_during_sample")
         self.assertNotIn("memory", result)
@@ -166,8 +166,9 @@ class FixtureTests(unittest.TestCase):
             self.assertEqual(released["release_evidence"]["confirmation_stat"]["virtual_bytes"], 0)
             original = sampler.parse_proc_stat(stat_line(101, start=100, virtual=0, rss=0))
             reused = sampler.parse_proc_stat(stat_line(101, start=999, virtual=0, rss=0))
-            with mock.patch.object(sampler, "read_proc_stat_details",
-                                   side_effect=[(original, None, None), (reused, None, None)]):
+            with mock.patch.object(
+                sampler, "read_proc_stat_details", side_effect=[(original, None, None), (reused, None, None)]
+            ):
                 replaced = sampler.sample_process(self.proc, (101, 100), {"label": "sandbox"}, 100, 4096)
             self.assertFalse(replaced["address_space_released"])
             self.assertEqual(replaced["status"], "identity_changed_during_sample")
@@ -181,6 +182,7 @@ class FixtureTests(unittest.TestCase):
 
         for denied_file in ("smaps_rollup", "maps"):
             with self.subTest(denied_file=denied_file):
+
                 def denied(path, denied_file=denied_file):
                     if path.name == denied_file:
                         return None, "permission_denied", errno.EACCES
@@ -202,8 +204,12 @@ class FixtureTests(unittest.TestCase):
     def test_inventory_exit_moves_to_evidence_without_synthetic_counters(self):
         self.process(101, start=100)
         self.process(201, start=200)
-        self.write_registry([{"pid": 101, "starttime_ticks": 100, "label": "sandbox"},
-                             {"pid": 201, "starttime_ticks": 200, "label": "provider"}])
+        self.write_registry(
+            [
+                {"pid": 101, "starttime_ticks": 100, "label": "sandbox"},
+                {"pid": 201, "starttime_ticks": 200, "label": "provider"},
+            ]
+        )
         original_scan = sampler.scan_processes
 
         def exit_after_inventory(proc):
@@ -235,8 +241,7 @@ class FixtureTests(unittest.TestCase):
         self.process(101)
         seen = sampler.read_proc_stat(self.proc, 101)
         (self.proc / "101" / "stat").unlink()
-        result = sampler.sample_process(self.proc, (101, 100), {"label": "sandbox"}, 100, 4096,
-                                        inventory_stat=seen)
+        result = sampler.sample_process(self.proc, (101, 100), {"label": "sandbox"}, 100, 4096, inventory_stat=seen)
         self.assertEqual(result["status"], "identity_unavailable")
         self.assertFalse(result["exit_evidence"]["confirmed"])
         self.assertTrue(result["exit_evidence"]["checks"][0]["pid_directory"]["present"])
@@ -248,31 +253,45 @@ class FixtureTests(unittest.TestCase):
         root_identity = sampler.directory_identity(self.proc)
         self.remove_fixture_process(101)
         missing = (None, "not_found", errno.ENOENT)
-        for category, number in (("permission_denied", errno.EACCES), ("read_error", errno.EIO),
-                                 ("malformed", None)):
-            with self.subTest(stat_error=category), mock.patch.object(
-                    sampler, "read_proc_stat_details", return_value=(None, category, number)):
-                result = sampler.sample_process(self.proc, (101, 100), {}, 100, 4096,
-                                                inventory_stat=seen, proc_identity=root_identity)
+        for category, number in (("permission_denied", errno.EACCES), ("read_error", errno.EIO), ("malformed", None)):
+            with (
+                self.subTest(stat_error=category),
+                mock.patch.object(sampler, "read_proc_stat_details", return_value=(None, category, number)),
+            ):
+                result = sampler.sample_process(
+                    self.proc, (101, 100), {}, 100, 4096, inventory_stat=seen, proc_identity=root_identity
+                )
                 self.assertEqual(result["status"], "identity_unavailable")
                 self.assertFalse(result["exit_evidence"]["confirmed"])
                 self.assertNotIn("memory", result)
         for root_error, number in (("not_found", errno.ENOENT), ("permission_denied", errno.EACCES)):
-            with self.subTest(root_error=root_error), mock.patch.object(sampler, "directory_identity", return_value={
-                    "device": None, "inode": None, "error": root_error, "errno": number}):
-                result = sampler.sample_process(self.proc, (101, 100), {}, 100, 4096,
-                                                inventory_stat=seen, proc_identity=root_identity)
+            with (
+                self.subTest(root_error=root_error),
+                mock.patch.object(
+                    sampler,
+                    "directory_identity",
+                    return_value={"device": None, "inode": None, "error": root_error, "errno": number},
+                ),
+            ):
+                result = sampler.sample_process(
+                    self.proc, (101, 100), {}, 100, 4096, inventory_stat=seen, proc_identity=root_identity
+                )
                 self.assertEqual(result["exit_evidence"]["reason"], "proc_root_changed_or_unavailable")
                 self.assertFalse(result["exit_evidence"]["confirmed"])
-        with mock.patch.object(sampler, "directory_presence", return_value={
-                "present": None, "error": "permission_denied", "errno": errno.EACCES}):
-            result = sampler.sample_process(self.proc, (101, 100), {}, 100, 4096,
-                                            inventory_stat=seen, proc_identity=root_identity)
+        with mock.patch.object(
+            sampler,
+            "directory_presence",
+            return_value={"present": None, "error": "permission_denied", "errno": errno.EACCES},
+        ):
+            result = sampler.sample_process(
+                self.proc, (101, 100), {}, 100, 4096, inventory_stat=seen, proc_identity=root_identity
+            )
             self.assertFalse(result["exit_evidence"]["confirmed"])
         reused = sampler.parse_proc_stat(stat_line(101, start=999))
         with mock.patch.object(sampler, "read_proc_stat_details", side_effect=[missing, missing, (reused, None, None)]):
-            result = sampler.sample_process(self.proc, (101, 100), {}, 100, 4096,
-                                            inventory_stat=seen, proc_identity=root_identity)
+            result = sampler.sample_process(
+                self.proc, (101, 100), {}, 100, 4096, inventory_stat=seen, proc_identity=root_identity
+            )
         self.assertFalse(result["exit_evidence"]["confirmed"])
         self.assertEqual(result["exit_evidence"]["reason"], "identity_reappeared_or_reused")
         self.assertNotIn("memory", result)
@@ -292,14 +311,16 @@ class FixtureTests(unittest.TestCase):
             return original_reader(proc, pid)
 
         with mock.patch.object(sampler, "read_proc_stat_details", side_effect=exit_before_final):
-            result = sampler.sample_process(self.proc, (101, 100), {}, 100, 4096,
-                                            inventory_stat=seen, proc_identity=root_identity)
+            result = sampler.sample_process(
+                self.proc, (101, 100), {}, 100, 4096, inventory_stat=seen, proc_identity=root_identity
+            )
         self.assertEqual(result["status"], "confirmed_exited")
         self.assertNotIn("memory", result)
         self.assertNotIn("io", result)
         self.process(101, start=999)
-        reused = sampler.sample_process(self.proc, (101, 100), {}, 100, 4096,
-                                        inventory_stat=seen, proc_identity=root_identity)
+        reused = sampler.sample_process(
+            self.proc, (101, 100), {}, 100, 4096, inventory_stat=seen, proc_identity=root_identity
+        )
         self.assertEqual(reused["status"], "identity_unavailable")
         self.assertFalse(reused["exit_evidence"]["confirmed"])
 
@@ -334,16 +355,21 @@ class RealProcessTests(unittest.TestCase):
     def test_controlled_child_is_measured_without_selecting_parent(self):
         with tempfile.TemporaryDirectory(prefix="offload-live-sampler-") as directory:
             process = subprocess.Popen(
-                [sys.executable, "-c",
-                 "import time; b=bytearray(8*1024*1024); print('ready',flush=True); time.sleep(30)"],
-                stdout=subprocess.PIPE, text=True,
+                [
+                    sys.executable,
+                    "-c",
+                    "import time; b=bytearray(8*1024*1024); print('ready',flush=True); time.sleep(30)",
+                ],
+                stdout=subprocess.PIPE,
+                text=True,
             )
             try:
                 self.assertEqual(process.stdout.readline().strip(), "ready")
                 stat = sampler.read_proc_stat(Path("/proc"), process.pid)
                 registry = Path(directory) / "owned.json"
-                registry.write_text(json.dumps({"processes": [{"pid": process.pid,
-                                                               "starttime_ticks": stat["starttime_ticks"]}]}))
+                registry.write_text(
+                    json.dumps({"processes": [{"pid": process.pid, "starttime_ticks": stat["starttime_ticks"]}]})
+                )
                 row = sampler.Sampler(registry).sample()
                 self.assertEqual([x["pid"] for x in row["processes"]], [process.pid])
                 self.assertNotIn(os.getpid(), [x["pid"] for x in row["processes"]])
@@ -353,9 +379,15 @@ class RealProcessTests(unittest.TestCase):
                 proc_identity = sampler.directory_identity(Path("/proc"))
                 process.terminate()
                 process.wait(timeout=5)
-                exited = sampler.sample_process(Path("/proc"), (process.pid, stat["starttime_ticks"]),
-                                                 {}, os.sysconf("SC_CLK_TCK"), os.sysconf("SC_PAGE_SIZE"),
-                                                 inventory_stat=stat, proc_identity=proc_identity)
+                exited = sampler.sample_process(
+                    Path("/proc"),
+                    (process.pid, stat["starttime_ticks"]),
+                    {},
+                    os.sysconf("SC_CLK_TCK"),
+                    os.sysconf("SC_PAGE_SIZE"),
+                    inventory_stat=stat,
+                    proc_identity=proc_identity,
+                )
                 self.assertEqual(exited["status"], "confirmed_exited")
                 self.assertNotIn("memory", exited)
             finally:

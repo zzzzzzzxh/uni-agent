@@ -31,9 +31,19 @@ import tomllib
 AGENTENV_SHA = "a27b2db909b035f58696ba8798ea0e285c7bfa17"
 HERE = Path(__file__).resolve().parent
 ORACLE_FIELDS = (
-    "nonce", "memory_sha256", "memory_bytes", "pid", "process_started_ns",
-    "process_start_ticks", "counter", "fd_offset", "fd_sha256", "fd_size",
-    "journal_sha256", "journal_size", "owned_dir",
+    "nonce",
+    "memory_sha256",
+    "memory_bytes",
+    "pid",
+    "process_started_ns",
+    "process_start_ticks",
+    "counter",
+    "fd_offset",
+    "fd_sha256",
+    "fd_size",
+    "journal_sha256",
+    "journal_size",
+    "owned_dir",
 )
 SOURCE_FILES = ("demo.py", "guest_probe.py", "host_sampler.py", "analyze.py")
 
@@ -85,8 +95,11 @@ def archive_sources(output: Path, source_dir: Path = HERE) -> dict[str, str]:
 def clean(value, secrets=()):
     if isinstance(value, dict):
         return {
-            key: ("[redacted]" if any(word in key.lower() for word in ("token", "api_key", "api-key"))
-                  else clean(item, secrets))
+            key: (
+                "[redacted]"
+                if any(word in key.lower() for word in ("token", "api_key", "api-key"))
+                else clean(item, secrets)
+            )
             for key, item in value.items()
         }
     if isinstance(value, list | tuple):
@@ -115,8 +128,12 @@ class API:
             request_headers["X-API-Key"] = self.key
         else:
             request_headers.update(headers)
-        request = Request(self.url + path, method=method, headers=request_headers,
-                          data=None if body is None else json.dumps(body).encode())
+        request = Request(
+            self.url + path,
+            method=method,
+            headers=request_headers,
+            data=None if body is None else json.dumps(body).encode(),
+        )
         try:
             with self.opener.open(request, timeout=self.timeout) as response:
                 status, raw = response.status, response.read()
@@ -142,7 +159,7 @@ class API:
 
 # The helper receives all arguments as JSON on stdin. No shell interpolation of
 # file contents, credentials, guest commands, or process identities is needed.
-NODE_HELPER = r'''
+NODE_HELPER = r"""
 import base64,json,os,signal,subprocess,sys,time
 from pathlib import Path
 p=json.load(sys.stdin)
@@ -271,7 +288,7 @@ elif action=='finish':
         if path.is_file(): files[name]=base64.b64encode(path.read_bytes()).decode()
     print(json.dumps({'files':files}))
 else: raise RuntimeError('unknown action')
-'''
+"""
 
 
 class Node:
@@ -285,8 +302,13 @@ class Node:
         payload = {"action": action, **kwargs}
         command = "python3 -c " + shlex.quote(NODE_HELPER)
         try:
-            result = subprocess.run(self.ssh + [command], input=json.dumps(payload), capture_output=True,
-                                    text=True, timeout=self.args.operation_timeout + 30)
+            result = subprocess.run(
+                self.ssh + [command],
+                input=json.dumps(payload),
+                capture_output=True,
+                text=True,
+                timeout=self.args.operation_timeout + 30,
+            )
         except subprocess.TimeoutExpired:
             raise ExperimentError(f"node {action} timed out; remote outcome unknown") from None
         if result.returncode:
@@ -297,10 +319,15 @@ class Node:
             raise ExperimentError(f"node {action} returned invalid JSON") from None
 
     def prepare(self, trial: str):
-        context = self.call("prepare", root=self.args.node_root, trial=trial,
-                            sampler=base64.b64encode((self.source_dir / "host_sampler.py").read_bytes()).decode(),
-                            provider_pid_file=self.args.provider_pid_file, provider_pids=self.args.provider_pid,
-                            interval=self.args.sample_interval)
+        context = self.call(
+            "prepare",
+            root=self.args.node_root,
+            trial=trial,
+            sampler=base64.b64encode((self.source_dir / "host_sampler.py").read_bytes()).decode(),
+            provider_pid_file=self.args.provider_pid_file,
+            provider_pids=self.args.provider_pid,
+            interval=self.args.sample_interval,
+        )
         before = time.monotonic()
         clock = self.call("clock")
         after = time.monotonic()
@@ -317,23 +344,31 @@ class Node:
         return self.call("discover", sandbox_id=sid, serial_dir=self.args.serial_dir)["processes"]
 
     def discover_and_register(self, context: dict, trial: str, sid: str):
-        return self.call("discover_and_register", sandbox_id=sid, serial_dir=self.args.serial_dir,
-                         folder=context["folder"], trial=trial)["processes"]
+        return self.call(
+            "discover_and_register",
+            sandbox_id=sid,
+            serial_dir=self.args.serial_dir,
+            folder=context["folder"],
+            trial=trial,
+        )["processes"]
 
     def alive(self, processes: list):
         return self.call("alive", processes=processes)["alive"]
 
     def audit(self, sid=None):
-        return self.call("audit", sandbox_id=sid, state_dir=self.args.state_dir,
-                         runtime_dir=self.args.runtime_dir)
+        return self.call("audit", sandbox_id=sid, state_dir=self.args.state_dir, runtime_dir=self.args.runtime_dir)
 
     def register(self, context: dict, trial: str, processes: list):
         self.call("register", folder=context["folder"], trial=trial, processes=processes)
 
     def launch_probe(self, sid: str):
         encoded = base64.b64encode((self.source_dir / "guest_probe.py").read_bytes()).decode()
-        config = {"memory": self.args.memory_mib, "entropy": self.args.entropy,
-                  "seed": self.args.seed, "dirty": self.args.dirty_ratio}
+        config = {
+            "memory": self.args.memory_mib,
+            "entropy": self.args.entropy,
+            "seed": self.args.seed,
+            "dirty": self.args.dirty_ratio,
+        }
         bootstrap = (
             "import base64,json,subprocess,time;from pathlib import Path;"
             "root=Path('/tmp/offload-probe');root.mkdir(exist_ok=True);"
@@ -347,8 +382,9 @@ class Node:
             "log.close();print(json.dumps({'probe_pid':p.pid}))"
         )
         started = time.monotonic()
-        result = self.call("exec", aenv=self.args.aenv_bin, sandbox_id=sid,
-                           code=bootstrap, timeout=self.args.operation_timeout)
+        result = self.call(
+            "exec", aenv=self.args.aenv_bin, sandbox_id=sid, code=bootstrap, timeout=self.args.operation_timeout
+        )
         elapsed = time.monotonic() - started
         if result["returncode"]:
             raise ExperimentError(f"aenv probe bootstrap failed (exit {result['returncode']})")
@@ -388,21 +424,32 @@ class Trial:
         self.ttl = max(600, math.ceil(args.cycles * (args.wait_seconds + args.operation_timeout * 3) + 300))
 
     def event(self, name: str, **data):
-        row = {"event": name, "trial_id": self.id, "mode": self.mode, "sandbox_id": self.sid,
-               "monotonic_seconds": time.monotonic(), "wall_time_ns": time.time_ns(), **data}
+        row = {
+            "event": name,
+            "trial_id": self.id,
+            "mode": self.mode,
+            "sandbox_id": self.sid,
+            "monotonic_seconds": time.monotonic(),
+            "wall_time_ns": time.time_ns(),
+            **data,
+        }
         with (self.output / "events.jsonl").open("a", encoding="utf-8") as stream:
             stream.write(json.dumps(clean(row, self.api.secrets), allow_nan=False) + "\n")
 
     def proxy(self, method: str, path: str, body=None):
         if self.lifecycle != "running":
             raise ExperimentError("guest request forbidden outside confirmed running state")
-        headers = {"x-agentenv-sandbox-id": self.sid, "x-agentenv-target-port": "8000",
-                   "e2b-traffic-access-token": self.traffic_token}
+        headers = {
+            "x-agentenv-sandbox-id": self.sid,
+            "x-agentenv-target-port": "8000",
+            "e2b-traffic-access-token": self.traffic_token,
+        }
         return self.api.request(method, "/proxy" + path, body, headers=headers)[1]
 
     def refresh(self):
-        self.api.request("POST", f"/sandboxes/{self.sid}/refreshes",
-                         {"duration": min(3600, self.ttl)}, expected=(200, 204))
+        self.api.request(
+            "POST", f"/sandboxes/{self.sid}/refreshes", {"duration": min(3600, self.ttl)}, expected=(200, 204)
+        )
 
     def observe_node(self, phase: str):
         try:
@@ -421,8 +468,12 @@ class Trial:
             if item not in self.known_processes:
                 self.known_processes.append(item)
         elapsed = time.monotonic() - started
-        self.event("firecracker_identity", processes=found, sandbox_instance_id="unknown",
-                   ssh_discovery_registration_seconds=elapsed)
+        self.event(
+            "firecracker_identity",
+            processes=found,
+            sandbox_instance_id="unknown",
+            ssh_discovery_registration_seconds=elapsed,
+        )
         return elapsed
 
     def pause(self):
@@ -442,8 +493,11 @@ class Trial:
             time.sleep(0.1)
         self.lifecycle = "paused"
         self.node.register(self.context, self.id, [])
-        self.event("resources_released", elapsed=time.monotonic() - started,
-                   evidence="owned Firecracker PID/starttime gone; memory measured separately")
+        self.event(
+            "resources_released",
+            elapsed=time.monotonic() - started,
+            evidence="owned Firecracker PID/starttime gone; memory measured separately",
+        )
         self.observe_node("paused")
         return time.monotonic() - started
 
@@ -453,8 +507,9 @@ class Trial:
         self.lifecycle = "resuming"
         started = time.monotonic()
         self.event("resume_requested")
-        status, data = self.api.request("POST", f"/v2/sandboxes/{self.sid}/connect",
-                                       {"timeout": self.ttl}, expected=(200, 201))
+        status, data = self.api.request(
+            "POST", f"/v2/sandboxes/{self.sid}/connect", {"timeout": self.ttl}, expected=(200, 201)
+        )
         if status != 201:
             raise ExperimentError("resume returned an already-running instance; unexpected wakeup")
         if data.get("sandboxID") != self.sid:
@@ -464,8 +519,7 @@ class Trial:
         self.event("resume_api_done", elapsed=api_seconds)
         ssh_seconds = self.find_process()
         self.lifecycle = "running"
-        self.last_resume_parts = {"resume_api_seconds": api_seconds,
-                                  "resume_ssh_observation_seconds": ssh_seconds}
+        self.last_resume_parts = {"resume_api_seconds": api_seconds, "resume_ssh_observation_seconds": ssh_seconds}
         return time.monotonic() - started
 
     def tool(self, cycle: int):
@@ -474,8 +528,9 @@ class Trial:
         self.busy = True
         self.event("tool_dispatched", command_id=f"{self.id}-{cycle}")
         try:
-            result = self.proxy("POST", "/tool", {"command_id": f"{self.id}-{cycle}",
-                                                  "read_bytes": 17, "payload": f"cycle-{cycle}"})
+            result = self.proxy(
+                "POST", "/tool", {"command_id": f"{self.id}-{cycle}", "read_bytes": 17, "payload": f"cycle-{cycle}"}
+            )
             if not result.get("ok") or result.get("duplicate"):
                 raise ExperimentError("tool response is not a new confirmed completion")
             self.event("tool_completed", result=result)
@@ -488,8 +543,10 @@ class Trial:
 
     def delete(self):
         if self.sid is None:
-            self.cleanup = {"confirmed": not self.create_attempted,
-                            "reason": "create outcome unknown" if self.create_attempted else "create not attempted"}
+            self.cleanup = {
+                "confirmed": not self.create_attempted,
+                "reason": "create outcome unknown" if self.create_attempted else "create not attempted",
+            }
             return
         before_delete = self.lifecycle
         self.lifecycle = "deleting"
@@ -506,15 +563,24 @@ class Trial:
                 new_devices = sorted(set(audit.get("ublk_devices") or []) - set(before.get("ublk_devices") or []))
                 new_netns = sorted(set(audit.get("netns") or []) - set(before.get("netns") or []))
                 remaining = [item for item in audit.get("owned_artifacts", []) if item["exists"]]
-                observable = bool(self.baseline_audit is not None
-                                  and not audit.get("errors") and not before.get("errors"))
+                observable = bool(
+                    self.baseline_audit is not None and not audit.get("errors") and not before.get("errors")
+                )
                 complete = observable and not new_devices and not new_netns and not remaining
-                self.cleanup = {"confirmed": complete, "api_pid_confirmed": True, "api_absent": True,
-                                "owned_firecracker_gone": True,
-                                "resource_audit": {"before": before, "after": audit,
-                                                   "new_ublk_devices": new_devices, "new_netns": new_netns,
-                                                   "owned_artifacts_remaining": remaining,
-                                                   "status": "no_observed_residue" if complete else "pending"}}
+                self.cleanup = {
+                    "confirmed": complete,
+                    "api_pid_confirmed": True,
+                    "api_absent": True,
+                    "owned_firecracker_gone": True,
+                    "resource_audit": {
+                        "before": before,
+                        "after": audit,
+                        "new_ublk_devices": new_devices,
+                        "new_netns": new_netns,
+                        "owned_artifacts_remaining": remaining,
+                        "status": "no_observed_residue" if complete else "pending",
+                    },
+                }
                 self.lifecycle = "deleted"
                 self.event("cleanup_confirmed" if complete else "cleanup_resource_audit_pending", **self.cleanup)
                 return
@@ -524,9 +590,14 @@ class Trial:
 
     def run(self):
         started = time.monotonic()
-        result = {"trial_id": self.id, "pair_index": int(self.id.split("-")[1]),
-                  "mode": self.mode, "success": False, "cycles": [],
-                  "validation_only": bool(getattr(self.args, "pause_before_cleanup", False))}
+        result = {
+            "trial_id": self.id,
+            "pair_index": int(self.id.split("-")[1]),
+            "mode": self.mode,
+            "success": False,
+            "cycles": [],
+            "validation_only": bool(getattr(self.args, "pause_before_cleanup", False)),
+        }
         self.event("trial_started")
         try:
             self.context = self.node.prepare(self.id)
@@ -541,13 +612,22 @@ class Trial:
             self.lifecycle = "creating"
             create_started = time.monotonic()
             self.create_attempted = True
-            _, created = self.api.request("POST", "/sandboxes-cold", {
-                "image": self.args.guest_image, "cpuCount": self.args.cpus,
-                "memoryMB": self.args.sandbox_memory_mib, "timeout": self.ttl,
-                "secure": True, "autoPause": False, "autoResume": {"enabled": False},
-                "network": {"allowPublicTraffic": False},
-                "metadata": {"offload_run": self.id},
-            }, expected=(200, 201))
+            _, created = self.api.request(
+                "POST",
+                "/sandboxes-cold",
+                {
+                    "image": self.args.guest_image,
+                    "cpuCount": self.args.cpus,
+                    "memoryMB": self.args.sandbox_memory_mib,
+                    "timeout": self.ttl,
+                    "secure": True,
+                    "autoPause": False,
+                    "autoResume": {"enabled": False},
+                    "network": {"allowPublicTraffic": False},
+                    "metadata": {"offload_run": self.id},
+                },
+                expected=(200, 201),
+            )
             self.sid = created.get("sandboxID")
             if not self.sid:
                 raise ExperimentError("create response lacks sandboxID")
@@ -585,9 +665,13 @@ class Trial:
                 # recovery and validation remain inside the measured task.
                 requested = idle_start + self.args.wait_seconds
                 lead = getattr(self.args, "resume_lead_seconds", 0.0) if self.mode == "offload" else 0.0
-                self.event("tool_deadline_known", cycle=cycle,
-                           ready_monotonic_seconds=requested, resume_lead_seconds=lead,
-                           forecast_source="fixed synthetic inference wait")
+                self.event(
+                    "tool_deadline_known",
+                    cycle=cycle,
+                    ready_monotonic_seconds=requested,
+                    resume_lead_seconds=lead,
+                    forecast_source="fixed synthetic inference wait",
+                )
                 time.sleep(max(0.0, requested - lead - time.monotonic()))
                 recovery_started = time.monotonic()
                 resume_seconds = self.resume() if self.mode == "offload" else 0.0
@@ -595,8 +679,12 @@ class Trial:
                 assert_continuity(previous, restored)
                 oracle_ready = time.monotonic()
                 time.sleep(max(0.0, requested - time.monotonic()))
-                self.event("tool_requested", cycle=cycle, ready_monotonic_seconds=requested,
-                           observation_lag_seconds=max(0.0,time.monotonic()-requested))
+                self.event(
+                    "tool_requested",
+                    cycle=cycle,
+                    ready_monotonic_seconds=requested,
+                    observation_lag_seconds=max(0.0, time.monotonic() - requested),
+                )
                 idle_observation_seconds = 0.0
                 oracle_seconds = max(0.0, oracle_ready - requested)
                 state = self.tool(cycle)
@@ -608,16 +696,21 @@ class Trial:
                 if state["nonce"] != previous["nonce"] or state["fd_sha256"] != previous["fd_sha256"]:
                     raise OracleMismatch("tool corrupted preserved runtime or file state")
                 previous = state
-                row = {"cycle": cycle, "pause_seconds": pause_seconds, "resume_seconds": resume_seconds,
-                       "restore_oracle_seconds": oracle_seconds, "first_tool_seconds": first_tool_seconds,
-                       "idle_actual_seconds": requested - idle_start,
-                       "resume_lead_seconds": lead,
-                       "recovery_started_monotonic_seconds": recovery_started,
-                       "oracle_ready_monotonic_seconds": oracle_ready,
-                       "recovery_to_oracle_seconds": oracle_ready - recovery_started,
-                       "oracle_ready_before_tool_seconds": max(0.0, requested - oracle_ready),
-                       "idle_end_ssh_observation_seconds": idle_observation_seconds,
-                       **(self.last_resume_parts if self.mode == "offload" else {})}
+                row = {
+                    "cycle": cycle,
+                    "pause_seconds": pause_seconds,
+                    "resume_seconds": resume_seconds,
+                    "restore_oracle_seconds": oracle_seconds,
+                    "first_tool_seconds": first_tool_seconds,
+                    "idle_actual_seconds": requested - idle_start,
+                    "resume_lead_seconds": lead,
+                    "recovery_started_monotonic_seconds": recovery_started,
+                    "oracle_ready_monotonic_seconds": oracle_ready,
+                    "recovery_to_oracle_seconds": oracle_ready - recovery_started,
+                    "oracle_ready_before_tool_seconds": max(0.0, requested - oracle_ready),
+                    "idle_end_ssh_observation_seconds": idle_observation_seconds,
+                    **(self.last_resume_parts if self.mode == "offload" else {}),
+                }
                 result["cycles"].append(row)
                 self.event("cycle_completed", **row)
             if getattr(self.args, "pause_before_cleanup", False):
@@ -643,9 +736,12 @@ class Trial:
             if self.context is not None:
                 try:
                     self.node.register(self.context, self.id, [])
-                    time.sleep(max(self.args.io_tail_seconds,
-                                   (self.measurement_started or started)
-                                   + self.args.observation_seconds - time.monotonic()))
+                    time.sleep(
+                        max(
+                            self.args.io_tail_seconds,
+                            (self.measurement_started or started) + self.args.observation_seconds - time.monotonic(),
+                        )
+                    )
                     result["measurement_finished_monotonic_seconds"] = time.monotonic()
                     self.event("measurement_finished")
                     time.sleep(2 * self.args.sample_interval)
@@ -656,7 +752,8 @@ class Trial:
             result["lifecycle_seconds"] = time.monotonic() - started
             self.event("trial_finished", result=result)
             (self.output / "result.json").write_text(
-                json.dumps(clean(result, self.api.secrets), indent=2), encoding="utf-8")
+                json.dumps(clean(result, self.api.secrets), indent=2), encoding="utf-8"
+            )
             (self.output / "cleanup.json").write_text(json.dumps(self.cleanup, indent=2), encoding="utf-8")
         return result
 
@@ -668,9 +765,12 @@ def summary(results: list[dict]) -> dict:
         if group:
             successful = sum(row["success"] for row in group)
             cleaned = sum(bool(row["cleanup"].get("confirmed")) for row in group)
-            output["by_mode"][mode] = {"started": len(group), "successful": successful,
-                                        "success_rate": successful / len(group),
-                                        "cleanup_confirmed": cleaned}
+            output["by_mode"][mode] = {
+                "started": len(group),
+                "successful": successful,
+                "success_rate": successful / len(group),
+                "cleanup_confirmed": cleaned,
+            }
     return output
 
 
@@ -690,11 +790,18 @@ def parse_args(argv=None):
     parser.add_argument("--guest-image", required=True, help="Pinned image@sha256:... or AgentEnv sha256:... image")
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--mode", choices=("resident", "offload", "both"), default="both")
-    parser.add_argument("--pause-before-cleanup", action="store_true",
-                        help="Validation-only: pause after completed cycles, then delete the paused sandbox")
+    parser.add_argument(
+        "--pause-before-cleanup",
+        action="store_true",
+        help="Validation-only: pause after completed cycles, then delete the paused sandbox",
+    )
     parser.add_argument("--wait-seconds", type=float, default=30)
-    parser.add_argument("--resume-lead-seconds", type=float, default=0.0,
-                        help="Explicit fixed-wait forecast: begin recovery this long before tool arrival")
+    parser.add_argument(
+        "--resume-lead-seconds",
+        type=float,
+        default=0.0,
+        help="Explicit fixed-wait forecast: begin recovery this long before tool arrival",
+    )
     parser.add_argument("--memory-mib", type=int, default=64)
     parser.add_argument("--sandbox-memory-mib", type=int, default=1024)
     parser.add_argument("--cycles", type=int, default=3)
@@ -706,8 +813,12 @@ def parse_args(argv=None):
     parser.add_argument("--operation-timeout", type=float, default=180)
     parser.add_argument("--sample-interval", type=float, default=0.1)
     parser.add_argument("--io-tail-seconds", type=float, default=2)
-    parser.add_argument("--observation-seconds", type=float, default=0,
-                        help="Minimum elapsed trial window to sample, including post-cleanup idle")
+    parser.add_argument(
+        "--observation-seconds",
+        type=float,
+        default=0,
+        help="Minimum elapsed trial window to sample, including post-cleanup idle",
+    )
     args = parser.parse_args(argv)
     if not math.isfinite(args.resume_lead_seconds) or not 0 <= args.resume_lead_seconds <= args.wait_seconds:
         parser.error("resume-lead-seconds must be finite and within 0..wait-seconds")
@@ -719,9 +830,13 @@ def parse_args(argv=None):
         parser.error("memory, cycles, pairs and cpus must be positive")
     if args.memory_mib + 128 >= args.sandbox_memory_mib:
         parser.error("leave more than 128 MiB beyond probe memory for the guest runtime")
-    if not all(math.isfinite(value) and value >= 0 for value in
-               (args.wait_seconds, args.dirty_ratio, args.io_tail_seconds,
-                args.observation_seconds)) or args.dirty_ratio > 1:
+    if (
+        not all(
+            math.isfinite(value) and value >= 0
+            for value in (args.wait_seconds, args.dirty_ratio, args.io_tail_seconds, args.observation_seconds)
+        )
+        or args.dirty_ratio > 1
+    ):
         parser.error("wait/tail must be finite and nonnegative; dirty-ratio must be in 0..1")
     if not all(math.isfinite(value) and value > 0 for value in (args.operation_timeout, args.sample_interval)):
         parser.error("timeouts and sample interval must be positive and finite")
@@ -739,20 +854,34 @@ def main(argv=None):
     api = API(args.api_url or credentials.get("url", ""), credentials["api_key"], args.operation_timeout)
     args.output.mkdir(parents=True, mode=0o700, exist_ok=False)
     source_hashes = archive_sources(args.output)
-    manifest = {"schema_version": 1, "required_agentenv_sha": AGENTENV_SHA, "created_ns": time.time_ns(),
-                "parameters": {key: str(value) if isinstance(value, Path) else value
-                               for key, value in vars(args).items() if key != "credentials_file"},
-                "source_sha256": source_hashes, "source_archive": "source",
-                "validation_only": bool(args.pause_before_cleanup),
-                "control_path": {"version": 3, "fixed_wait_forecast": True,
-                                 "resume_lead_seconds": getattr(args, "resume_lead_seconds", 0.0),
-                                 "tool_deadline_unchanged": True, "resume_requires_http_status": 201,
-                                 "resume_discovery_registration_ssh_calls": 1,
-                                 "idle_end_synchronous_ssh": False, "full_memory_oracle": True},
-                "credential_source": "private TOML file", "workload": "external simulated inference wait",
-                "tool_workload": "HTTP probe file/counter mutation; aenv CLI used for guest bootstrap",
-                "deployment_revision_validation": "requires deployment manifest; not inferred from API health",
-                "limitations": ["single node", "no cross-node recovery", "no workload success-rate SLA claim"]}
+    manifest = {
+        "schema_version": 1,
+        "required_agentenv_sha": AGENTENV_SHA,
+        "created_ns": time.time_ns(),
+        "parameters": {
+            key: str(value) if isinstance(value, Path) else value
+            for key, value in vars(args).items()
+            if key != "credentials_file"
+        },
+        "source_sha256": source_hashes,
+        "source_archive": "source",
+        "validation_only": bool(args.pause_before_cleanup),
+        "control_path": {
+            "version": 3,
+            "fixed_wait_forecast": True,
+            "resume_lead_seconds": getattr(args, "resume_lead_seconds", 0.0),
+            "tool_deadline_unchanged": True,
+            "resume_requires_http_status": 201,
+            "resume_discovery_registration_ssh_calls": 1,
+            "idle_end_synchronous_ssh": False,
+            "full_memory_oracle": True,
+        },
+        "credential_source": "private TOML file",
+        "workload": "external simulated inference wait",
+        "tool_workload": "HTTP probe file/counter mutation; aenv CLI used for guest bootstrap",
+        "deployment_revision_validation": "requires deployment manifest; not inferred from API health",
+        "limitations": ["single node", "no cross-node recovery", "no workload success-rate SLA claim"],
+    }
     (args.output / "manifest.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
     node = Node(args)
     results = []
@@ -768,10 +897,22 @@ def main(argv=None):
                 stream.write(json.dumps(clean(result, api.secrets)) + "\n")
             report = summary(results)
             (args.output / "run_summary.json").write_text(json.dumps(report, indent=2), encoding="utf-8")
-            print(json.dumps({"trial_id": trial_id, "success": result["success"],
-                              "cleanup_confirmed": result["cleanup"].get("confirmed", False)}), flush=True)
-            if (not result["success"] or not result["cleanup"].get("confirmed") or result.get("unknown_command")
-                    or result.get("correctness_failure")):
+            print(
+                json.dumps(
+                    {
+                        "trial_id": trial_id,
+                        "success": result["success"],
+                        "cleanup_confirmed": result["cleanup"].get("confirmed", False),
+                    }
+                ),
+                flush=True,
+            )
+            if (
+                not result["success"]
+                or not result["cleanup"].get("confirmed")
+                or result.get("unknown_command")
+                or result.get("correctness_failure")
+            ):
                 return 1
     return 0 if all(row["success"] for row in results) else 1
 

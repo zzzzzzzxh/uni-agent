@@ -43,8 +43,11 @@ class LocalNode:
         return {"folder": str(self.folder), "sampler": {}, "clock_calibration": None}
 
     def discover(self, sid):
-        return ([{"pid": 1000 + self.generation, "starttime_ticks": self.generation, "label": "sandbox"}]
-                if self.running else [])
+        return (
+            [{"pid": 1000 + self.generation, "starttime_ticks": self.generation, "label": "sandbox"}]
+            if self.running
+            else []
+        )
 
     def discover_and_register(self, context, trial, sid):
         processes = self.discover(sid)
@@ -62,10 +65,21 @@ class LocalNode:
 
     def launch_probe(self, sid):
         self.process = subprocess.Popen(
-            [sys.executable, str(ROOT / "scripts/agentenv_offload/guest_probe.py"),
-             "--memory-mib", "1", "--port", "0", "--host", "127.0.0.1",
-             "--workdir", str(self.folder / "guest")],
-            stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
+            [
+                sys.executable,
+                str(ROOT / "scripts/agentenv_offload/guest_probe.py"),
+                "--memory-mib",
+                "1",
+                "--port",
+                "0",
+                "--host",
+                "127.0.0.1",
+                "--workdir",
+                str(self.folder / "guest"),
+            ],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
             creationflags=subprocess.CREATE_NO_WINDOW if os.name == "nt" else 0,
         )
         output = queue.Queue()
@@ -124,9 +138,12 @@ class LocalAPI:
                 if self.fail_tool:
                     raise demo.ExperimentError("tool response lost")
             assert headers["e2b-traffic-access-token"] == "test-private-key"
-            request = Request(self.node.url + path.removeprefix("/proxy"), method=method,
-                              data=None if body is None else json.dumps(body).encode(),
-                              headers={"Content-Type": "application/json"})
+            request = Request(
+                self.node.url + path.removeprefix("/proxy"),
+                method=method,
+                data=None if body is None else json.dumps(body).encode(),
+                headers={"Content-Type": "application/json"},
+            )
             with urlopen(request, timeout=5) as response:
                 return response.status, json.load(response)
         raise AssertionError((method, path))
@@ -138,9 +155,16 @@ class WorkflowTests(unittest.TestCase):
         self.addCleanup(self.temp.cleanup)
         self.root = Path(self.temp.name)
         self.args = SimpleNamespace(
-            output=self.root, operation_timeout=0.1, cycles=2, wait_seconds=0.01,
-            guest_image="python@sha256:" + "1" * 64, cpus=1, sandbox_memory_mib=512,
-            io_tail_seconds=0, observation_seconds=0, sample_interval=0.001,
+            output=self.root,
+            operation_timeout=0.1,
+            cycles=2,
+            wait_seconds=0.01,
+            guest_image="python@sha256:" + "1" * 64,
+            cpus=1,
+            sandbox_memory_mib=512,
+            io_tail_seconds=0,
+            observation_seconds=0,
+            sample_interval=0.001,
             pause_before_cleanup=False,
         )
         self.node = LocalNode(self.root)
@@ -216,8 +240,7 @@ class WorkflowTests(unittest.TestCase):
                     return 204, {}
                 return super().request(method, path, *args, **kwargs)
 
-        trial = demo.Trial(self.args, StillRunningAPI(self.node), self.node,
-                           "offload", "pair-000-offload-test")
+        trial = demo.Trial(self.args, StillRunningAPI(self.node), self.node, "offload", "pair-000-offload-test")
         trial.sid = "local"
         trial.lifecycle = "running"
         trial.current_processes = self.node.discover("local")
@@ -237,8 +260,7 @@ class WorkflowTests(unittest.TestCase):
             return result
 
         self.node.audit = residue
-        result = demo.Trial(self.args, LocalAPI(self.node), self.node,
-                            "resident", "pair-000-resident-test").run()
+        result = demo.Trial(self.args, LocalAPI(self.node), self.node, "resident", "pair-000-resident-test").run()
         self.assertTrue(result["cleanup"]["api_pid_confirmed"])
         self.assertFalse(result["cleanup"]["confirmed"])
         self.assertEqual(result["cleanup"]["resource_audit"]["status"], "pending")
@@ -251,9 +273,12 @@ class WorkflowTests(unittest.TestCase):
         def read_audit(sid=None):
             response = subprocess.run(
                 [sys.executable, "-c", demo.NODE_HELPER],
-                input=json.dumps({"action": "audit", "state_dir": str(state),
-                                  "runtime_dir": str(runtime), "sandbox_id": sid}),
-                text=True, capture_output=True, timeout=10,
+                input=json.dumps(
+                    {"action": "audit", "state_dir": str(state), "runtime_dir": str(runtime), "sandbox_id": sid}
+                ),
+                text=True,
+                capture_output=True,
+                timeout=10,
             )
             self.assertEqual(response.returncode, 0, response.stderr)
             return json.loads(response.stdout)
@@ -304,8 +329,7 @@ class WorkflowTests(unittest.TestCase):
                 def artifact_audit(sid=None, original_audit=original_audit, artifact=artifact):
                     audit = original_audit(sid)
                     if sid:
-                        audit["owned_artifacts"] = [{"path": str(artifact.parent),
-                                                     "exists": artifact.parent.exists()}]
+                        audit["owned_artifacts"] = [{"path": str(artifact.parent), "exists": artifact.parent.exists()}]
                     return audit
 
                 node.audit = artifact_audit
@@ -319,10 +343,13 @@ class WorkflowTests(unittest.TestCase):
                 self.assertEqual(result["cleanup"]["final_cleanup_state"], "paused")
                 self.assertEqual(api.deleted_from, "paused")
                 self.assertEqual(result["cleanup"]["confirmed"], not retain_artifact)
-                events = [json.loads(line) for line in
-                          (self.root / result["trial_id"] / "events.jsonl").read_text().splitlines()]
-                self.assertEqual(next(row for row in events if row["event"] == "delete_requested")["from_state"],
-                                 "paused")
+                events = [
+                    json.loads(line)
+                    for line in (self.root / result["trial_id"] / "events.jsonl").read_text().splitlines()
+                ]
+                self.assertEqual(
+                    next(row for row in events if row["event"] == "delete_requested")["from_state"], "paused"
+                )
 
     def test_oracle_checks_ram_and_fd_not_only_files(self):
         before = dict.fromkeys(demo.ORACLE_FIELDS, "same")
@@ -337,10 +364,15 @@ class WorkflowTests(unittest.TestCase):
         self.args.mode, self.args.pairs, self.args.seed = "both", 3, 1
 
         def failed_trial(args, api, node, mode, trial_id):
-            return SimpleNamespace(run=lambda: {
-                "trial_id": trial_id, "mode": mode, "success": False,
-                "cleanup": {"confirmed": True}, "error": "ordinary setup failure",
-            })
+            return SimpleNamespace(
+                run=lambda: {
+                    "trial_id": trial_id,
+                    "mode": mode,
+                    "success": False,
+                    "cleanup": {"confirmed": True},
+                    "error": "ordinary setup failure",
+                }
+            )
 
         with (
             patch.object(demo, "parse_args", return_value=self.args),
@@ -367,8 +399,17 @@ class ForecastTimingTests(unittest.TestCase):
         self.root = Path(self.temporary.name)
         self.trial_count = 0
 
-    def run_timed_trial(self, mode="offload", lead=None, *, pause_seconds=.5,
-                        resume_seconds=1, oracle_seconds=.5, tool_seconds=.2, fail_resume=False):
+    def run_timed_trial(
+        self,
+        mode="offload",
+        lead=None,
+        *,
+        pause_seconds=0.5,
+        resume_seconds=1,
+        oracle_seconds=0.5,
+        tool_seconds=0.2,
+        fail_resume=False,
+    ):
         class Clock:
             value = 100.0
 
@@ -390,8 +431,12 @@ class ForecastTimingTests(unittest.TestCase):
         class TimedAPI(LocalAPI):
             def __init__(self):
                 super().__init__(node)
-                self.state = {**dict.fromkeys(demo.ORACLE_FIELDS, "preserved"),
-                              "counter": 0, "fd_offset": 0, "fd_size": 4096}
+                self.state = {
+                    **dict.fromkeys(demo.ORACLE_FIELDS, "preserved"),
+                    "counter": 0,
+                    "fd_offset": 0,
+                    "fd_size": 4096,
+                }
                 self.state_calls, self.dispatched, self.connect_calls = [], [], []
 
             def request(self, method, path, *args, **kwargs):
@@ -418,9 +463,17 @@ class ForecastTimingTests(unittest.TestCase):
 
         self.trial_count += 1
         args = SimpleNamespace(
-            output=self.root, operation_timeout=10, cycles=1, wait_seconds=10,
-            guest_image="python@sha256:" + "1" * 64, cpus=1, sandbox_memory_mib=512,
-            io_tail_seconds=0, observation_seconds=0, sample_interval=.01, pause_before_cleanup=False,
+            output=self.root,
+            operation_timeout=10,
+            cycles=1,
+            wait_seconds=10,
+            guest_image="python@sha256:" + "1" * 64,
+            cpus=1,
+            sandbox_memory_mib=512,
+            io_tail_seconds=0,
+            observation_seconds=0,
+            sample_interval=0.01,
+            pause_before_cleanup=False,
         )
         if lead is not None:
             args.resume_lead_seconds = lead
@@ -429,8 +482,7 @@ class ForecastTimingTests(unittest.TestCase):
         with patch.object(demo, "time", clock):
             result = trial.run()
         events = [json.loads(line) for line in (trial.output / "events.jsonl").read_text().splitlines()]
-        deadline = next(event["ready_monotonic_seconds"] for event in events
-                        if event["event"] == "tool_deadline_known")
+        deadline = next(event["ready_monotonic_seconds"] for event in events if event["event"] == "tool_deadline_known")
         return result, api, events, deadline
 
     def test_forecast_restores_and_validates_early_but_defers_tool_effects_to_deadline(self):
@@ -440,15 +492,17 @@ class ForecastTimingTests(unittest.TestCase):
         self.assertAlmostEqual(api.connect_calls[0], deadline - 2)
         self.assertLess(api.state_calls[-1], deadline)
         self.assertAlmostEqual(api.dispatched[0], deadline)
-        self.assertAlmostEqual(cycle["first_tool_seconds"], .2)
+        self.assertAlmostEqual(cycle["first_tool_seconds"], 0.2)
         self.assertAlmostEqual(cycle["recovery_to_oracle_seconds"], 1.5)
-        self.assertAlmostEqual(cycle["oracle_ready_before_tool_seconds"], .5)
+        self.assertAlmostEqual(cycle["oracle_ready_before_tool_seconds"], 0.5)
         self.assertAlmostEqual(cycle["restore_oracle_seconds"], 0)
         self.assertAlmostEqual(cycle["idle_actual_seconds"], 10)
-        measurement_start = next(event["monotonic_seconds"] for event in events
-                                 if event["event"] == "measurement_started")
-        measurement_end = next(event["monotonic_seconds"] for event in events
-                               if event["event"] == "measurement_finished")
+        measurement_start = next(
+            event["monotonic_seconds"] for event in events if event["event"] == "measurement_started"
+        )
+        measurement_end = next(
+            event["monotonic_seconds"] for event in events if event["event"] == "measurement_finished"
+        )
         self.assertLess(measurement_start, cycle["recovery_started_monotonic_seconds"])
         self.assertGreater(measurement_end, api.dispatched[0])
         self.assertAlmostEqual(result["task_seconds"], 10.7)
@@ -464,18 +518,19 @@ class ForecastTimingTests(unittest.TestCase):
         self.assertEqual(resident_api.connect_calls, [])
         self.assertAlmostEqual(resident_api.state_calls[-1], resident_deadline)
         self.assertAlmostEqual(resident["cycles"][0]["resume_lead_seconds"], 0)
-        self.assertAlmostEqual(resident["cycles"][0]["first_tool_seconds"], .7)
+        self.assertAlmostEqual(resident["cycles"][0]["first_tool_seconds"], 0.7)
         self.assertAlmostEqual(resident["task_seconds"], 11.2)
 
     def test_late_recovery_and_pause_overrun_remain_in_first_tool_and_task_latency(self):
-        for pause_seconds, resume_seconds, expected_extra in ((.5, 5, 3.7), (12, 1, 3.7)):
+        for pause_seconds, resume_seconds, expected_extra in ((0.5, 5, 3.7), (12, 1, 3.7)):
             with self.subTest(pause_seconds=pause_seconds, resume_seconds=resume_seconds):
                 result, api, _, deadline = self.run_timed_trial(
-                    lead=2, pause_seconds=pause_seconds, resume_seconds=resume_seconds)
+                    lead=2, pause_seconds=pause_seconds, resume_seconds=resume_seconds
+                )
                 self.assertTrue(result["success"], result)
                 cycle = result["cycles"][0]
                 self.assertAlmostEqual(cycle["first_tool_seconds"], expected_extra)
-                self.assertAlmostEqual(cycle["restore_oracle_seconds"], expected_extra - .2)
+                self.assertAlmostEqual(cycle["restore_oracle_seconds"], expected_extra - 0.2)
                 self.assertAlmostEqual(cycle["oracle_ready_before_tool_seconds"], 0)
                 self.assertGreater(api.dispatched[0], deadline)
                 self.assertAlmostEqual(result["task_seconds"], 10.5 + expected_extra)
@@ -521,11 +576,17 @@ class HTTPTests(unittest.TestCase):
         try:
             # Neither uppercase nor lowercase proxy settings may divert the
             # loopback tunnel, even when the environment disables no-proxy.
-            with patch.dict(os.environ, {
-                "HTTP_PROXY": "http://127.0.0.1:1", "http_proxy": "http://127.0.0.1:1",
-                "HTTPS_PROXY": "http://127.0.0.1:1", "https_proxy": "http://127.0.0.1:1",
-                "NO_PROXY": "", "no_proxy": "",
-            }):
+            with patch.dict(
+                os.environ,
+                {
+                    "HTTP_PROXY": "http://127.0.0.1:1",
+                    "http_proxy": "http://127.0.0.1:1",
+                    "HTTPS_PROXY": "http://127.0.0.1:1",
+                    "https_proxy": "http://127.0.0.1:1",
+                    "NO_PROXY": "",
+                    "no_proxy": "",
+                },
+            ):
                 api = demo.API(f"http://127.0.0.1:{server.server_port}", "platform-secret")
                 api.request("GET", "/nodes")
                 api.request("GET", "/proxy/health", headers={"e2b-traffic-access-token": "app-secret"})
@@ -565,15 +626,21 @@ class SourceArchiveTests(unittest.TestCase):
 class DiscoveryRegistrationTests(unittest.TestCase):
     def test_combined_node_protocol_uses_one_control_call(self):
         with tempfile.TemporaryDirectory(prefix="offload-discovery-protocol-") as temporary:
-            args = SimpleNamespace(output=Path(temporary), ssh_config=None,
-                                   node_ssh="unused-test-node", serial_dir="/owned/serial")
+            args = SimpleNamespace(
+                output=Path(temporary), ssh_config=None, node_ssh="unused-test-node", serial_dir="/owned/serial"
+            )
             node = demo.Node(args)
             identity = {"pid": 1234, "starttime_ticks": 777, "label": "sandbox"}
             with patch.object(node, "call", return_value={"processes": [identity]}) as control:
                 found = node.discover_and_register({"folder": "/owned/trial"}, "trial-1", "sandbox-1")
             self.assertEqual(found, [identity])
-            control.assert_called_once_with("discover_and_register", sandbox_id="sandbox-1",
-                                            serial_dir="/owned/serial", folder="/owned/trial", trial="trial-1")
+            control.assert_called_once_with(
+                "discover_and_register",
+                sandbox_id="sandbox-1",
+                serial_dir="/owned/serial",
+                folder="/owned/trial",
+                trial="trial-1",
+            )
 
     def test_helper_registers_only_unique_owned_firecracker_and_keeps_base_roots(self):
         with tempfile.TemporaryDirectory(prefix="offload-discovery-helper-") as temporary:
@@ -600,8 +667,13 @@ class DiscoveryRegistrationTests(unittest.TestCase):
                 return path_type(*parts)
 
             def run_helper():
-                payload = {"action": "discover_and_register", "sandbox_id": "sandbox-1",
-                           "serial_dir": str(serial), "folder": str(folder), "trial": "trial-1"}
+                payload = {
+                    "action": "discover_and_register",
+                    "sandbox_id": "sandbox-1",
+                    "serial_dir": str(serial),
+                    "folder": str(folder),
+                    "trial": "trial-1",
+                }
                 output = io.StringIO()
                 with (
                     patch("pathlib.Path", side_effect=fixture_path),
@@ -632,20 +704,31 @@ class NodeHelperTests(unittest.TestCase):
         with tempfile.TemporaryDirectory(prefix="offload-node-helper-") as temporary:
             root = Path(temporary)
             provider = subprocess.Popen(
-                [sys.executable, "-c",
-                 "import subprocess,sys,time;print('ready',flush=True);sys.stdin.readline();"
-                 "child=subprocess.Popen([sys.executable,'-c',"
-                 "'import time;data=bytearray(1048576);time.sleep(60)']);"
-                 "print(child.pid,flush=True);time.sleep(60)"],
-                stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                text=True, start_new_session=True,
+                [
+                    sys.executable,
+                    "-c",
+                    "import subprocess,sys,time;print('ready',flush=True);sys.stdin.readline();"
+                    "child=subprocess.Popen([sys.executable,'-c',"
+                    "'import time;data=bytearray(1048576);time.sleep(60)']);"
+                    "print(child.pid,flush=True);time.sleep(60)",
+                ],
+                stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+                start_new_session=True,
             )
             context = None
 
             def helper(payload):
-                response = subprocess.run([sys.executable, "-c", demo.NODE_HELPER],
-                                          input=json.dumps(payload), text=True, capture_output=True, timeout=20,
-                                          env={**os.environ, "PATH": str(root / "no-python-on-path")})
+                response = subprocess.run(
+                    [sys.executable, "-c", demo.NODE_HELPER],
+                    input=json.dumps(payload),
+                    text=True,
+                    capture_output=True,
+                    timeout=20,
+                    env={**os.environ, "PATH": str(root / "no-python-on-path")},
+                )
                 self.assertEqual(response.returncode, 0, response.stderr)
                 return json.loads(response.stdout)
 
@@ -653,15 +736,31 @@ class NodeHelperTests(unittest.TestCase):
                 self.assertEqual(provider.stdout.readline().strip(), "ready")
                 fields = Path(f"/proc/{provider.pid}/stat").read_text().rsplit(") ", 1)[1].split()
                 registry = root / "provider.json"
-                registry.write_text(json.dumps({"processes": [{
-                    "pid": provider.pid, "starttime_ticks": int(fields[19]),
-                    "label": "provider", "include_descendants": False,
-                }]}))
-                context = helper({
-                    "action": "prepare", "root": str(root), "trial": "owned-test",
-                    "provider_pid_file": str(registry), "provider_pids": [], "interval": 0.03,
-                    "sampler": base64.b64encode((demo.HERE / "host_sampler.py").read_bytes()).decode(),
-                })
+                registry.write_text(
+                    json.dumps(
+                        {
+                            "processes": [
+                                {
+                                    "pid": provider.pid,
+                                    "starttime_ticks": int(fields[19]),
+                                    "label": "provider",
+                                    "include_descendants": False,
+                                }
+                            ]
+                        }
+                    )
+                )
+                context = helper(
+                    {
+                        "action": "prepare",
+                        "root": str(root),
+                        "trial": "owned-test",
+                        "provider_pid_file": str(registry),
+                        "provider_pids": [],
+                        "interval": 0.03,
+                        "sampler": base64.b64encode((demo.HERE / "host_sampler.py").read_bytes()).decode(),
+                    }
+                )
                 self.assertTrue(context["provider_roots"][0]["include_descendants"])
                 provider.stdin.write("spawn\n")
                 provider.stdin.flush()
@@ -671,8 +770,7 @@ class NodeHelperTests(unittest.TestCase):
                 found = []
                 while time.monotonic() < deadline:
                     rows = [json.loads(line) for line in metrics_path.read_text().splitlines() if line.endswith("}")]
-                    found = [process for row in rows for process in row["processes"]
-                             if process["pid"] == child_pid]
+                    found = [process for row in rows for process in row["processes"] if process["pid"] == child_pid]
                     if found:
                         break
                     time.sleep(0.05)

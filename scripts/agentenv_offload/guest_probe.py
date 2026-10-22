@@ -72,7 +72,9 @@ class ProbeState:
         self.journal = self.journal_path.open("w+b", buffering=0)
         if os.name == "posix":
             self.memory = mmap.mmap(
-                -1, self.memory_bytes, flags=mmap.MAP_PRIVATE | mmap.MAP_ANONYMOUS,
+                -1,
+                self.memory_bytes,
+                flags=mmap.MAP_PRIVATE | mmap.MAP_ANONYMOUS,
                 prot=mmap.PROT_READ | mmap.PROT_WRITE,
             )
         else:
@@ -90,7 +92,7 @@ class ProbeState:
                 data = generator.getrandbits(length * 8).to_bytes(length, "little")
             else:
                 data = bytes([(self.seed + version) % 256]) * length
-            self.memory[offset:offset + length] = data
+            self.memory[offset : offset + length] = data
 
     def _snapshot(self) -> dict[str, Any]:
         """Caller holds the lock; independent file reads preserve the open FD."""
@@ -261,16 +263,24 @@ def main() -> None:
     state = ProbeState(args)
     try:
         with ProbeServer((args.host, args.port), state) as server:
+
             def request_stop(signum: int, frame: Any) -> None:
                 threading.Thread(target=server.shutdown, daemon=True).start()
 
             signal.signal(signal.SIGTERM, request_stop)
             signal.signal(signal.SIGINT, request_stop)
-            print(json.dumps({
-                "event": "probe_ready", "pid": state.pid,
-                "port": server.server_port, "owned_dir": str(state.owned_dir),
-                "memory_bytes": state.memory_bytes,
-            }), flush=True)
+            print(
+                json.dumps(
+                    {
+                        "event": "probe_ready",
+                        "pid": state.pid,
+                        "port": server.server_port,
+                        "owned_dir": str(state.owned_dir),
+                        "memory_bytes": state.memory_bytes,
+                    }
+                ),
+                flush=True,
+            )
             server.serve_forever(poll_interval=0.1)
     finally:
         state.close()
